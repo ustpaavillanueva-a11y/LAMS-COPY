@@ -471,7 +471,13 @@ export class UsersComponent implements OnInit {
         const isCampusAdmin = this.currentUserRole === 'CampusAdmin';
         const isSuperAdmin = this.currentUserRole === 'SuperAdmin';
         const campusAdminCampusId = loggedInUserData.campus?.campusId || loggedInUserData.campusId || '';
-        const campusAdminCampusName = loggedInUserData.campus?.campusName || loggedInUserData.campusName || '';
+
+        // Find campus name from campuses array based on campusId
+        let campusAdminCampusName = loggedInUserData.campus?.campusName || loggedInUserData.campusName || '';
+        if (!campusAdminCampusName && campusAdminCampusId) {
+            const foundCampus = this.campuses.find((c: any) => c.campusId === campusAdminCampusId);
+            campusAdminCampusName = foundCampus?.campusName || '';
+        }
 
         // Filter departments for CampusAdmin (only their campus departments)
         const filteredDepartments = isCampusAdmin ? this.departments.filter((dept: any) => dept.campus?.campusId === campusAdminCampusId) : this.departments;
