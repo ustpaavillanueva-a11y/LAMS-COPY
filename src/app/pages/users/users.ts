@@ -524,7 +524,7 @@ export class UsersComponent implements OnInit {
                         <div>
                             <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Department * <span style="color: #999; font-size: 11px;">(Auto)</span></label>
                             <input id="newDepartment" type="text" value="Default Department" placeholder="Department" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #ccc; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent; color: #999; cursor: not-allowed;" disabled />
-                            <input id="newDepartmentId" type="hidden" value="813e7dd9-345f-40dd-a37b-ec08c2575119" />
+                            <input id="newDepartmentId" type="hidden" value="DEPT-001" />
                         </div>
                         <div>
                             <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Campus *</label>
@@ -684,7 +684,7 @@ export class UsersComponent implements OnInit {
                     department = departmentElement ? departmentElement.value : '';
                 } else {
                     // SuperAdmin - use hidden input
-                    department = departmentIdElement ? departmentIdElement.value : '813e7dd9-345f-40dd-a37b-ec08c2575119';
+                    department = departmentIdElement ? departmentIdElement.value : 'DEPT-001';
                 }
 
                 const campusInput = document.getElementById('newCampus') as HTMLInputElement | HTMLSelectElement;
