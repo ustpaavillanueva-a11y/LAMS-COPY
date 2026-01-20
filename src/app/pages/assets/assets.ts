@@ -21,6 +21,7 @@ import { StepperModule } from 'primeng/stepper';
 import { MessageService } from 'primeng/api';
 import { AssetService, Asset, Program, Supplier, Location, Color, Brand, Status, Laboratory } from '../service/asset.service';
 import { MaintenanceService, MaintenanceRequestPayload } from '../service/maintenance.service';
+import { AuthService } from '../service/auth.service';
 import { environment } from '../../../environments/environment';
 import jsQR from 'jsqr';
 import Swal from 'sweetalert2';
@@ -175,7 +176,7 @@ import Swal from 'sweetalert2';
                             <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(item)" />
                             <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="edit(item)" />
                             <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(item)" />
-                            <p-button icon="pi pi-wrench" label="Request" severity="help" [rounded]="true" [text]="true" (onClick)="openRequestDialog(item)" />
+                            <p-button icon="pi pi-wrench" label="Request" severity="help" [rounded]="true" [text]="true" (onClick)="openRequestDialog(item)" *ngIf="!isLabTech" />
                         </div>
                     </td>
                 </tr>
@@ -459,6 +460,7 @@ export class AssetsComponent implements OnInit {
     expandedRowIds: Set<string> = new Set();
     searchValue: string = '';
     loading: boolean = true;
+    isLabTech: boolean = false;
 
     // Dialog and form
     assetDialog: boolean = false;
@@ -491,6 +493,7 @@ export class AssetsComponent implements OnInit {
         private assetService: AssetService,
         private messageService: MessageService,
         private maintenanceService: MaintenanceService,
+        private authService: AuthService,
         private router: Router
     ) {}
 
@@ -529,9 +532,16 @@ export class AssetsComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.checkUserRole();
         this.loadAssets();
         this.loadReferenceData();
         this.loadMaintenanceDialogOptions();
+    }
+
+    checkUserRole() {
+        const currentUser = this.authService.getCurrentUser();
+        this.isLabTech = currentUser?.role === 'LabTech';
+        console.log('👤 Current user role:', currentUser?.role, 'Is LabTech:', this.isLabTech);
     }
 
     loadReferenceData() {
@@ -785,7 +795,7 @@ export class AssetsComponent implements OnInit {
             this.newAsset.inventoryCustodianSlip.length = null;
             this.newAsset.inventoryCustodianSlip.material = '';
             // Set default color for Software category
-            this.newAsset.inventoryCustodianSlip.color = '968afd8c-be83-48c8-b21b-f1ab29f15b2d';
+            this.newAsset.inventoryCustodianSlip.color = 'COLOR001';
         } else {
             // Clear color when switching back to Hardware
             this.newAsset.inventoryCustodianSlip.color = '';
