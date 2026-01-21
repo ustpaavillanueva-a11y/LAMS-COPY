@@ -511,24 +511,24 @@ import Swal from 'sweetalert2';
             <ng-template #content>
                 <div class="grid grid-cols-12 gap-4 mt-2">
                     <div class="col-span-12">
-                        <label class="block font-bold mb-2">maintenanceName *</label>
-                        <input pInputText [(ngModel)]="maintenanceRequest.maintenanceName" placeholder="Maintenance title / name" class="w-full" />
+                        <label class="block font-bold mb-2">Asset Name</label>
+                        <input pInputText [(ngModel)]="maintenanceRequest.maintenanceName" placeholder="Maintenance title / name" class="w-full" [disabled]="true" />
                     </div>
                     <div class="col-span-6">
-                        <label class="block font-bold mb-2">maintenanceType (ID) *</label>
+                        <label class="block font-bold mb-2">Maintenance Type</label>
                         <p-select [(ngModel)]="maintenanceRequest.maintenanceType" [options]="maintenanceTypesOptions" optionLabel="label" optionValue="value" placeholder="Select type" class="w-full" appendTo="body" />
                     </div>
                     <div class="col-span-6">
-                        <label class="block font-bold mb-2">serviceMaintenance (ID) *</label>
+                        <label class="block font-bold mb-2">Service Maintenance</label>
                         <p-select [(ngModel)]="maintenanceRequest.serviceMaintenance" [options]="serviceMaintenancesOptions" optionLabel="label" optionValue="value" placeholder="Select service" class="w-full" appendTo="body" />
                     </div>
                     <div class="col-span-6">
                         <label class="block font-bold mb-2">asset (ID) *</label>
-                        <input pInputText [(ngModel)]="maintenanceRequest.asset" [value]="requestAsset?.assetId" class="w-full" />
+                        <input pInputText [(ngModel)]="maintenanceRequest.asset" [value]="requestAsset?.assetId" class="w-full" [disabled]="true" />
                         <small class="text-gray-500">Selected: {{ requestAsset?.assetName }}</small>
                     </div>
                     <div class="col-span-6">
-                        <label class="block font-bold mb-2">priorityLevel (ID) *</label>
+                        <label class="block font-bold mb-2">Priority Level</label>
                         <p-select [(ngModel)]="maintenanceRequest.priorityLevel" [options]="priorityLevelsOptions" optionLabel="label" optionValue="value" placeholder="Select priority" class="w-full" appendTo="body" />
                     </div>
                 </div>
@@ -989,8 +989,11 @@ export class AssetsComponent implements OnInit {
 
     // Request Maintenance Handlers
     openRequestDialog(asset: Asset) {
+        console.log('📋 Request button clicked for asset:', asset);
+        console.log('Asset ID:', asset.assetId);
+        console.log('Asset Name:', asset.assetName);
         this.requestAsset = asset;
-        this.maintenanceRequest = { maintenanceName: '', maintenanceType: '', serviceMaintenance: '', asset: String(asset.assetId || ''), priorityLevel: '' };
+        this.maintenanceRequest = { maintenanceName: asset.assetName || '', maintenanceType: '', serviceMaintenance: '', asset: String(asset.assetId || ''), priorityLevel: '' };
         this.requestDialog = true;
     }
 
