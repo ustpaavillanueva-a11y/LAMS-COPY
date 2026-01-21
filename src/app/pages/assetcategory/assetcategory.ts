@@ -377,17 +377,26 @@ export class SupplierComponent extends AssetCategoryBase {
         Swal.fire({
             title: 'New Supplier',
             html: `<input id="supplierName" class="swal2-input" placeholder="Supplier Name" />
-                   <textarea id="contactInfo" class="swal2-textarea" placeholder="Contact Info"></textarea>`,
+                   <input id="supplierAddress" class="swal2-input" placeholder="Supplier Address" />
+                   <input id="supplierContactNumber" class="swal2-input" value="+639" placeholder="Contact Number (+639xxxxxxxxx)" />`,
             confirmButtonText: 'Create',
             showCancelButton: true,
             preConfirm: () => {
                 const supplierName = (document.getElementById('supplierName') as HTMLInputElement).value.trim();
-                const contactInfo = (document.getElementById('contactInfo') as HTMLTextAreaElement).value.trim();
+                const supplierAddress = (document.getElementById('supplierAddress') as HTMLInputElement).value.trim();
+                const supplierContactNumber = (document.getElementById('supplierContactNumber') as HTMLInputElement).value.trim();
+                
                 if (!supplierName) {
                     Swal.showValidationMessage('Supplier name is required');
                     return false;
                 }
-                return { supplierName, contactInfo };
+                
+                if (supplierContactNumber && !this.isValidPhilippinePhoneNumber(supplierContactNumber)) {
+                    Swal.showValidationMessage('Contact number must be a valid Philippine phone number +63');
+                    return false;
+                }
+                
+                return { supplierName, supplierAddress, supplierContactNumber };
             }
         }).then((r) => {
             if (r.isConfirmed && r.value) {
@@ -407,17 +416,26 @@ export class SupplierComponent extends AssetCategoryBase {
         Swal.fire({
             title: 'Edit Supplier',
             html: `<input id="supplierName" class="swal2-input" value="${item.supplierName}" />
-                   <textarea id="contactInfo" class="swal2-textarea">${item.contactInfo || ''}</textarea>`,
+                   <input id="supplierAddress" class="swal2-input" value="${item.supplierAddress || ''}" />
+                   <input id="supplierContactNumber" class="swal2-input" value="${item.supplierContactNumber || ''}" placeholder="Contact Number (+63XXXXXXXXXX)" />`,
             confirmButtonText: 'Update',
             showCancelButton: true,
             preConfirm: () => {
                 const supplierName = (document.getElementById('supplierName') as HTMLInputElement).value.trim();
-                const contactInfo = (document.getElementById('contactInfo') as HTMLTextAreaElement).value.trim();
+                const supplierAddress = (document.getElementById('supplierAddress') as HTMLInputElement).value.trim();
+                const supplierContactNumber = (document.getElementById('supplierContactNumber') as HTMLInputElement).value.trim();
+                
                 if (!supplierName) {
                     Swal.showValidationMessage('Supplier name is required');
                     return false;
                 }
-                return { supplierName, contactInfo };
+                
+                if (supplierContactNumber && !this.isValidPhilippinePhoneNumber(supplierContactNumber)) {
+                    Swal.showValidationMessage('Contact number must be a valid Philippine phone number +63');
+                    return false;
+                }
+                
+                return { supplierName, supplierAddress, supplierContactNumber };
             }
         }).then((r) => {
             if (r.isConfirmed && r.value) {
@@ -464,6 +482,12 @@ export class SupplierComponent extends AssetCategoryBase {
                     .catch(() => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Bulk delete failed' }));
             }
         });
+    }
+
+    isValidPhilippinePhoneNumber(phoneNumber: string): boolean {
+        // Format: +63XXXXXXXXXX (10 digits after +63)
+        const pattern = /^\+63\d{10}$/;
+        return pattern.test(phoneNumber);
     }
 }
 

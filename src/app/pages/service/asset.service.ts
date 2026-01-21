@@ -41,7 +41,8 @@ export interface Location {
 export interface Supplier {
     supplierId?: string;
     supplierName?: string;
-    contactInfo?: string;
+    supplierAddress?: string;
+    supplierContactNumber?: string;
 }
 
 export interface Program {
