@@ -33,59 +33,60 @@ import Swal from 'sweetalert2';
 
                 <p-divider></p-divider>
 
-                <!-- Change Password Section -->
-                <div style="margin: 28px 0;">
-                    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 16px 0; color: #1a1a1a; display: flex; align-items: center; gap: 8px;"><i class="pi pi-lock" style="color: #667eea;"></i> Change Password</h3>
+                <!-- Change Password Section and Account Status -->
+                <div style="display: flex; gap: 12px; margin: 28px 0; align-items: flex-start;">
+                    <!-- Change Password -->
+                    <div style="flex: 0 0 30%; min-width: 250px;">
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 16px 0; color: #1a1a1a; display: flex; align-items: center; gap: 8px;"><i class="pi pi-lock" style="color: #667eea;"></i> Change Password</h3>
 
-                    <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
-                        <div>
-                            <label style="font-weight: 600; color: #1a1a1a; font-size: 13px; display: block; margin-bottom: 8px;">Current Password</label>
-                            <p-password formControlName="currentPassword" [feedback]="false" placeholder="Enter your current password" [toggleMask]="true"></p-password>
-                            <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.get('currentPassword')?.hasError('required') && passwordForm.get('currentPassword')?.touched">Current password is required</p>
-                        </div>
+                        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                            <div>
+                                <label style="font-weight: 600; color: #1a1a1a; font-size: 13px; display: block; margin-bottom: 8px;">Current Password</label>
+                                <p-password formControlName="currentPassword" [feedback]="false" placeholder="Enter your current password" [toggleMask]="true"></p-password>
+                                <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.get('currentPassword')?.hasError('required') && passwordForm.get('currentPassword')?.touched">Current password is required</p>
+                            </div>
 
-                        <div>
-                            <label style="font-weight: 600; color: #1a1a1a; font-size: 13px; display: block; margin-bottom: 8px;">New Password</label>
-                            <p-password formControlName="newPassword" placeholder="Enter new password (min 8 characters)" [feedback]="true" [toggleMask]="true"></p-password>
-                            <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched">New password is required</p>
-                            <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.get('newPassword')?.hasError('minlength') && passwordForm.get('newPassword')?.touched">Password must be at least 8 characters</p>
-                        </div>
+                            <div>
+                                <label style="font-weight: 600; color: #1a1a1a; font-size: 13px; display: block; margin-bottom: 8px;">New Password</label>
+                                <p-password formControlName="newPassword" placeholder="Enter new password (min 8 characters)" [feedback]="true" [toggleMask]="true"></p-password>
+                                <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched">New password is required</p>
+                                <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.get('newPassword')?.hasError('minlength') && passwordForm.get('newPassword')?.touched">Password must be at least 8 characters</p>
+                            </div>
 
-                        <div>
-                            <label style="font-weight: 600; color: #1a1a1a; font-size: 13px; display: block; margin-bottom: 8px;">Confirm Password</label>
-                            <p-password formControlName="confirmPassword" [feedback]="false" placeholder="Confirm your new password" [toggleMask]="true"></p-password>
-                            <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched">Confirm password is required</p>
-                            <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.hasError('passwordMismatch') && passwordForm.get('confirmPassword')?.touched">Passwords do not match</p>
-                        </div>
+                            <div>
+                                <label style="font-weight: 600; color: #1a1a1a; font-size: 13px; display: block; margin-bottom: 8px;">Confirm Password</label>
+                                <p-password formControlName="confirmPassword" [feedback]="false" placeholder="Confirm your new password" [toggleMask]="true"></p-password>
+                                <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched">Confirm password is required</p>
+                                <p style="color: #e74c3c; font-size: 12px; margin: 4px 0 0 0;" *ngIf="passwordForm.hasError('passwordMismatch') && passwordForm.get('confirmPassword')?.touched">Passwords do not match</p>
+                            </div>
 
-                        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
-                            <p-button type="button" label="Cancel" severity="secondary" (click)="resetPasswordForm()"></p-button>
-                            <p-button type="submit" label="Change Password" severity="success" icon="pi pi-check" [disabled]="passwordForm.invalid"></p-button>
-                        </div>
-                    </form>
-                </div>
+                            <div style="display: flex; gap: 8px; justify-content: flex-start; margin-top: 8px;">
+                                <p-button type="button" label="Cancel" severity="secondary" (click)="resetPasswordForm()"></p-button>
+                                <p-button type="submit" label="Change Password" severity="success" icon="pi pi-check" [disabled]="passwordForm.invalid"></p-button>
+                            </div>
+                        </form>
+                    </div>
 
-                <p-divider></p-divider>
-
-                <!-- Account Status -->
-                <div style="margin: 28px 0;">
-                    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 16px 0; color: #1a1a1a; display: flex; align-items: center; gap: 8px;"><i class="pi pi-info-circle" style="color: #667eea;"></i> Account Status</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                        <div style="background: rgba(46, 204, 113, 0.1); padding: 16px; border-radius: 8px; border: 1px solid rgba(46, 204, 113, 0.2);">
-                            <p style="font-size: 12px; color: #666; font-weight: 600; margin: 0 0 8px 0;">Account Status</p>
-                            <p style="font-size: 16px; font-weight: 700; color: #27ae60; margin: 0;">Active</p>
-                        </div>
-                        <div style="background: rgba(52, 152, 219, 0.1); padding: 16px; border-radius: 8px; border: 1px solid rgba(52, 152, 219, 0.2);">
-                            <p style="font-size: 12px; color: #666; font-weight: 600; margin: 0 0 8px 0;">Member Since</p>
-                            <p style="font-size: 16px; font-weight: 700; color: #2980b9; margin: 0;">{{ currentUser?.createdAt || 'N/A' }}</p>
-                        </div>
-                        <div style="background: rgba(155, 89, 182, 0.1); padding: 16px; border-radius: 8px; border: 1px solid rgba(155, 89, 182, 0.2);">
-                            <p style="font-size: 12px; color: #666; font-weight: 600; margin: 0 0 8px 0;">Account Type</p>
-                            <p style="font-size: 16px; font-weight: 700; color: #9b59b6; margin: 0; text-transform: capitalize;">{{ currentUser?.role }}</p>
-                        </div>
-                        <div style="background: rgba(230, 126, 34, 0.1); padding: 16px; border-radius: 8px; border: 1px solid rgba(230, 126, 34, 0.2);">
-                            <p style="font-size: 12px; color: #666; font-weight: 600; margin: 0 0 8px 0;">Last Updated</p>
-                            <p style="font-size: 16px; font-weight: 700; color: #e67e22; margin: 0;">{{ currentUser?.updatedAt || 'N/A' }}</p>
+                    <!-- Account Status -->
+                    <div style="flex: 0 0 70%; min-width: 250px;">
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 16px 0; color: #1a1a1a; display: flex; align-items: center; gap: 8px;"><i class="pi pi-info-circle" style="color: #667eea;"></i> Account Status</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div style="background: rgba(46, 204, 113, 0.1); padding: 24px 16px; border-radius: 8px; border: 1px solid rgba(46, 204, 113, 0.2); display: flex; flex-direction: column; justify-content: center; min-height: 120px;">
+                                <p style="font-size: 12px; color: #666; font-weight: 600; margin: 0 0 8px 0;">Account Status</p>
+                                <p style="font-size: 16px; font-weight: 700; color: #27ae60; margin: 0;">Active</p>
+                            </div>
+                            <div style="background: rgba(52, 152, 219, 0.1); padding: 24px 16px; border-radius: 8px; border: 1px solid rgba(52, 152, 219, 0.2); display: flex; flex-direction: column; justify-content: center; min-height: 120px;">
+                                <p style="font-size: 12px; color: #666; font-weight: 600; margin: 0 0 8px 0;">Member Since</p>
+                                <p style="font-size: 16px; font-weight: 700; color: #2980b9; margin: 0;">{{ currentUser?.createdAt || 'N/A' }}</p>
+                            </div>
+                            <div style="background: rgba(155, 89, 182, 0.1); padding: 24px 16px; border-radius: 8px; border: 1px solid rgba(155, 89, 182, 0.2); display: flex; flex-direction: column; justify-content: center; min-height: 120px;">
+                                <p style="font-size: 12px; color: #666; font-weight: 600; margin: 0 0 8px 0;">Account Type</p>
+                                <p style="font-size: 16px; font-weight: 700; color: #9b59b6; margin: 0; text-transform: capitalize;">{{ currentUser?.role }}</p>
+                            </div>
+                            <div style="background: rgba(230, 126, 34, 0.1); padding: 24px 16px; border-radius: 8px; border: 1px solid rgba(230, 126, 34, 0.2); display: flex; flex-direction: column; justify-content: center; min-height: 120px;">
+                                <p style="font-size: 12px; color: #666; font-weight: 600; margin: 0 0 8px 0;">Last Updated</p>
+                                <p style="font-size: 16px; font-weight: 700; color: #e67e22; margin: 0;">{{ currentUser?.updatedAt || 'N/A' }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
