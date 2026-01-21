@@ -101,7 +101,7 @@ import Swal from 'sweetalert2';
         <p-toolbar styleClass="mb-4">
             <ng-template #start>
                 <div class="flex items-center gap-2">
-                    <p-button label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNew()" />
+                    <p-button *ngIf="!isSuperAdmin" label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNew()" />
                     <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedAssets.length" />
                 </div>
             </ng-template>
@@ -176,7 +176,7 @@ import Swal from 'sweetalert2';
                             <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(item)" />
                             <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="edit(item)" />
                             <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(item)" />
-                            <p-button icon="pi pi-wrench" label="Request" severity="help" [rounded]="true" [text]="true" (onClick)="openRequestDialog(item)" *ngIf="!isLabTech" />
+                            <p-button icon="pi pi-wrench" label="Request" severity="help" [rounded]="true" [text]="true" (onClick)="openRequestDialog(item)" *ngIf="!isLabTech && !isSuperAdmin" />
                         </div>
                     </td>
                 </tr>
@@ -461,6 +461,7 @@ export class AssetsComponent implements OnInit {
     searchValue: string = '';
     loading: boolean = true;
     isLabTech: boolean = false;
+    isSuperAdmin: boolean = false;
 
     // Dialog and form
     assetDialog: boolean = false;
@@ -541,7 +542,8 @@ export class AssetsComponent implements OnInit {
     checkUserRole() {
         const currentUser = this.authService.getCurrentUser();
         this.isLabTech = currentUser?.role === 'LabTech';
-        console.log('👤 Current user role:', currentUser?.role, 'Is LabTech:', this.isLabTech);
+        this.isSuperAdmin = currentUser?.role === 'SuperAdmin';
+        console.log('👤 Current user role:', currentUser?.role, 'Is LabTech:', this.isLabTech, 'Is SuperAdmin:', this.isSuperAdmin);
     }
 
     loadReferenceData() {

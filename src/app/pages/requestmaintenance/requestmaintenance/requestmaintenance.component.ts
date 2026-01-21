@@ -53,7 +53,6 @@ import { TabsModule } from 'primeng/tabs';
         <p-toolbar styleClass="mb-4">
             <ng-template #start>
                 <div class="flex items-center gap-2">
-                    <p-button label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNewDialog()" />
                     <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length" />
                 </div>
             </ng-template>
@@ -397,6 +396,10 @@ export class RequestmaintenanceComponent implements OnInit {
         });
 
         this.loadItems();
+    }
+
+    checkUserRole() {
+        const currentUser = this.authService.getCurrentUser();
     }
 
     isLabTech(): boolean {
