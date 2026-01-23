@@ -159,6 +159,7 @@ import { TabsModule } from 'primeng/tabs';
                                     <th style="width:3rem"><p-tableHeaderCheckbox /></th>
                                     <th style="min-width:25rem">ID</th>
                                     <th pSortableColumn="maintenanceRequest.maintenanceName" style="min-width:20rem">Maintenance Name <p-sortIcon field="maintenanceRequest.maintenanceName" /></th>
+                                    <th style="min-width:15rem">Assigned Technician</th>
                                     <th style="min-width:15rem">Scheduled Date</th>
                                     <th style="min-width:15rem">Status</th>
                                     <th style="min-width:12rem">Actions</th>
@@ -169,6 +170,7 @@ import { TabsModule } from 'primeng/tabs';
                                     <td><p-tableCheckbox [value]="row" /></td>
                                     <td>{{ row.maintenanceRequest?.requestId }}</td>
                                     <td>{{ row.maintenanceRequest?.maintenanceName }}</td>
+                                    <td>{{ row.assignedTechnician?.firstName }} {{ row.assignedTechnician?.lastName || '' }}</td>
                                     <td>{{ row.scheduledAt | date: 'short' }}</td>
                                     <td><p-tag [value]="row.isCompleted ? 'Completed' : row.isApproved ? 'Approved' : 'Pending'" /></td>
                                     <td>
@@ -316,7 +318,7 @@ import { TabsModule } from 'primeng/tabs';
 
                     <div class="space-y-2">
                         <label class="block text-sm font-semibold text-slate-700">Technician</label>
-                        <p-select [(ngModel)]="approveFormData.technicianId" [options]="technicians" optionLabel="firstName" optionValue="userId" placeholder="Select technician" [styleClass]="'w-full'" [panelStyleClass]="'rounded'" appendTo="body" />
+                        <p-select [(ngModel)]="approveFormData.technicianId" [options]="technicians" optionLabel="fullName" optionValue="userId" placeholder="Select technician" [styleClass]="'w-full'" [panelStyleClass]="'rounded'" appendTo="body" />
                     </div>
                 </div>
 
@@ -553,26 +555,22 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     loadTechnicians(campusId: string) {
-        if (!campusId) {
-            this.technicians = [];
-            return;
-        }
-        // TODO: Replace with actual API call to get technicians by campus
-        // this.maintenanceService.getTechniciansByCompus(campusId).subscribe({
-        //     next: (data) => {
-        //         this.technicians = data;
-        //     },
-        //     error: () => {
-        //         this.technicians = [];
-        //     }
-        // });
-
-        // For now, using mock data - replace with actual API call
-        this.technicians = [
-            { userId: 'USER-00001', firstName: 'Technician One' },
-            { userId: 'USER-00002', firstName: 'Technician Two' },
-            { userId: 'USER-00003', firstName: 'Technician Three' }
-        ];
+        this.maintenanceService.getLabTechnicians().subscribe({
+            next: (data: any[]) => {
+                console.log('✅ Lab Technicians loaded:', data);
+                // Map the data to add a fullName property for display
+                this.technicians = data.map((tech) => ({
+                    ...tech,
+                    fullName: [tech.firstName, tech.middleName, tech.lastName].filter((name) => name && name.trim()).join(' ')
+                }));
+                console.log('Technicians with fullName:', this.technicians);
+            },
+            error: (error: any) => {
+                console.error('Error loading technicians:', error);
+                this.technicians = [];
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load technicians' });
+            }
+        });
     }
 
     confirmApprove() {

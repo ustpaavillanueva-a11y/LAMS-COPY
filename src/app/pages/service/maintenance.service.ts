@@ -187,4 +187,11 @@ export class MaintenanceService {
         console.log('📡 Deleting Maintenance Request:', url);
         return this.http.delete<void>(url);
     }
+
+    // Get Lab Technicians
+    getLabTechnicians(): Observable<any[]> {
+        const url = `${this.baseApiUrl}/users/filter/lab-technicians`;
+        console.log('📡 Fetching Lab Technicians:', url);
+        return this.http.get<any[]>(url);
+    }
 }
