@@ -197,19 +197,49 @@ import { AuthService } from '../service/auth.service';
                         <i class="pi pi-building text-gray-500"></i>
                         <span>{{ selectedLaboratory?.laboratoryName || 'N/A' }}</span>
                     </div>
-                    <div class="flex items-center gap-3" *ngIf="selectedSchedule.isLocked !== undefined">
-                        <i class="pi" [ngClass]="selectedSchedule.isLocked ? 'pi-lock text-orange-500' : 'pi-lock-open text-green-500'"></i>
-                        <span>{{ selectedSchedule.isLocked ? 'Locked' : 'Unlocked' }}</span>
-                    </div>
                 </div>
             </ng-template>
             <ng-template #footer>
                 <div class="flex justify-between w-full">
-                    <p-button [label]="selectedSchedule?.isLocked ? 'Unlock' : 'Lock'" [icon]="selectedSchedule?.isLocked ? 'pi pi-lock-open' : 'pi pi-lock'" severity="warn" (click)="toggleLockSchedule()" />
+                    <p-button label="Edit" icon="pi pi-pencil" severity="info" (click)="openEditScheduleDialog()" />
                     <div class="flex gap-2">
                         <p-button label="Close" icon="pi pi-times" severity="secondary" text (click)="closeScheduleDetailsDialog()" />
                         <p-button label="Delete" icon="pi pi-trash" severity="danger" (click)="confirmDeleteSchedule()" />
                     </div>
+                </div>
+            </ng-template>
+        </p-dialog>
+
+        <!-- Edit Schedule Dialog -->
+        <p-dialog [(visible)]="editScheduleDialog" [style]="{ width: '500px' }" header="Edit Schedule" [modal]="true" [closable]="true">
+            <ng-template #content>
+                <div class="grid grid-cols-12 gap-4 mt-2" *ngIf="editingSchedule">
+                    <div class="col-span-12">
+                        <label class="block font-bold mb-2">Instructor</label>
+                        <p-select [(ngModel)]="editingSchedule.instructor" [options]="users" optionLabel="firstName" optionValue="userId" placeholder="Select instructor" [showClear]="true" class="w-full" appendTo="body" />
+                    </div>
+                    <div class="col-span-6">
+                        <label class="block font-bold mb-2">Day *</label>
+                        <p-select [(ngModel)]="editingSchedule.day" [options]="daysOfWeek" placeholder="Select day" class="w-full" appendTo="body" />
+                    </div>
+                    <div class="col-span-6">
+                        <label class="block font-bold mb-2">Subject *</label>
+                        <p-select [(ngModel)]="editingSchedule.subject" [options]="subjects" optionLabel="subjectName" optionValue="subjectId" placeholder="Select subject" class="w-full" appendTo="body" />
+                    </div>
+                    <div class="col-span-6">
+                        <label class="block font-bold mb-2">Start Time *</label>
+                        <input pInputText [(ngModel)]="editingSchedule.startTime" type="time" class="w-full" />
+                    </div>
+                    <div class="col-span-6">
+                        <label class="block font-bold mb-2">End Time *</label>
+                        <input pInputText [(ngModel)]="editingSchedule.endTime" type="time" class="w-full" />
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template #footer>
+                <div class="flex justify-end gap-2 w-full">
+                    <p-button label="Cancel" icon="pi pi-times" severity="secondary" text (click)="closeEditScheduleDialog()" />
+                    <p-button label="Update" icon="pi pi-check" (click)="saveEditedSchedule()" />
                 </div>
             </ng-template>
         </p-dialog>
@@ -236,6 +266,8 @@ export class LabScheduleComponent implements OnInit {
     newSubject: any = this.getEmptySubject();
     scheduleDetailsDialog: boolean = false;
     selectedSchedule: any = null;
+    editScheduleDialog: boolean = false;
+    editingSchedule: any = null;
 
     private apiUrl = `${environment.apiUrl}/laboratories`;
 
@@ -694,33 +726,72 @@ export class LabScheduleComponent implements OnInit {
         this.selectedSchedule = null;
     }
 
-    // Toggle lock/unlock schedule
-    toggleLockSchedule() {
+    // Open edit schedule dialog
+    openEditScheduleDialog() {
         if (!this.selectedSchedule) return;
 
-        const laboratoryId = this.selectedLaboratory?.laboratoryId || this.selectedSchedule.laboratory?.laboratoryId;
-        const scheduleId = this.selectedSchedule.scheduleId;
-        const newLockStatus = !this.selectedSchedule.isLocked;
+        this.editingSchedule = {
+            scheduleId: this.selectedSchedule.scheduleId,
+            instructor: this.selectedSchedule.faculty?.userId || null,
+            day: this.selectedSchedule.dayOfWeek,
+            subject: this.selectedSchedule.subject?.subjectId || null,
+            startTime: this.selectedSchedule.startTime,
+            endTime: this.selectedSchedule.endTime
+        };
 
-        const lockUrl = `${environment.apiUrl}/laboratories/${laboratoryId}/schedules/${scheduleId}/lock`;
-        console.log('🔒 Toggling lock status:', lockUrl);
+        this.scheduleDetailsDialog = false;
+        this.editScheduleDialog = true;
+    }
 
-        this.http.patch(lockUrl, { isLocked: newLockStatus }).subscribe({
+    // Close edit schedule dialog
+    closeEditScheduleDialog() {
+        this.editScheduleDialog = false;
+        this.editingSchedule = null;
+    }
+
+    // Save edited schedule
+    saveEditedSchedule() {
+        if (!this.editingSchedule) return;
+
+        const laboratoryId = this.selectedLaboratory?.laboratoryId;
+        const scheduleId = this.editingSchedule.scheduleId;
+
+        if (!laboratoryId || !scheduleId) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Cannot update: Missing laboratory or schedule ID'
+            });
+            return;
+        }
+
+        const updateData = {
+            dayOfWeek: this.editingSchedule.day,
+            startTime: this.editingSchedule.startTime,
+            endTime: this.editingSchedule.endTime,
+            subjectId: this.editingSchedule.subject,
+            facultyId: this.editingSchedule.instructor
+        };
+
+        const updateUrl = `${environment.apiUrl}/laboratories/${laboratoryId}/schedules/${scheduleId}`;
+        console.log('✏️ Updating schedule:', updateUrl, updateData);
+
+        this.http.put(updateUrl, updateData).subscribe({
             next: () => {
-                this.selectedSchedule.isLocked = newLockStatus;
                 this.messageService.add({
                     severity: 'success',
-                    summary: newLockStatus ? 'Locked' : 'Unlocked',
-                    detail: `Schedule ${newLockStatus ? 'locked' : 'unlocked'} successfully`
+                    summary: 'Updated',
+                    detail: 'Schedule updated successfully'
                 });
+                this.closeEditScheduleDialog();
                 this.loadSchedules();
             },
             error: (error: any) => {
-                console.error('❌ Error toggling lock:', error);
+                console.error('❌ Error updating schedule:', error);
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error',
-                    detail: 'Failed to update lock status: ' + (error?.error?.message || error?.message)
+                    detail: 'Failed to update schedule: ' + (error?.error?.message || error?.message)
                 });
             }
         });
