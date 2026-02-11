@@ -95,7 +95,7 @@ import Swal from 'sweetalert2';
                 }
 
                 .p-datatable.p-datatable-compact {
-                    font-size: 12px;
+                    font-size: 14px;
                     width: 100%;
                     max-height: calc(100vh - 200px);
                 }
@@ -107,7 +107,7 @@ import Swal from 'sweetalert2';
 
                 .p-datatable.p-datatable-compact .p-datatable-thead > tr > th {
                     padding: 6px 4px;
-                    font-size: 13px;
+                    font-size: 15px;
                     font-weight: 600;
                     background-color: #f3f4f6;
                     white-space: nowrap;
@@ -117,7 +117,7 @@ import Swal from 'sweetalert2';
 
                 .p-datatable.p-datatable-compact .p-datatable-tbody > tr > td {
                     padding: 6px 4px;
-                    font-size: 13px;
+                    font-size: 14px;
                     height: 32px;
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -131,7 +131,7 @@ import Swal from 'sweetalert2';
 
                 .p-datatable.p-datatable-compact .p-button-text {
                     padding: 0.25rem 0.25rem;
-                    font-size: 13px;
+                    font-size: 14px;
                 }
 
                 .p-datatable.p-datatable-compact .p-datatable-tbody > tr:hover {
@@ -167,7 +167,7 @@ import Swal from 'sweetalert2';
                     <th style="width:3rem"><p-tableHeaderCheckbox /></th>
                     <th pSortableColumn="assetId" style="width:7rem">Asset ID <p-sortIcon field="assetId" /></th>
                     <th pSortableColumn="assetName" style="width:8rem">Asset Name <p-sortIcon field="assetName" /></th>
-                    <th style="width:7rem">Property #</th>
+                    <th style="width:7rem">Property Number</th>
                     <th style="width:7rem">Campus</th>
                     <th style="width:7rem">Lab</th>
                     <th style="width:7rem">Issued To</th>
@@ -804,7 +804,7 @@ export class AssetsComponent implements OnInit {
         // Extract numbers from assetId format like "CAMPUS004-LAB002-001"
         // Result: "004-002-001"
         const parts = assetId.split('-');
-        return parts.map(part => part.replace(/[^\d]/g, '')).join('-');
+        return parts.map((part) => part.replace(/[^\d]/g, '')).join('-');
     }
 
     onSelectionChange(event: any) {
