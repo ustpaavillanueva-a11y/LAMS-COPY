@@ -93,6 +93,50 @@ import Swal from 'sweetalert2';
                 .animate-expand {
                     animation: slideDown 0.3s ease-out;
                 }
+
+                .p-datatable.p-datatable-compact {
+                    font-size: 12px;
+                    width: 100%;
+                    max-height: calc(100vh - 200px);
+                }
+
+                .p-datatable.p-datatable-compact .p-datatable-wrapper {
+                    overflow-x: visible;
+                    overflow-y: auto;
+                }
+
+                .p-datatable.p-datatable-compact .p-datatable-thead > tr > th {
+                    padding: 6px 4px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    background-color: #f3f4f6;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .p-datatable.p-datatable-compact .p-datatable-tbody > tr > td {
+                    padding: 6px 4px;
+                    font-size: 13px;
+                    height: 32px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .p-datatable.p-datatable-compact .p-checkbox {
+                    width: 18px;
+                    height: 18px;
+                }
+
+                .p-datatable.p-datatable-compact .p-button-text {
+                    padding: 0.25rem 0.25rem;
+                    font-size: 13px;
+                }
+
+                .p-datatable.p-datatable-compact .p-datatable-tbody > tr:hover {
+                    background-color: #eff6ff;
+                }
             }
         `
     ],
@@ -117,56 +161,45 @@ import Swal from 'sweetalert2';
             </ng-template>
         </p-toolbar>
 
-        <p-table
-            #dt
-            [value]="filteredAssets"
-            [rows]="10"
-            [paginator]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
-            [loading]="loading"
-            [rowHover]="true"
-            dataKey="assetId"
-            [(selection)]="selectedAssets"
-            (selectionChange)="onSelectionChange($event)"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} assets"
-            [showCurrentPageReport]="true"
-            [tableStyle]="{ 'min-width': '70rem' }"
-        >
+        <p-table #dt [value]="filteredAssets" [loading]="loading" [rowHover]="true" dataKey="assetId" [(selection)]="selectedAssets" (selectionChange)="onSelectionChange($event)" styleClass="p-datatable-compact">
             <ng-template pTemplate="header">
                 <tr>
                     <th style="width:3rem"><p-tableHeaderCheckbox /></th>
-                    <th style="width:3rem">Expand</th>
-                    <!-- <th style="min-width:20rem">ID</th> -->
-                    <th pSortableColumn="assetName" style="min-width:18rem">Asset <p-sortIcon field="assetName" /></th>
-                    <th style="min-width:14rem">Property #</th>
-                    <th style="min-width:14rem">Laboratory</th>
-                    <th style="min-width:12rem">QR Code</th>
-                    <th style="min-width:12rem">Actions</th>
+                    <th pSortableColumn="assetId" style="width:7rem">Asset ID <p-sortIcon field="assetId" /></th>
+                    <th pSortableColumn="assetName" style="width:8rem">Asset Name <p-sortIcon field="assetName" /></th>
+                    <th style="width:7rem">Property #</th>
+                    <th style="width:7rem">Campus</th>
+                    <th style="width:7rem">Lab</th>
+                    <th style="width:7rem">Issued To</th>
+                    <th style="width:5rem">Status</th>
+                    <th style="width:5rem">Warranty</th>
+                    <th style="width:5rem">QR</th>
+                    <th style="width:8rem">Actions</th>
                 </tr>
             </ng-template>
 
             <ng-template #body let-item>
                 <tr>
                     <td style="width: 3rem"><p-tableCheckbox [value]="item" /></td>
-                    <td style="width: 3rem">
-                        <button type="button" pButton pRipple icon="pi pi-chevron-right" class="p-button-rounded p-button-text p-button-sm expand-btn" [class.expanded]="isRowExpanded(item.assetId)" (click)="toggleExpand(item)"></button>
-                    </td>
-                    <!-- <td>{{ item.assetId }}</td> -->
-                    <td>{{ item.assetName }}</td>
-                    <td>{{ item.propertyNumber }}</td>
+                    <td>{{ getShortAssetId(item.assetId) }}</td>
+                    <td>{{ item.assetName || 'N/A' }}</td>
+                    <td>{{ item.propertyNumber || 'N/A' }}</td>
+                    <td>{{ item.campus?.campusName || 'N/A' }}</td>
                     <td>{{ item.laboratories?.laboratoryName || 'N/A' }}</td>
+                    <td>{{ item.issuedTo || 'N/A' }}</td>
+                    <td>{{ item.Status_id || 'N/A' }}</td>
+                    <td class="text-gray-400">NULL</td>
                     <td>
                         <div *ngIf="item.qrCode" class="inline-block">
-                            <!-- Display QR Code as image if it's base64 or URL, otherwise as text -->
                             <img
                                 *ngIf="isBase64Image(item.qrCode)"
                                 [src]="item.qrCode"
                                 alt="QR Code"
-                                class="w-14 h-14 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-lg hover:scale-110 transition-all"
+                                class="w-12 h-12 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-lg hover:scale-110 transition-all"
                                 (click)="viewQrCode(item.qrCode)"
                                 pTooltip="Click to view QR Code"
                             />
-                            <span *ngIf="!isBase64Image(item.qrCode)" class="text-sm bg-blue-100 px-2 py-1 rounded cursor-pointer hover:bg-blue-200 transition-colors" (click)="copyToClipboard(item.qrCode)" pTooltip="Click to copy QR Code">
+                            <span *ngIf="!isBase64Image(item.qrCode)" class="text-xs bg-blue-100 px-2 py-1 rounded cursor-pointer hover:bg-blue-200 transition-colors" (click)="copyToClipboard(item.qrCode)" pTooltip="Click to copy QR Code">
                                 {{ item.qrCode }}
                             </span>
                         </div>
@@ -181,64 +214,11 @@ import Swal from 'sweetalert2';
                         </div>
                     </td>
                 </tr>
-                <!-- Manual Expansion Row -->
-                <tr *ngIf="isRowExpanded(item.assetId)" class="expansion-row bg-blue-50 border-l-4 border-blue-500">
-                    <td colspan="10" class="p-0">
-                        <div class="expansion-content animate-expand p-8 bg-linear-to-r from-blue-50 to-indigo-50 shadow-inner">
-                            <!-- Header with Asset Info -->
-                            <div class="mb-6 pb-6 border-b-2 border-blue-200">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-lg font-bold text-blue-600 flex items-center gap-2">
-                                            <i class="pi pi-file-pdf text-2xl text-red-500"></i>
-                                            Inventory Custodian Slip Details
-                                        </h4>
-                                        <p class="text-sm text-gray-600 mt-1">
-                                            Asset: <span class="font-semibold text-gray-800">{{ item.assetName }}</span>
-                                        </p>
-                                        <p class="text-sm text-gray-600">
-                                            Property Number: <span class="font-semibold text-gray-800">{{ item.propertyNumber }}</span>
-                                        </p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-xs text-gray-500 mb-1">ICS No:</p>
-                                        <p class="text-xl font-bold text-blue-600">{{ item.inventoryCustodianSlip?.icsNo || 'N/A' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- ICS Data Table with Enhanced Styling -->
-                            <div class="overflow-x-auto">
-                                <table class="w-full border-collapse">
-                                    <thead>
-                                        <tr class="bg-blue-100 border-b-2 border-blue-300">
-                                            <th class="px-4 py-3 text-left font-bold text-gray-700 text-sm">Field</th>
-                                            <th class="px-4 py-3 text-left font-bold text-gray-700 text-sm">Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <ng-container *ngFor="let rowData of getIcsTableData(item.inventoryCustodianSlip); let odd = odd">
-                                            <tr [class]="odd ? 'bg-white' : 'bg-blue-50'" class="border-b border-gray-200 hover:bg-blue-100 transition-colors">
-                                                <td class="px-4 py-3 font-semibold text-gray-700 text-sm w-1/3">{{ rowData.field }}</td>
-                                                <td class="px-4 py-3 text-gray-800 text-sm">{{ rowData.value }}</td>
-                                            </tr>
-                                        </ng-container>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Footer Actions -->
-                            <div class="mt-6 pt-4 border-t-2 border-blue-200 flex justify-end gap-2">
-                                <button (click)="toggleExpand(item)" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors text-sm font-semibold">Close</button>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="8" class="text-center py-5">No assets found</td>
+                    <td colspan="11" class="text-center py-5">No assets found</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -817,6 +797,14 @@ export class AssetsComponent implements OnInit {
         console.log('🔍 Filter applied - Campus:', this.selectedCampus, 'Search:', this.searchValue);
         console.log('🔍 Filtered assets count:', this.filteredAssets.length);
         console.log('🔍 Filtered assets:', this.filteredAssets);
+    }
+
+    getShortAssetId(assetId: string | undefined): string {
+        if (!assetId) return 'N/A';
+        // Extract numbers from assetId format like "CAMPUS004-LAB002-001"
+        // Result: "004-002-001"
+        const parts = assetId.split('-');
+        return parts.map(part => part.replace(/[^\d]/g, '')).join('-');
     }
 
     onSelectionChange(event: any) {
