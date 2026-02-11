@@ -56,9 +56,24 @@ import { AuthService } from '../service/auth.service';
                 </div>
             </ng-template>
             <ng-template #end>
-                <div class="flex items-center gap-2">
-                    <label class="font-semibold mr-2">Filter by Laboratory:</label>
-                    <p-select [(ngModel)]="selectedLaboratory" [options]="laboratories" optionLabel="laboratoryName" placeholder="All Laboratories" [showClear]="true" styleClass="w-64" appendTo="body" (onChange)="onLaboratoryFilterChange()" />
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2" *ngIf="isSuperAdmin">
+                        <label class="font-semibold">Campus:</label>
+                        <p-select [(ngModel)]="selectedCampus" [options]="campuses" optionLabel="campusName" placeholder="All Campuses" [showClear]="true" styleClass="w-48" appendTo="body" (onChange)="onCampusFilterChange()" />
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="font-semibold">Laboratory:</label>
+                        <p-select
+                            [(ngModel)]="selectedLaboratory"
+                            [options]="filteredLaboratories"
+                            optionLabel="laboratoryName"
+                            placeholder="All Laboratories"
+                            [showClear]="true"
+                            styleClass="w-64"
+                            appendTo="body"
+                            (onChange)="onLaboratoryFilterChange()"
+                        />
+                    </div>
                 </div>
             </ng-template>
         </p-toolbar>
@@ -253,6 +268,9 @@ export class LabScheduleComponent implements OnInit {
     timeSlots: string[] = [];
     daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     laboratories: any[] = [];
+    filteredLaboratories: any[] = [];
+    campuses: any[] = [];
+    selectedCampus: any = null;
     users: any[] = [];
     subjects: any[] = [];
     selectedLaboratory: any = null;
@@ -280,10 +298,11 @@ export class LabScheduleComponent implements OnInit {
     ngOnInit() {
         this.initializeTimeSlots();
         this.checkUserRole();
+        this.loadCampuses();
         this.loadLaboratories();
         this.loadUsers();
         this.loadSubjects();
-        this.loadSchedules();
+        // Note: loadSchedules is called by loadLaboratories after selecting a laboratory
     }
 
     checkUserRole() {
@@ -339,8 +358,12 @@ export class LabScheduleComponent implements OnInit {
             next: (data: any[]) => {
                 console.log('✅ Laboratories loaded:', data);
                 this.laboratories = data || [];
-                if (this.laboratories.length > 0) {
-                    this.selectedLaboratory = this.laboratories[0];
+                this.filteredLaboratories = [...this.laboratories];
+
+                // For SuperAdmin, don't auto-select - they should choose campus first
+                // For other users, auto-select first laboratory
+                if (!this.isSuperAdmin && this.filteredLaboratories.length > 0) {
+                    this.selectedLaboratory = this.filteredLaboratories[0];
                     this.onLaboratoryFilterChange();
                 }
             },
@@ -353,6 +376,51 @@ export class LabScheduleComponent implements OnInit {
                 });
             }
         });
+    }
+
+    loadCampuses() {
+        const campusesUrl = `${environment.apiUrl}/campuses`;
+        console.log('📡 Fetching campuses from:', campusesUrl);
+        this.http.get<any[]>(campusesUrl).subscribe({
+            next: (data: any[]) => {
+                console.log('✅ Campuses loaded:', data);
+                this.campuses = data || [];
+            },
+            error: (error: any) => {
+                console.error('❌ Error loading campuses:', error);
+            }
+        });
+    }
+
+    onCampusFilterChange() {
+        if (this.selectedCampus) {
+            // Filter laboratories by selected campus
+            this.filteredLaboratories = this.laboratories.filter((lab) => lab.campus?.campusId === this.selectedCampus.campusId);
+
+            // Reset laboratory selection (show all campus schedules first)
+            this.selectedLaboratory = null;
+
+            // Load schedules filtered by campus
+            const campusSchedulesUrl = `${environment.apiUrl}/schedules/filter/by-campus/${this.selectedCampus.campusId}`;
+            console.log('📡 Fetching schedules by campus from:', campusSchedulesUrl);
+
+            this.http.get<any[]>(campusSchedulesUrl).subscribe({
+                next: (data: any[]) => {
+                    console.log('✅ Campus schedules loaded:', data);
+                    this.schedules = data || [];
+                },
+                error: (error: any) => {
+                    console.error('❌ Error loading campus schedules:', error);
+                    this.schedules = [];
+                }
+            });
+        } else {
+            // Show all laboratories
+            this.filteredLaboratories = [...this.laboratories];
+            // Reset laboratory and clear schedules
+            this.selectedLaboratory = null;
+            this.schedules = [];
+        }
     }
 
     loadUsers() {
@@ -426,6 +494,22 @@ export class LabScheduleComponent implements OnInit {
                 summary: 'Filter Applied',
                 detail: `Showing schedules for: ${this.selectedLaboratory.laboratoryName}`
             });
+            // Load schedules for selected laboratory
+            this.loadSchedules();
+        } else if (this.selectedCampus) {
+            // If no laboratory but campus is selected, load campus schedules
+            console.log('🔍 No laboratory selected, loading all campus schedules');
+            const campusSchedulesUrl = `${environment.apiUrl}/schedules/filter/by-campus/${this.selectedCampus.campusId}`;
+            this.http.get<any[]>(campusSchedulesUrl).subscribe({
+                next: (data: any[]) => {
+                    console.log('✅ Campus schedules loaded:', data);
+                    this.schedules = data || [];
+                },
+                error: (error: any) => {
+                    console.error('❌ Error loading campus schedules:', error);
+                    this.schedules = [];
+                }
+            });
         } else {
             console.log('🔍 Showing all laboratory schedules');
             this.messageService.add({
@@ -433,8 +517,8 @@ export class LabScheduleComponent implements OnInit {
                 summary: 'Filter Cleared',
                 detail: 'Showing all laboratory schedules'
             });
+            this.schedules = [];
         }
-        this.loadSchedules();
     }
 
     loadSchedules() {
