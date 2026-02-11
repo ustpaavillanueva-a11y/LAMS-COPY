@@ -644,11 +644,18 @@ export class AssetsComponent implements OnInit {
     }
 
     loadReferenceData() {
+        console.log('🔄 Loading reference data...');
         this.assetService.getPrograms().subscribe({
             next: (data) => {
+                console.log('📦 Raw programs data received:', data);
+                console.log('📦 Programs data type:', typeof data);
+                console.log('📦 Is Array:', Array.isArray(data));
                 if (data && data.length > 0) {
+                    console.log('✅ Programs loaded successfully:', data.length, 'items');
+                    console.log('📦 First program:', data[0]);
                 }
                 this.programs = data || [];
+                console.log('📦 this.programs after assignment:', this.programs);
             },
             error: (error) => {
                 console.error('❌ Error loading programs:', error);
