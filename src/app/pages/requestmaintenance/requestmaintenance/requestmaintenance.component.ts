@@ -10,12 +10,13 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-requestmaintenance',
     standalone: true,
-    imports: [CommonModule, FormsModule, ToolbarModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, ToastModule],
+    imports: [CommonModule, FormsModule, ToolbarModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, ToastModule, TooltipModule],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     styles: [
         `
@@ -182,51 +183,6 @@ import Swal from 'sweetalert2';
                 gap: 0.5rem;
             }
 
-            .btn-icon {
-                padding: 0.375rem 0.75rem;
-                border: none;
-                border-radius: 0.25rem;
-                cursor: pointer;
-                font-size: 0.75rem;
-                transition: all 0.2s;
-            }
-
-            .btn-icon-view {
-                background: #dbeafe;
-                color: #1e40af;
-            }
-
-            .btn-icon-view:hover {
-                background: #bfdbfe;
-            }
-
-            .btn-icon-delete {
-                background: #fee2e2;
-                color: #991b1b;
-            }
-
-            .btn-icon-delete:hover {
-                background: #fecaca;
-            }
-
-            .btn-icon-approve {
-                background: #dcfce7;
-                color: #166534;
-            }
-
-            .btn-icon-approve:hover {
-                background: #bbf7d0;
-            }
-
-            .btn-icon-decline {
-                background: #fee2e2;
-                color: #991b1b;
-            }
-
-            .btn-icon-decline:hover {
-                background: #fecaca;
-            }
-
             .empty-message {
                 padding: 2rem;
                 text-align: center;
@@ -382,11 +338,11 @@ import Swal from 'sweetalert2';
                                     <td>
                                         <div class="actions">
                                             <ng-container *ngIf="isLabTech() || isCampusAdmin()">
-                                                <button class="btn-icon btn-icon-approve" (click)="approve(row)" title="Approve">✓</button>
-                                                <button class="btn-icon btn-icon-decline" (click)="decline(row)" title="Decline">✕</button>
+                                                <p-button icon="pi pi-check" severity="success" [rounded]="true" [text]="true" pTooltip="Approve" (onClick)="approve(row)" />
+                                                <p-button icon="pi pi-times" severity="danger" [rounded]="true" [text]="true" pTooltip="Decline" (onClick)="decline(row)" />
                                             </ng-container>
                                             <ng-container *ngIf="!isLabTech() && !isCampusAdmin()">
-                                                <button class="btn-icon btn-icon-delete" (click)="delete(row)" title="Delete">🗑</button>
+                                                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" pTooltip="Delete" (onClick)="delete(row)" />
                                             </ng-container>
                                         </div>
                                     </td>
@@ -430,7 +386,7 @@ import Swal from 'sweetalert2';
                                     </td>
                                     <td *ngIf="isLabTech()">
                                         <div class="actions">
-                                            <button class="btn-icon btn-icon-approve" (click)="confirm(row)" title="Confirm">✓</button>
+                                            <p-button icon="pi pi-check" severity="success" [rounded]="true" [text]="true" pTooltip="Confirm" (onClick)="confirm(row)" />
                                         </div>
                                     </td>
                                 </tr>
@@ -467,8 +423,8 @@ import Swal from 'sweetalert2';
                                     </td>
                                     <td>
                                         <div class="actions">
-                                            <button class="btn-icon btn-icon-view" (click)="view(row)" title="View">👁</button>
-                                            <button class="btn-icon btn-icon-delete" (click)="delete(row)" title="Delete">🗑</button>
+                                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" pTooltip="View" (onClick)="view(row)" />
+                                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" pTooltip="Delete" (onClick)="delete(row)" />
                                         </div>
                                     </td>
                                 </tr>
