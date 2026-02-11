@@ -1,21 +1,25 @@
 import {
   Tooltip,
   TooltipModule
-} from "./chunk-VNLYMEUP.js";
+} from "./chunk-37ZIGYKF.js";
 import {
-  Badge,
-  BadgeModule
-} from "./chunk-W566P2YV.js";
+  zindexutils
+} from "./chunk-CMVOE67Z.js";
 import {
   ConnectedOverlayScrollHandler,
   DomHandler
 } from "./chunk-P6SMTJBG.js";
 import {
-  zindexutils
-} from "./chunk-CMVOE67Z.js";
-import {
   Ripple
 } from "./chunk-RFZJG26N.js";
+import {
+  Badge,
+  BadgeModule
+} from "./chunk-3VGMHEZZ.js";
+import {
+  Bind,
+  BindModule
+} from "./chunk-246XFSKK.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -24,14 +28,15 @@ import {
   BaseStyle
 } from "./chunk-DCGH7JIK.js";
 import {
+  RouterLink,
+  RouterLinkActive,
+  RouterModule
+} from "./chunk-JQU33M2K.js";
+import {
   OverlayService,
   PrimeTemplate,
   SharedModule
 } from "./chunk-JCDWLVR7.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-246XFSKK.js";
 import "./chunk-Y3VPSMBK.js";
 import {
   animate,
@@ -39,6 +44,11 @@ import {
   transition,
   trigger
 } from "./chunk-GGMOGVES.js";
+import {
+  DomSanitizer
+} from "./chunk-WGXPQ2Y2.js";
+import "./chunk-XI5EKNQ2.js";
+import "./chunk-RS4JDN4Z.js";
 import "./chunk-OTTARZB5.js";
 import {
   D,
@@ -49,16 +59,6 @@ import {
   s3 as s,
   z2 as z
 } from "./chunk-U4LT4ZJN.js";
-import {
-  RouterLink,
-  RouterLinkActive,
-  RouterModule
-} from "./chunk-CIMRSYG7.js";
-import {
-  DomSanitizer
-} from "./chunk-QAUQ7NUX.js";
-import "./chunk-RS4JDN4Z.js";
-import "./chunk-XI5EKNQ2.js";
 import {
   CommonModule,
   NgForOf,

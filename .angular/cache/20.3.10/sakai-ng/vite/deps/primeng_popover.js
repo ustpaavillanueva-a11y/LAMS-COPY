@@ -1,9 +1,12 @@
 import {
+  zindexutils
+} from "./chunk-CMVOE67Z.js";
+import {
   ConnectedOverlayScrollHandler
 } from "./chunk-P6SMTJBG.js";
 import {
-  zindexutils
-} from "./chunk-CMVOE67Z.js";
+  Bind
+} from "./chunk-246XFSKK.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -16,9 +19,6 @@ import {
   PrimeTemplate,
   SharedModule
 } from "./chunk-JCDWLVR7.js";
-import {
-  Bind
-} from "./chunk-246XFSKK.js";
 import "./chunk-Y3VPSMBK.js";
 import {
   animate,

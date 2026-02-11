@@ -1,4 +1,8 @@
 import {
+  Bind,
+  BindModule
+} from "./chunk-246XFSKK.js";
+import {
   BaseComponent,
   PARENT_INSTANCE
 } from "./chunk-VM5VBBK4.js";
@@ -8,10 +12,6 @@ import {
 import {
   SharedModule
 } from "./chunk-JCDWLVR7.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-246XFSKK.js";
 import "./chunk-OTTARZB5.js";
 import "./chunk-U4LT4ZJN.js";
 import "./chunk-R2OVIKVM.js";

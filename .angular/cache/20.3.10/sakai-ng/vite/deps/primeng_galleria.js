@@ -2,12 +2,12 @@ import {
   FocusTrap
 } from "./chunk-DR3SZNU7.js";
 import {
+  zindexutils
+} from "./chunk-CMVOE67Z.js";
+import {
   blockBodyScroll,
   unblockBodyScroll
 } from "./chunk-P6SMTJBG.js";
-import {
-  zindexutils
-} from "./chunk-CMVOE67Z.js";
 import {
   Ripple
 } from "./chunk-RFZJG26N.js";
@@ -20,6 +20,10 @@ import {
 } from "./chunk-RUJSBIO3.js";
 import "./chunk-NKBIU3HO.js";
 import {
+  Bind,
+  BindModule
+} from "./chunk-246XFSKK.js";
+import {
   BaseComponent,
   PARENT_INSTANCE
 } from "./chunk-VM5VBBK4.js";
@@ -30,10 +34,6 @@ import {
   PrimeTemplate,
   SharedModule
 } from "./chunk-JCDWLVR7.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-246XFSKK.js";
 import "./chunk-Y3VPSMBK.js";
 import {
   animate,

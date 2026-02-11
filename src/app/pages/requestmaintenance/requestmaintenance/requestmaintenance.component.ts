@@ -1,374 +1,576 @@
-import { Component, OnInit, signal, ViewChild, Inject, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { Table, TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { DialogModule } from 'primeng/dialog';
-import { SelectModule } from 'primeng/select';
-import { TagModule } from 'primeng/tag';
-import { InputIconModule } from 'primeng/inputicon';
-import { IconFieldModule } from 'primeng/iconfield';
 import { FormsModule } from '@angular/forms';
-import { DatePickerModule } from 'primeng/datepicker';
-import { MessageService, ConfirmationService } from 'primeng/api';
-import { AssetService } from '../../service/asset.service';
+import { MessageService } from 'primeng/api';
 import { MaintenanceService } from '../../service/maintenance.service';
 import { AuthService } from '../../service/auth.service';
 import Swal from 'sweetalert2';
-import { TooltipModule } from 'primeng/tooltip';
-import { TabsModule } from 'primeng/tabs';
 
 @Component({
     selector: 'app-requestmaintenance',
     standalone: true,
-    imports: [
-        CommonModule,
-        TableModule,
-        FormsModule,
-        ButtonModule,
-        RippleModule,
-        ToastModule,
-        ToolbarModule,
-        InputTextModule,
-        TextareaModule,
-        SelectModule,
-        DialogModule,
-        TagModule,
-        InputIconModule,
-        IconFieldModule,
-        ConfirmDialogModule,
-        TooltipModule,
-        DatePickerModule,
-        TabsModule
-    ],
-    styles: [],
-    template: `
-        <p-toast />
-        <p-toolbar styleClass="mb-4">
-            <ng-template #start>
-                <div class="flex items-center gap-2">
-                    <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length" />
-                </div>
-            </ng-template>
-            <ng-template #end>
-                <div class="flex items-center gap-2">
-                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="filterByTab()" placeholder="Search maintenance requests..." />
-                    </p-iconfield>
-                </div>
-            </ng-template>
-        </p-toolbar>
+    imports: [CommonModule, FormsModule],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    styles: [
+        `
+            .maintenance-container {
+                padding: 1rem;
+            }
 
-        <p-tabs (activeIndexChange)="onActiveIndexChange($event)">
-            <p-tablist>
-                <p-tab value="0" (click)="activeTabIndex = 0">Pending</p-tab>
-                <p-tab value="1" (click)="activeTabIndex = 1">Approved</p-tab>
-                <p-tab value="3" (click)="activeTabIndex = 2">Completed</p-tab>
-            </p-tablist>
-            <p-tabpanels>
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+                gap: 1rem;
+                background: #f5f5f5;
+                padding: 1rem;
+                border-radius: 0.5rem;
+            }
+
+            .toolbar-left,
+            .toolbar-right {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            .search-field {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 0.375rem;
+                padding: 0.5rem;
+            }
+
+            .search-field input {
+                border: none;
+                outline: none;
+                flex: 1;
+                font-size: 0.875rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 0.375rem;
+                cursor: pointer;
+                font-size: 0.875rem;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+
+            .btn-primary {
+                background: #3b82f6;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background: #2563eb;
+            }
+
+            .btn-secondary {
+                background: #e5e7eb;
+                color: #1f2937;
+            }
+
+            .btn-secondary:hover {
+                background: #d1d5db;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            .tabs-container {
+                margin-bottom: 1.5rem;
+            }
+
+            .tab-headers {
+                display: flex;
+                gap: 0;
+                border-bottom: 2px solid #e5e7eb;
+                background: #fafafa;
+            }
+
+            .tab-header {
+                padding: 1rem 1.5rem;
+                cursor: pointer;
+                border: none;
+                background: transparent;
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: #6b7280;
+                border-bottom: 3px solid transparent;
+                margin-bottom: -2px;
+                transition: all 0.2s;
+            }
+
+            .tab-header:hover {
+                color: #1f2937;
+                background: #f3f4f6;
+            }
+
+            .tab-header.active {
+                color: #2563eb;
+                border-bottom-color: #2563eb;
+                background: white;
+            }
+
+            .tab-content {
+                display: none;
+                animation: fadeIn 0.2s ease-in;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            .table-wrapper {
+                background: white;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.875rem;
+            }
+
+            table thead {
+                background: #f9fafb;
+                border-bottom: 2px solid #e5e7eb;
+            }
+
+            table th {
+                padding: 0.75rem;
+                text-align: left;
+                font-weight: 600;
+                color: #374151;
+                white-space: nowrap;
+            }
+
+            table td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #e5e7eb;
+                color: #1f2937;
+            }
+
+            table tbody tr:hover {
+                background: #f9fafb;
+            }
+
+            table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .tag {
+                display: inline-block;
+                padding: 0.25rem 0.75rem;
+                border-radius: 9999px;
+                font-size: 0.75rem;
+                font-weight: 500;
+            }
+
+            .tag-danger {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .tag-warning {
+                background: #fef08a;
+                color: #92400e;
+            }
+
+            .tag-success {
+                background: #dcfce7;
+                color: #166534;
+            }
+
+            .tag-info {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .actions {
+                display: flex;
+                gap: 0.5rem;
+            }
+
+            .btn-icon {
+                padding: 0.375rem 0.75rem;
+                border: none;
+                border-radius: 0.25rem;
+                cursor: pointer;
+                font-size: 0.75rem;
+                transition: all 0.2s;
+            }
+
+            .btn-icon-view {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .btn-icon-view:hover {
+                background: #bfdbfe;
+            }
+
+            .btn-icon-delete {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .btn-icon-delete:hover {
+                background: #fecaca;
+            }
+
+            .btn-icon-approve {
+                background: #dcfce7;
+                color: #166534;
+            }
+
+            .btn-icon-approve:hover {
+                background: #bbf7d0;
+            }
+
+            .btn-icon-decline {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .btn-icon-decline:hover {
+                background: #fecaca;
+            }
+
+            .empty-message {
+                padding: 2rem;
+                text-align: center;
+                color: #6b7280;
+            }
+
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-overlay.active {
+                display: flex;
+            }
+
+            .modal {
+                background: white;
+                border-radius: 0.5rem;
+                width: 90%;
+                max-width: 500px;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+
+            .modal-header {
+                padding: 1.5rem;
+                border-bottom: 1px solid #e5e7eb;
+                font-weight: 600;
+                color: #1f2937;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .modal-footer {
+                padding: 1.5rem;
+                border-top: 1px solid #e5e7eb;
+                display: flex;
+                gap: 0.5rem;
+                justify-content: flex-end;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .form-label {
+                display: block;
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-control {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.375rem;
+                font-size: 0.875rem;
+            }
+
+            .form-control:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            textarea.form-control {
+                resize: vertical;
+                min-height: 100px;
+            }
+        `
+    ],
+    template: `
+        <div class="maintenance-container">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-secondary" (click)="deleteSelected()" [disabled]="!selectedItems.length">Delete Selected</button>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-secondary" (click)="exportCSV()">Export</button>
+                    <div class="search-field">
+                        <span>🔍</span>
+                        <input type="text" [(ngModel)]="searchValue" (input)="filterByTab()" placeholder="Search maintenance requests..." />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tab-headers">
+                    <button class="tab-header" [class.active]="activeTabIndex === 0" (click)="onActiveIndexChange(0)">Pending</button>
+                    <button class="tab-header" [class.active]="activeTabIndex === 1" (click)="onActiveIndexChange(1)">Approved</button>
+                    <button class="tab-header" [class.active]="activeTabIndex === 2" (click)="onActiveIndexChange(2)">Completed</button>
+                </div>
+
                 <!-- Pending Tab -->
-                <p-tabpanel value="0">
-                    <p-table
-                        [value]="pendingItems"
-                        [rows]="10"
-                        [paginator]="true"
-                        [rowsPerPageOptions]="[10, 20, 30]"
-                        [loading]="loading"
-                        [rowHover]="true"
-                        dataKey="requestId"
-                        [(selection)]="selectedItems"
-                        (selectionChange)="onSelectionChange($event)"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} pending requests"
-                        [showCurrentPageReport]="true"
-                        [tableStyle]="{ 'min-width': '120rem' }"
-                        styleClass="p-datatable-sm p-datatable-striped"
-                    >
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th style="width:3rem;padding:0.25rem"><p-tableHeaderCheckbox /></th>
-                                <th style="min-width:7rem;padding:0.25rem">ID</th>
-                                <th pSortableColumn="maintenanceName" style="min-width:9rem;padding:0.25rem">Asset Name <p-sortIcon field="maintenanceName" /></th>
-                                <th style="min-width:8rem;padding:0.25rem">Maintenance Type</th>
-                                <th style="min-width:8rem;padding:0.25rem">Service Name</th>
-                                <th style="min-width:7rem;padding:0.25rem">Priority</th>
-                                <th style="min-width:7rem;padding:0.25rem">Request Date</th>
-                                <th style="min-width:8rem;padding:0.25rem">Requested By</th>
-                                <th style="min-width:7rem;padding:0.25rem">Status</th>
-                                <th style="min-width:7rem;padding:0.25rem">Actions</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-row>
-                            <tr>
-                                <td style="padding:0.25rem"><p-tableCheckbox [value]="row" /></td>
-                                <td style="padding:0.25rem">{{ row.requestId }}</td>
-                                <td style="padding:0.25rem">{{ row.maintenanceName }}</td>
-                                <td style="padding:0.25rem">{{ row.maintenanceType?.maintenanceTypeName || 'N/A' }}</td>
-                                <td style="padding:0.25rem">{{ row.serviceMaintenance?.serviceName || 'N/A' }}</td>
-                                <td style="padding:0.25rem"><p-tag [value]="row.priorityLevel?.priorityLevelName" [severity]="getPrioritySeverity(row.priorityLevel?.priorityLevelName)" /></td>
-                                <td style="padding:0.25rem">{{ row.requestDate || row.createdAt | date: 'short' }}</td>
-                                <td style="padding:0.25rem">{{ getFullName(row) }}</td>
-                                <td style="padding:0.25rem"><p-tag [value]="row.maintenanceStatus?.requestStatusName" /></td>
-                                <td style="padding:0.25rem">
-                                    <div class="flex gap-0.5">
-                                        <ng-container *ngIf="isLabTech() || isCampusAdmin()">
-                                            <p-button icon="pi pi-check" severity="success" [rounded]="true" [text]="true" pTooltip="Approve" (onClick)="approve(row)" size="small" />
-                                            <p-button icon="pi pi-times" severity="danger" [rounded]="true" [text]="true" pTooltip="Decline" (onClick)="decline(row)" size="small" />
-                                        </ng-container>
-                                        <ng-container *ngIf="!isLabTech() && !isCampusAdmin()">
-                                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(row)" size="small" />
-                                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" size="small" />
-                                        </ng-container>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="10" class="text-center py-5">No pending requests found</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                </p-tabpanel>
+                <div class="tab-content" [class.active]="activeTabIndex === 0">
+                    <div class="table-wrapper" *ngIf="!loading">
+                        <table *ngIf="filteredPendingItems.length > 0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 3rem;">
+                                        <input type="checkbox" (change)="toggleSelectAll('pending')" />
+                                    </th>
+                                    <th>ID</th>
+                                    <th>Asset Name</th>
+                                    <th>Maintenance Type</th>
+                                    <th>Service Name</th>
+                                    <th>Priority</th>
+                                    <th>Request Date</th>
+                                    <th>Requested By</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let row of filteredPendingItems">
+                                    <td>
+                                        <input type="checkbox" [checked]="isSelected(row)" (change)="toggleSelect(row)" />
+                                    </td>
+                                    <td>{{ row.requestId }}</td>
+                                    <td>{{ row.maintenanceName }}</td>
+                                    <td>{{ row.maintenanceType?.maintenanceTypeName || 'N/A' }}</td>
+                                    <td>{{ row.serviceMaintenance?.serviceName || 'N/A' }}</td>
+                                    <td>
+                                        <span class="tag" [ngClass]="'tag-' + getPriorityClass(row.priorityLevel?.priorityLevelName)">
+                                            {{ row.priorityLevel?.priorityLevelName || 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ row.requestDate || row.createdAt | date: 'short' }}</td>
+                                    <td>{{ getFullName(row) }}</td>
+                                    <td>
+                                        <span class="tag tag-info">{{ row.maintenanceStatus?.requestStatusName }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="actions">
+                                            <ng-container *ngIf="isLabTech() || isCampusAdmin()">
+                                                <button class="btn-icon btn-icon-approve" (click)="approve(row)" title="Approve">✓</button>
+                                                <button class="btn-icon btn-icon-decline" (click)="decline(row)" title="Decline">✕</button>
+                                            </ng-container>
+                                            <ng-container *ngIf="!isLabTech() && !isCampusAdmin()">
+                                                <button class="btn-icon btn-icon-view" (click)="view(row)" title="View">👁</button>
+                                                <button class="btn-icon btn-icon-delete" (click)="delete(row)" title="Delete">🗑</button>
+                                            </ng-container>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="empty-message" *ngIf="filteredPendingItems.length === 0">No pending requests found</div>
+                    </div>
+                </div>
 
                 <!-- Approved Tab -->
-                <p-tabpanel value="1">
-                    <div *ngIf="activeTabIndex === 1">
-                        <p-table
-                            [value]="getFilteredApprovedItems()"
-                            [rows]="10"
-                            [paginator]="true"
-                            [rowsPerPageOptions]="[10, 20, 30]"
-                            [loading]="loading"
-                            [rowHover]="true"
-                            dataKey="maintenanceApprovalId"
-                            [(selection)]="selectedItems"
-                            (selectionChange)="onSelectionChange($event)"
-                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} approved requests"
-                            [showCurrentPageReport]="true"
-                            [tableStyle]="{ 'min-width': '70rem' }"
-                            styleClass="p-datatable-sm p-datatable-striped"
-                            [scrollable]="true"
-                            scrollHeight="flex"
-                        >
-                            <ng-template pTemplate="header">
+                <div class="tab-content" [class.active]="activeTabIndex === 1">
+                    <div class="table-wrapper" *ngIf="!loading">
+                        <table *ngIf="filteredApprovedItems.length > 0">
+                            <thead>
                                 <tr>
-                                    <th style="width:3rem;padding:0.25rem"><p-tableHeaderCheckbox /></th>
-                                    <th style="min-width:8rem;padding:0.25rem">ID</th>
-                                    <th pSortableColumn="maintenanceRequest.maintenanceName" style="min-width:10rem;padding:0.25rem">Maintenance Name <p-sortIcon field="maintenanceRequest.maintenanceName" /></th>
-                                    <th style="min-width:10rem;padding:0.25rem">Assigned Technician</th>
-                                    <th style="min-width:8rem;padding:0.25rem">Scheduled Date</th>
-                                    <th style="min-width:8rem;padding:0.25rem">Status</th>
-                                    <th style="min-width:8rem;padding:0.25rem" *ngIf="isLabTech()">Actions</th>
+                                    <th style="width: 3rem;">
+                                        <input type="checkbox" (change)="toggleSelectAll('approved')" />
+                                    </th>
+                                    <th>ID</th>
+                                    <th>Maintenance Name</th>
+                                    <th>Assigned Technician</th>
+                                    <th>Scheduled Date</th>
+                                    <th>Status</th>
+                                    <th *ngIf="isLabTech()">Actions</th>
                                 </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-row>
-                                <tr>
-                                    <td style="padding:0.25rem"><p-tableCheckbox [value]="row" /></td>
-                                    <td style="padding:0.25rem">{{ row.maintenanceRequest?.requestId }}</td>
-                                    <td style="padding:0.25rem">{{ row.maintenanceRequest?.maintenanceName }}</td>
-                                    <td style="padding:0.25rem">{{ row.assignedTechnician?.firstName }} {{ row.assignedTechnician?.lastName || '' }}</td>
-                                    <td style="padding:0.25rem">{{ row.scheduledAt | date: 'short' }}</td>
-                                    <td style="padding:0.25rem"><p-tag [value]="row.isCompleted ? 'Completed' : row.isApproved ? 'Approved' : 'Pending'" /></td>
-                                    <td style="padding:0.25rem" *ngIf="isLabTech()">
-                                        <div class="flex gap-0.5">
-                                            <p-button label="Confirm" icon="pi pi-check" severity="success" [rounded]="true" [text]="false" (onClick)="confirm(row)" pTooltip="Confirm completion" size="small" />
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let row of filteredApprovedItems">
+                                    <td>
+                                        <input type="checkbox" [checked]="isSelected(row)" (change)="toggleSelect(row)" />
+                                    </td>
+                                    <td>{{ row.maintenanceRequest?.requestId }}</td>
+                                    <td>{{ row.maintenanceRequest?.maintenanceName }}</td>
+                                    <td>{{ row.assignedTechnician?.firstName }} {{ row.assignedTechnician?.lastName || '' }}</td>
+                                    <td>{{ row.scheduledAt | date: 'short' }}</td>
+                                    <td>
+                                        <span class="tag tag-info">
+                                            {{ row.isCompleted ? 'Completed' : row.isApproved ? 'Approved' : 'Pending' }}
+                                        </span>
+                                    </td>
+                                    <td *ngIf="isLabTech()">
+                                        <div class="actions">
+                                            <button class="btn-icon btn-icon-approve" (click)="confirm(row)" title="Confirm">✓</button>
                                         </div>
                                     </td>
                                 </tr>
-                            </ng-template>
-                            <ng-template pTemplate="emptymessage">
-                                <tr>
-                                    <td [attr.colspan]="isLabTech() ? 7 : 6" class="text-center py-5">No approved requests found</td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
+                            </tbody>
+                        </table>
+                        <div class="empty-message" *ngIf="filteredApprovedItems.length === 0">No approved requests found</div>
                     </div>
-                </p-tabpanel>
+                </div>
 
                 <!-- Completed Tab -->
-                <p-tabpanel value="2">
-                    <div *ngIf="activeTabIndex === 2">
-                        <p-table
-                            [value]="completedItems"
-                            [rows]="10"
-                            [paginator]="true"
-                            [rowsPerPageOptions]="[10, 20, 30]"
-                            [loading]="loading"
-                            [rowHover]="true"
-                            dataKey="requestId"
-                            [(selection)]="selectedItems"
-                            (selectionChange)="onSelectionChange($event)"
-                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} completed requests"
-                            [showCurrentPageReport]="true"
-                            [tableStyle]="{ 'min-width': '70rem' }"
-                            styleClass="p-datatable-sm p-datatable-striped"
-                        >
-                            <ng-template pTemplate="header">
+                <div class="tab-content" [class.active]="activeTabIndex === 2">
+                    <div class="table-wrapper" *ngIf="!loading">
+                        <table *ngIf="filteredCompletedItems.length > 0">
+                            <thead>
                                 <tr>
-                                    <th style="width:3rem;padding:0.25rem"><p-tableHeaderCheckbox /></th>
-                                    <th style="min-width:12rem;padding:0.25rem">ID</th>
-                                    <th pSortableColumn="maintenanceName" style="min-width:14rem;padding:0.25rem">Maintenance Name <p-sortIcon field="maintenanceName" /></th>
-                                    <th style="min-width:10rem;padding:0.25rem">Status</th>
-                                    <th style="min-width:9rem;padding:0.25rem">Actions</th>
+                                    <th style="width: 3rem;">
+                                        <input type="checkbox" (change)="toggleSelectAll('completed')" />
+                                    </th>
+                                    <th>ID</th>
+                                    <th>Maintenance Name</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-row>
-                                <tr>
-                                    <td style="padding:0.25rem"><p-tableCheckbox [value]="row" /></td>
-                                    <td style="padding:0.25rem">{{ row.requestId }}</td>
-                                    <td style="padding:0.25rem">{{ row.maintenanceName }}</td>
-                                    <td style="padding:0.25rem"><p-tag [value]="row.maintenanceStatus?.requestStatusName" /></td>
-                                    <td style="padding:0.25rem">
-                                        <div class="flex gap-0.5">
-                                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(row)" size="small" />
-                                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" size="small" />
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let row of filteredCompletedItems">
+                                    <td>
+                                        <input type="checkbox" [checked]="isSelected(row)" (change)="toggleSelect(row)" />
+                                    </td>
+                                    <td>{{ row.requestId }}</td>
+                                    <td>{{ row.maintenanceName }}</td>
+                                    <td>
+                                        <span class="tag tag-success">{{ row.maintenanceStatus?.requestStatusName }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="actions">
+                                            <button class="btn-icon btn-icon-view" (click)="view(row)" title="View">👁</button>
+                                            <button class="btn-icon btn-icon-delete" (click)="delete(row)" title="Delete">🗑</button>
                                         </div>
                                     </td>
                                 </tr>
-                            </ng-template>
-                            <ng-template pTemplate="emptymessage">
-                                <tr>
-                                    <td colspan="5" class="text-center py-5">No completed requests found</td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
+                            </tbody>
+                        </table>
+                        <div class="empty-message" *ngIf="filteredCompletedItems.length === 0">No completed requests found</div>
                     </div>
-                </p-tabpanel>
-
-                <!-- Completed Approvals Tab -->
-                <p-tabpanel value="3">
-                    <p-table
-                        [value]="completedApprovedItems"
-                        [rows]="10"
-                        [paginator]="true"
-                        [rowsPerPageOptions]="[10, 20, 30]"
-                        [loading]="loading"
-                        [rowHover]="true"
-                        dataKey="maintenanceApprovalId"
-                        [(selection)]="selectedItems"
-                        (selectionChange)="onSelectionChange($event)"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} completed approvals"
-                        [showCurrentPageReport]="true"
-                        [tableStyle]="{ 'min-width': '120rem' }"
-                    >
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th style="width:3rem"><p-tableHeaderCheckbox /></th>
-                                <th style="min-width:20rem">ID</th>
-                                <th pSortableColumn="maintenanceRequest.maintenanceName" style="min-width:18rem">Maintenance Name <p-sortIcon field="maintenanceRequest.maintenanceName" /></th>
-                                <th style="min-width:12rem">Scheduled Date</th>
-                                <th style="min-width:15rem">Remarks</th>
-                                <th style="min-width:15rem">Action Taken</th>
-                                <th style="min-width:15rem">Observations</th>
-                                <th style="min-width:12rem">Expected Reading</th>
-                                <th style="min-width:12rem">Actual Reading</th>
-                                <th style="min-width:10rem">Status</th>
-                                <th style="min-width:12rem">Actions</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-row>
-                            <tr>
-                                <td><p-tableCheckbox [value]="row" /></td>
-                                <td>{{ row.maintenanceApprovalId }}</td>
-                                <td>{{ row.maintenanceRequest?.maintenanceName }}</td>
-                                <td>{{ row.scheduledAt | date: 'short' }}</td>
-                                <td>{{ row.remarks || 'N/A' }}</td>
-                                <td>{{ row.actionTaken || 'N/A' }}</td>
-                                <td>{{ row.observations || 'N/A' }}</td>
-                                <td>{{ row.expectedReading || 'N/A' }}</td>
-                                <td>{{ row.actualReading || 'N/A' }}</td>
-                                <td><p-tag value="Completed" severity="success" /></td>
-                                <td>
-                                    <div class="flex gap-2">
-                                        <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(row)" />
-                                        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" />
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="11" class="text-center py-5">No completed approvals found</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                </p-tabpanel>
-            </p-tabpanels>
-        </p-tabs>
-
-        <p-dialog [(visible)]="approveModalVisible" [header]="'Assign Technician'" [modal]="true" [contentStyle]="{ padding: '2rem' }">
-            <div class="space-y-5">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Scheduled Date</label>
-                        <p-iconfield class="w-full">
-                            <p-inputicon styleClass="pi pi-calendar text-slate-400" />
-                            <p-datepicker [(ngModel)]="approveFormData.scheduledAt" dateFormat="yy-mm-dd" appendTo="body" [styleClass]="'w-full'" placeholder="Select date" />
-                        </p-iconfield>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Technician</label>
-                        <p-select [(ngModel)]="approveFormData.technicianId" [options]="technicians" optionLabel="fullName" optionValue="userId" placeholder="Select technician" [styleClass]="'w-full'" [panelStyleClass]="'rounded'" appendTo="body" />
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block text-sm font-semibold text-slate-700">Remarks</label>
-                    <textarea pInputTextarea [(ngModel)]="approveFormData.remarks" rows="4" placeholder="Enter remarks..." class="w-full text-sm resize-none"></textarea>
                 </div>
             </div>
+        </div>
 
-            <ng-template pTemplate="footer">
-                <div class="flex gap-2 justify-end pt-4">
-                    <p-button label="Cancel" (onClick)="approveModalVisible = false" severity="secondary" outlined />
-                    <p-button label="Assign" (onClick)="confirmApprove()" severity="success" icon="pi pi-check" />
+        <!-- Approve Modal -->
+        <div class="modal-overlay" [class.active]="approveModalVisible" (click)="approveModalVisible = false">
+            <div class="modal" (click)="$event.stopPropagation()">
+                <div class="modal-header">Assign Technician</div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Scheduled Date *</label>
+                        <input type="date" class="form-control" [(ngModel)]="approveFormData.scheduledAt" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Technician *</label>
+                        <select class="form-control" [(ngModel)]="approveFormData.technicianId">
+                            <option value="">-- Select Technician --</option>
+                            <option *ngFor="let tech of technicians" [value]="tech.userId">
+                                {{ tech.fullName }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Remarks *</label>
+                        <textarea class="form-control" [(ngModel)]="approveFormData.remarks" placeholder="Enter remarks..."></textarea>
+                    </div>
                 </div>
-            </ng-template>
-        </p-dialog>
-
-        <p-dialog [(visible)]="confirmModalVisible" [header]="'Complete Maintenance Request'" [modal]="true" [style]="{ width: '50vw' }">
-            <div class="flex flex-col gap-4">
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold">Remarks</label>
-                    <textarea pInputTextarea [(ngModel)]="confirmFormData.remarks" rows="3" placeholder="Enter remarks..."></textarea>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold">Action Taken</label>
-                    <textarea pInputTextarea [(ngModel)]="confirmFormData.actionTaken" rows="3" placeholder="Describe the action taken..."></textarea>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold">Observations</label>
-                    <textarea pInputTextarea [(ngModel)]="confirmFormData.observations" rows="3" placeholder="Enter observations..."></textarea>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold">Expected Reading</label>
-                    <input pInputText [(ngModel)]="confirmFormData.expectedReading" type="text" placeholder="Enter expected reading..." />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold">Actual Reading</label>
-                    <input pInputText [(ngModel)]="confirmFormData.actualReading" type="text" placeholder="Enter actual reading..." />
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" (click)="approveModalVisible = false">Cancel</button>
+                    <button class="btn btn-primary" (click)="confirmApprove()">Assign</button>
                 </div>
             </div>
-            <ng-template pTemplate="footer">
-                <p-button label="Cancel" (onClick)="confirmModalVisible = false" severity="secondary" />
-                <p-button label="Complete" (onClick)="confirmCompletion()" severity="success" />
-            </ng-template>
-        </p-dialog>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div class="modal-overlay" [class.active]="confirmModalVisible" (click)="confirmModalVisible = false">
+            <div class="modal" (click)="$event.stopPropagation()">
+                <div class="modal-header">Complete Maintenance Request</div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Remarks *</label>
+                        <textarea class="form-control" [(ngModel)]="confirmFormData.remarks" placeholder="Enter remarks..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Action Taken</label>
+                        <textarea class="form-control" [(ngModel)]="confirmFormData.actionTaken" placeholder="Describe the action taken..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Observations</label>
+                        <textarea class="form-control" [(ngModel)]="confirmFormData.observations" placeholder="Enter observations..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expected Reading</label>
+                        <input type="text" class="form-control" [(ngModel)]="confirmFormData.expectedReading" placeholder="Enter expected reading..." />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Actual Reading</label>
+                        <input type="text" class="form-control" [(ngModel)]="confirmFormData.actualReading" placeholder="Enter actual reading..." />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" (click)="confirmModalVisible = false">Cancel</button>
+                    <button class="btn btn-primary" (click)="confirmCompletion()">Complete</button>
+                </div>
+            </div>
+        </div>
     `,
-    providers: [MessageService, AssetService, ConfirmationService]
+    providers: [MessageService]
 })
 export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
-    @ViewChild('dt') dt!: Table;
-
     items: any[] = [];
     pendingItems: any[] = [];
     approvedItems: any[] = [];
@@ -394,34 +596,15 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     constructor(
         private maintenanceService: MaintenanceService,
         private messageService: MessageService,
-        private authService: AuthService,
-        private activatedRoute: ActivatedRoute
+        private authService: AuthService
     ) {}
 
     ngOnInit() {
-        // Check for tab parameter in query params
-        this.activatedRoute.queryParams.subscribe((params) => {
-            const tabParam = params['tab'];
-            if (tabParam === 'pending') {
-                this.activeTabIndex = 0;
-            } else if (tabParam === 'approved') {
-                this.activeTabIndex = 1;
-            } else if (tabParam === 'completed') {
-                this.activeTabIndex = 2;
-            }
-        });
-
         this.loadItems();
     }
 
     ngAfterViewInit() {
-        // Manually set the active tab after view initialization
-        setTimeout(() => {
-            const tabs = document.querySelector('p-tabs');
-            if (tabs) {
-                (tabs as any).activeIndex = this.activeTabIndex;
-            }
-        }, 100);
+        // Component initialization complete
     }
 
     checkUserRole() {
@@ -558,13 +741,104 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
         this.selectedItems = [];
     }
 
-    onActiveIndexChange(event: any) {
-        this.activeTabIndex = event as number;
+    onActiveIndexChange(index: number) {
+        this.activeTabIndex = index;
         this.selectedItems = [];
     }
 
     filter() {
         this.filterByTab();
+    }
+
+    // Computed properties for filtered items
+    get filteredPendingItems(): any[] {
+        const searchLower = this.searchValue.toLowerCase();
+        return this.pendingItems.filter((item) => item.maintenanceName?.toLowerCase().includes(searchLower) || false || item.requestId?.toLowerCase().includes(searchLower) || false);
+    }
+
+    get filteredApprovedItems(): any[] {
+        const searchLower = this.searchValue.toLowerCase();
+        const filtered = this.getFilteredApprovedItems();
+        return filtered.filter((item) => {
+            const maintenanceName = item.maintenanceRequest?.maintenanceName || item.maintenanceName || '';
+            const requestId = item.maintenanceRequest?.requestId || item.requestId || '';
+            return maintenanceName.toLowerCase().includes(searchLower) || requestId.toLowerCase().includes(searchLower);
+        });
+    }
+
+    get filteredCompletedItems(): any[] {
+        const searchLower = this.searchValue.toLowerCase();
+        let items: any[] = [];
+
+        // Include both completed requests and completed approvals
+        items = [...this.completedItems, ...this.completedApprovedItems];
+
+        return items.filter(
+            (item) =>
+                item.maintenanceName?.toLowerCase().includes(searchLower) ||
+                false ||
+                (item.maintenanceRequest?.maintenanceName || '').toLowerCase().includes(searchLower) ||
+                false ||
+                item.requestId?.toLowerCase().includes(searchLower) ||
+                false ||
+                (item.maintenanceRequest?.requestId || '').toLowerCase().includes(searchLower) ||
+                false
+        );
+    }
+
+    // Selection management methods
+    toggleSelect(item: any) {
+        const index = this.selectedItems.findIndex((selected) => selected.requestId === item.requestId || selected.maintenanceApprovalId === item.maintenanceApprovalId || selected.id === item.id);
+
+        if (index > -1) {
+            this.selectedItems.splice(index, 1);
+        } else {
+            this.selectedItems.push(item);
+        }
+    }
+
+    toggleSelectAll(tab: string) {
+        let items: any[] = [];
+
+        if (tab === 'pending') {
+            items = this.filteredPendingItems;
+        } else if (tab === 'approved') {
+            items = this.filteredApprovedItems;
+        } else if (tab === 'completed') {
+            items = this.filteredCompletedItems;
+        }
+
+        // Check if all items in this tab are already selected
+        const allSelected = items.length > 0 && items.every((item) => this.isSelected(item));
+
+        if (allSelected) {
+            // Deselect all items from this tab
+            this.selectedItems = this.selectedItems.filter((selected) => !items.some((item) => item.requestId === selected.requestId || item.maintenanceApprovalId === selected.maintenanceApprovalId || item.id === selected.id));
+        } else {
+            // Select all items from this tab
+            items.forEach((item) => {
+                if (!this.isSelected(item)) {
+                    this.selectedItems.push(item);
+                }
+            });
+        }
+    }
+
+    isSelected(item: any): boolean {
+        return this.selectedItems.some((selected) => selected.requestId === item.requestId || selected.maintenanceApprovalId === item.maintenanceApprovalId || selected.id === item.id);
+    }
+
+    // Priority level helper
+    getPriorityClass(priorityLevel: string): string {
+        const level = priorityLevel?.toLowerCase() || '';
+        if (level.includes('critical') || level.includes('urgent') || level.includes('high')) {
+            return 'danger';
+        } else if (level.includes('medium') || level.includes('moderate')) {
+            return 'warning';
+        } else if (level.includes('low')) {
+            return 'success';
+        }
+        return 'info';
     }
 
     onSelectionChange(event: any) {
