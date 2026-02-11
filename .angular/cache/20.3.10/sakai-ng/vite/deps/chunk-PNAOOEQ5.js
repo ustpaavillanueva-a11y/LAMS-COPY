@@ -6,7 +6,7 @@ import {
 } from "./chunk-3I52677U.js";
 import {
   Checkbox
-} from "./chunk-M5P2WBZQ.js";
+} from "./chunk-CHZQHQ3P.js";
 import {
   Scroller
 } from "./chunk-D64GT6IA.js";
@@ -44,6 +44,11 @@ import {
   BindModule
 } from "./chunk-246XFSKK.js";
 import {
+  FormsModule,
+  NgControlStatus,
+  NgModel
+} from "./chunk-C225D66Z.js";
+import {
   C2 as C,
   R,
   X,
@@ -53,11 +58,6 @@ import {
   v,
   z2 as z
 } from "./chunk-U4LT4ZJN.js";
-import {
-  FormsModule,
-  NgControlStatus,
-  NgModel
-} from "./chunk-C225D66Z.js";
 import {
   CommonModule,
   NgClass,
@@ -3320,4 +3320,4 @@ export {
   Tree,
   TreeModule
 };
-//# sourceMappingURL=chunk-UMYC6MTR.js.map
+//# sourceMappingURL=chunk-PNAOOEQ5.js.map

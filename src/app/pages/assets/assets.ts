@@ -22,6 +22,7 @@ import { MessageService } from 'primeng/api';
 import { AssetService, Asset, Program, Supplier, Location, Color, Brand, Status, Laboratory } from '../service/asset.service';
 import { MaintenanceService, MaintenanceRequestPayload } from '../service/maintenance.service';
 import { AuthService } from '../service/auth.service';
+import { UserService } from '../service/user.service';
 import { environment } from '../../../environments/environment';
 import jsQR from 'jsqr';
 import Swal from 'sweetalert2';
@@ -107,7 +108,7 @@ import Swal from 'sweetalert2';
             </ng-template>
             <ng-template #end>
                 <div class="flex items-center gap-2">
-                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+                    <p-select [(ngModel)]="selectedCampus" [options]="campuses" optionLabel="campusName" optionValue="campusId" placeholder="Filter by Campus" class="w-64" appendTo="body" [showClear]="true" (onChange)="filter()" />
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
                         <input pInputText type="text" [(ngModel)]="searchValue" (input)="filter()" placeholder="Search assets..." />
@@ -337,7 +338,12 @@ import Swal from 'sweetalert2';
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Supplier</label>
-                                <p-select [(ngModel)]="newAsset.supplier" [options]="suppliers" optionLabel="supplierName" optionValue="supplierId" placeholder="Select supplier" class="w-full" appendTo="body" />
+                                <input
+                                    pInputText
+                                    [(ngModel)]="newAsset.supplier"
+                                    placeholder="Enter supplier name"
+                                    style="width: 100%; padding: 11px 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 13px; background: #fafafa; transition: all 0.3s;"
+                                />
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Laboratory</label>
@@ -551,6 +557,7 @@ export class AssetsComponent implements OnInit {
     expandedAssets: Asset[] = [];
     expandedRowIds: Set<string> = new Set();
     searchValue: string = '';
+    selectedCampus: string | null = null;
     loading: boolean = true;
     isLabTech: boolean = false;
     isSuperAdmin: boolean = false;
@@ -577,6 +584,7 @@ export class AssetsComponent implements OnInit {
     statuses: Status[] = [];
     colors: Color[] = [];
     brands: Brand[] = [];
+    campuses: any[] = [];
     categoryOptions = [
         { label: 'Software', value: 'Software' },
         { label: 'Hardware', value: 'Hardware' }
@@ -587,6 +595,7 @@ export class AssetsComponent implements OnInit {
         private messageService: MessageService,
         private maintenanceService: MaintenanceService,
         private authService: AuthService,
+        private userService: UserService,
         private router: Router
     ) {}
 
@@ -734,6 +743,17 @@ export class AssetsComponent implements OnInit {
                 console.error('Status:', error?.status, 'Message:', error?.message);
             }
         });
+
+        this.userService.getCampuses().subscribe({
+            next: (data) => {
+                if (data && data.length > 0) {
+                }
+                this.campuses = data || [];
+            },
+            error: (error) => {
+                console.error('❌ Error loading campuses:', error);
+            }
+        });
     }
 
     loadMaintenanceDialogOptions() {
@@ -782,13 +802,17 @@ export class AssetsComponent implements OnInit {
 
     filter() {
         this.filteredAssets = this.assets.filter((asset) => {
-            return (
+            const matchesSearch =
+                !this.searchValue ||
                 asset.propertyNumber?.toLowerCase().includes(this.searchValue.toLowerCase()) ||
                 asset.assetName?.toLowerCase().includes(this.searchValue.toLowerCase()) ||
                 asset.category?.toLowerCase().includes(this.searchValue.toLowerCase()) ||
                 asset.foundCluster?.toLowerCase().includes(this.searchValue.toLowerCase()) ||
-                asset.issuedTo?.toLowerCase().includes(this.searchValue.toLowerCase())
-            );
+                asset.issuedTo?.toLowerCase().includes(this.searchValue.toLowerCase());
+
+            const matchesCampus = !this.selectedCampus || asset.campus?.campusId === this.selectedCampus;
+
+            return matchesSearch && matchesCampus;
         });
     }
 

@@ -5,6 +5,7 @@ import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface Asset {
+    campus: any;
     assetId?: string;
     assetName?: string;
     propertyNumber?: string;
@@ -125,6 +126,10 @@ export class AssetService {
 
     getAsset(id: number): Observable<Asset> {
         return this.http.get<Asset>(`${this.apiUrl}/${id}`);
+    }
+
+    getAssetsByCampus(campusId: string): Observable<Asset[]> {
+        return this.http.get<Asset[]>(`${this.apiUrl}/${campusId}`);
     }
 
     createAsset(asset: Asset): Observable<Asset> {

@@ -20,13 +20,13 @@ import {
   BindModule
 } from "./chunk-246XFSKK.js";
 import {
-  k,
-  q
-} from "./chunk-U4LT4ZJN.js";
-import {
   NG_VALUE_ACCESSOR,
   NgControl
 } from "./chunk-C225D66Z.js";
+import {
+  k,
+  q
+} from "./chunk-U4LT4ZJN.js";
 import {
   CommonModule,
   NgClass,
@@ -730,4 +730,4 @@ export {
   Checkbox,
   CheckboxModule
 };
-//# sourceMappingURL=chunk-M5P2WBZQ.js.map
+//# sourceMappingURL=chunk-CHZQHQ3P.js.map
