@@ -72,7 +72,6 @@ import Swal from 'sweetalert2';
                     <td>{{ campus.campusDirector || 'N/A' }}</td>
                     <td>
                         <div class="flex gap-2">
-                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="viewCampus(campus)" />
                             <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="editCampus(campus)" />
                             <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="deleteCampus(campus)" />
                         </div>

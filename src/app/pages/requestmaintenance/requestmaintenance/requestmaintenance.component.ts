@@ -808,7 +808,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             const status = (item.maintenanceStatus?.requestStatusName || '').toLowerCase();
             const requestedBy = this.getFullName(item).toLowerCase();
             const rawId = (item.requestId || '').toLowerCase();
-
             return (
                 formattedId.includes(searchLower) ||
                 maintenanceName.includes(searchLower) ||

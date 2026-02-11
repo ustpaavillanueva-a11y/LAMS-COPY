@@ -59,19 +59,20 @@ import Swal from 'sweetalert2';
             <ng-template pTemplate="header">
                 <tr>
                     <th style="width:3rem"><p-tableHeaderCheckbox /></th>
-                    <th style="min-width:25rem">ID</th>
-                    <th pSortableColumn="departmentName" style="min-width:20rem">Department <p-sortIcon field="departmentName" /></th>
+                    <th style="min-width:10rem">ID</th>
+                    <th pSortableColumn="departmentName" style="min-width:15rem">Department <p-sortIcon field="departmentName" /></th>
+                    <th pSortableColumn="campus.campusName" style="min-width:15rem">Campus <p-sortIcon field="campus.campusName" /></th>
                     <th style="min-width:12rem">Actions</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-department>
                 <tr>
                     <td><p-tableCheckbox [value]="department" /></td>
-                    <td>{{ department.departmentId }}</td>
+                    <td>{{ formatId(department.departmentId) }}</td>
                     <td>{{ department.departmentName }}</td>
+                    <td>{{ department.campus?.campusName || 'N/A' }}</td>
                     <td>
                         <div class="flex gap-2">
-                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="viewDepartment(department)" />
                             <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="editDepartment(department)" />
                             <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="deleteDepartment(department)" />
                         </div>
@@ -80,7 +81,7 @@ import Swal from 'sweetalert2';
             </ng-template>
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="4" class="text-center py-5">No departments found</td>
+                    <td colspan="5" class="text-center py-5">No departments found</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -150,7 +151,6 @@ export class DepartmentsComponent implements OnInit {
 
     onSelectionChange(event: any) {
         if (this.selectedDepartments && this.selectedDepartments.length > 0) {
-           
         }
     }
 
@@ -414,5 +414,11 @@ export class DepartmentsComponent implements OnInit {
         const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join('\n');
 
         return csvContent;
+    }
+
+    // Format ID to show only numbers (e.g., DEPT001 → 001)
+    formatId(id: string): string {
+        if (!id) return '';
+        return id.replace(/[^0-9]/g, '');
     }
 }
