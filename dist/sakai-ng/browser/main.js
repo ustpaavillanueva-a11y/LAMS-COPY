@@ -26,7 +26,7 @@ import {
   Documentation,
   RequestmaintenanceComponent,
   UserService
-} from "./chunk-WOIQ7LAN.js";
+} from "./chunk-CWJAQO2V.js";
 import {
   AuthService,
   UserContextService,
@@ -36698,7 +36698,7 @@ var appRoutes = [
       { path: "account", component: AccountComponent },
       { path: "uikit", loadChildren: () => import("./chunk-LLHU7TX6.js") },
       { path: "documentation", component: Documentation },
-      { path: "pages", loadChildren: () => import("./chunk-WG6LZG77.js") }
+      { path: "pages", loadChildren: () => import("./chunk-TRXBMQZC.js") }
     ]
   },
   { path: "notfound", component: Notfound },

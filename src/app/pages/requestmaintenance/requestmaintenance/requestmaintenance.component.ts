@@ -4,52 +4,23 @@ import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { MaintenanceService } from '../../service/maintenance.service';
 import { AuthService } from '../../service/auth.service';
+import { ToolbarModule } from 'primeng/toolbar';
+import { ButtonModule } from 'primeng/button';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
 import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-requestmaintenance',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ToolbarModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, ToastModule],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     styles: [
         `
             .maintenance-container {
                 padding: 1rem;
-            }
-
-            .toolbar {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1.5rem;
-                gap: 1rem;
-                background: #f5f5f5;
-                padding: 1rem;
-                border-radius: 0.5rem;
-            }
-
-            .toolbar-left,
-            .toolbar-right {
-                display: flex;
-                gap: 0.5rem;
-                align-items: center;
-            }
-
-            .search-field {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                background: white;
-                border: 1px solid #ddd;
-                border-radius: 0.375rem;
-                padding: 0.5rem;
-            }
-
-            .search-field input {
-                border: none;
-                outline: none;
-                flex: 1;
-                font-size: 0.875rem;
             }
 
             .btn {
@@ -341,20 +312,25 @@ import Swal from 'sweetalert2';
         `
     ],
     template: `
+        <p-toast />
         <div class="maintenance-container">
             <!-- Toolbar -->
-            <div class="toolbar">
-                <div class="toolbar-left">
-                    <button class="btn btn-secondary" (click)="deleteSelected()" [disabled]="!selectedItems.length">Delete Selected</button>
-                </div>
-                <div class="toolbar-right">
-                    <button class="btn btn-secondary" (click)="exportCSV()">Export</button>
-                    <div class="search-field">
-                        <span>🔍</span>
-                        <input type="text" [(ngModel)]="searchValue" (input)="filterByTab()" placeholder="Search maintenance requests..." />
+            <p-toolbar styleClass="mb-4">
+                <ng-template #start>
+                    <div class="flex items-center gap-2">
+                        <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length" />
                     </div>
-                </div>
-            </div>
+                </ng-template>
+                <ng-template #end>
+                    <div class="flex items-center gap-2">
+                        <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+                        <p-iconfield>
+                            <p-inputicon styleClass="pi pi-search" />
+                            <input pInputText type="text" [(ngModel)]="searchValue" (input)="filterByTab()" placeholder="Search maintenance requests..." />
+                        </p-iconfield>
+                    </div>
+                </ng-template>
+            </p-toolbar>
 
             <!-- Tabs -->
             <div class="tabs-container">
