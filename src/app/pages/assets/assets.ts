@@ -161,7 +161,7 @@ import Swal from 'sweetalert2';
             </ng-template>
         </p-toolbar>
 
-        <p-table #dt [value]="filteredAssets" [loading]="loading" [rowHover]="true" dataKey="assetId" [(selection)]="selectedAssets" (selectionChange)="onSelectionChange($event)" styleClass="p-datatable-compact">
+        <p-table #dt [value]="filteredAssets" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10, 20, 30]" [loading]="loading" [rowHover]="true" dataKey="assetId" [(selection)]="selectedAssets" (selectionChange)="onSelectionChange($event)" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} assets" [showCurrentPageReport]="true" styleClass="p-datatable-compact">
             <ng-template pTemplate="header">
                 <tr>
                     <th style="width:3rem"><p-tableHeaderCheckbox /></th>
