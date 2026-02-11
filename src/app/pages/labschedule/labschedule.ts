@@ -87,9 +87,12 @@ import { AuthService } from '../service/auth.service';
                                     [ngClass]="'schedule-block ' + getScheduleColor(schedule)"
                                     [style.grid-row]="'span ' + getRowSpan(schedule)"
                                     [style.min-height.px]="getRowSpan(schedule) * 60"
-                                    class="p-3 rounded cursor-pointer hover:opacity-80 transition-opacity text-white flex flex-col items-center justify-center"
+                                    class="p-3 rounded cursor-pointer hover:opacity-80 transition-opacity text-white flex flex-col items-center justify-center relative"
                                     (click)="viewSchedule(schedule)"
                                 >
+                                    <button class="delete-schedule-btn" (click)="deleteSchedule(schedule, $event)" pTooltip="Delete schedule">
+                                        <i class="pi pi-times"></i>
+                                    </button>
                                     <div class="text-sm font-bold">{{ schedule.subject?.subjectCode }}</div>
                                     <div class="text-xs mt-1">{{ schedule.faculty?.firstName }} {{ schedule.faculty?.lastName }}</div>
                                     <div class="text-xs mt-1 font-semibold">{{ schedule.startTime }} - {{ schedule.endTime }}</div>
@@ -643,5 +646,48 @@ export class LabScheduleComponent implements OnInit {
             summary: 'Schedule Details',
             detail: `${schedule.subject?.subjectName} - ${schedule.faculty?.firstName} ${schedule.faculty?.lastName}`
         });
+    }
+
+    // Delete schedule
+    deleteSchedule(schedule: any, event: Event) {
+        event.stopPropagation(); // Prevent triggering viewSchedule
+
+        const laboratoryId = this.selectedLaboratory?.laboratoryId || schedule.laboratory?.laboratoryId;
+        const scheduleId = schedule.scheduleId;
+
+        if (!laboratoryId || !scheduleId) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Cannot delete: Missing laboratory or schedule ID'
+            });
+            return;
+        }
+
+        // Confirm deletion
+        if (confirm(`Are you sure you want to delete "${schedule.subject?.subjectName || 'this schedule'}"?`)) {
+            const deleteUrl = `${environment.apiUrl}/laboratories/${laboratoryId}/schedules/${scheduleId}`;
+            console.log('🗑️ Deleting schedule:', deleteUrl);
+
+            this.http.delete(deleteUrl).subscribe({
+                next: () => {
+                    console.log('✅ Schedule deleted successfully');
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Deleted',
+                        detail: 'Schedule deleted successfully'
+                    });
+                    this.loadSchedules(); // Reload schedules
+                },
+                error: (error: any) => {
+                    console.error('❌ Error deleting schedule:', error);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Failed to delete schedule: ' + (error?.error?.message || error?.message)
+                    });
+                }
+            });
+        }
     }
 }
