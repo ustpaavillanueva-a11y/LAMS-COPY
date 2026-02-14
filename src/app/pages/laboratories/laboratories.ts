@@ -190,10 +190,6 @@ import { ActivatedRoute } from '@angular/router';
                         <input pInputText [(ngModel)]="newLab.laboratoryName" placeholder="Enter laboratory name" class="w-full" />
                     </div>
                     <div class="col-span-12">
-                        <label class="block font-bold mb-2">Capacity *</label>
-                        <p-inputNumber [(ngModel)]="newLab.capacity" placeholder="Enter capacity" class="w-full" />
-                    </div>
-                    <div class="col-span-12">
                         <label class="block font-bold mb-2">Laboratory Location *</label>
                         <input pInputText [(ngModel)]="newLab.laboratoryLocation" placeholder="Enter laboratory location" class="w-full" />
                     </div>
@@ -250,7 +246,7 @@ export class LaboratoriesComponent implements OnInit {
         return {
             laboratoryId: '',
             laboratoryName: '',
-            capacity: 0,
+            capacity: 30,
             laboratoryLocation: '',
             campus: null
         };
@@ -328,11 +324,11 @@ export class LaboratoriesComponent implements OnInit {
     }
 
     saveLab() {
-        if (!this.newLab.laboratoryName || !this.newLab.capacity || !this.newLab.laboratoryLocation) {
+        if (!this.newLab.laboratoryName || !this.newLab.laboratoryLocation) {
             this.messageService.add({
                 severity: 'warn',
                 summary: 'Validation',
-                detail: 'Laboratory Name, Capacity, and Location are required'
+                detail: 'Laboratory Name and Location are required'
             });
             return;
         }
@@ -342,8 +338,6 @@ export class LaboratoriesComponent implements OnInit {
             capacity: this.newLab.capacity,
             laboratoryLocation: this.newLab.laboratoryLocation
         };
-
-        console.log('📤 Creating laboratory with payload:', payload);
 
         this.http.post<any>(this.apiUrl, payload).subscribe({
             next: (response) => {
