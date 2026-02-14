@@ -128,7 +128,6 @@ export class DashboardLabTech implements OnInit {
         const apiUrl = `${environment.apiUrl}/maintenance-requests/by-service-type`;
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data) => {
-                console.log('Service type data:', data);
                 const labels = data.map((item) => item.serviceName || item.serviceType || 'Unknown');
                 const counts = data.map((item) => item.count || 0);
                 const colors = this.generateColors(labels.length);
@@ -155,7 +154,6 @@ export class DashboardLabTech implements OnInit {
         const apiUrl = `${environment.apiUrl}/assets/by-supplier`;
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data) => {
-                console.log('Assets by supplier:', data);
                 const labels = data.map((item) => item.supplierName || item.supplier || 'Unknown');
                 const counts = data.map((item) => item.count || item.assetCount || 0);
                 const colors = this.generateColors(labels.length);
@@ -183,7 +181,6 @@ export class DashboardLabTech implements OnInit {
         const apiUrl = `${environment.apiUrl}/assets/by-brand`;
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data) => {
-                console.log('Assets by brand:', data);
                 const labels = data.map((item) => item.brandName || item.brand || 'Unknown');
                 const counts = data.map((item) => item.count || item.assetCount || 0);
                 const colors = this.generateColors(labels.length);

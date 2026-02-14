@@ -61,7 +61,6 @@ export class AssetSummaryWidget implements OnInit {
                 this.totalAssets = data.length;
                 this.activeAssets = data.filter((a: any) => a.Status_id === '1').length;
                 this.assetCategories = new Set(data.map((a: any) => a.category || a.Category)).size;
-                console.log('✅ Asset Summary loaded');
             },
             error: (err: any) => {
                 console.error('❌ Error loading assets:', err);

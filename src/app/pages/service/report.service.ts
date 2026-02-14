@@ -37,7 +37,6 @@ export class ReportService {
     // Asset Reports
     getAssetReportData(): Observable<AssetReportData> {
         const url = `${this.baseApiUrl}/reports/assets`;
-        console.log('📊 Fetching Asset Report:', url);
         return this.http.get<AssetReportData>(url);
     }
 
@@ -50,7 +49,6 @@ export class ReportService {
     // Maintenance Reports
     getMaintenanceReportData(): Observable<MaintenanceReportData> {
         const url = `${this.baseApiUrl}/reports/maintenance`;
-        console.log('📊 Fetching Maintenance Report:', url);
         return this.http.get<MaintenanceReportData>(url);
     }
 
@@ -63,7 +61,6 @@ export class ReportService {
     // Schedule Reports
     getScheduleReportData(): Observable<ScheduleReportData> {
         const url = `${this.baseApiUrl}/reports/schedules`;
-        console.log('📊 Fetching Schedule Report:', url);
         return this.http.get<ScheduleReportData>(url);
     }
 
@@ -129,20 +126,17 @@ export class ReportService {
         pendingMaintenanceRequests: number;
     }> {
         const url = `${this.baseApiUrl}/reports/dashboard-summary`;
-        console.log('📊 Fetching Dashboard Summary:', url);
         return this.http.get<any>(url);
     }
 
     // Maintenance Reports - New Endpoints
     getDailyPreventiveReport(date: string, laboratoryId: string): Observable<any> {
         const url = `${this.baseApiUrl}/reports/preventive-maintenance/daily?date=${date}&laboratoryId=${laboratoryId}`;
-        console.log('📊 Fetching Daily Preventive Report:', url);
         return this.http.get<any>(url);
     }
 
     getMonthlyPreventiveReport(month: number, year: number, laboratoryId: string): Observable<any> {
         const url = `${this.baseApiUrl}/reports/preventive-maintenance/monthly?month=${month}&year=${year}&laboratoryId=${laboratoryId}`;
-        console.log('📊 Fetching Monthly Preventive Report:', url);
         return this.http.get<any>(url);
     }
 
@@ -151,7 +145,6 @@ export class ReportService {
         if (priorityLevelId) {
             url += `&priorityLevelId=${priorityLevelId}`;
         }
-        console.log('📊 Fetching Daily Corrective Report:', url);
         return this.http.get<any>(url);
     }
 
@@ -160,20 +153,17 @@ export class ReportService {
         if (priorityLevelId) {
             url += `&priorityLevelId=${priorityLevelId}`;
         }
-        console.log('📊 Fetching Monthly Corrective Report:', url);
         return this.http.get<any>(url);
     }
 
     // Calibration Reports
     getDailyCalibrationReport(date: string): Observable<any> {
         const url = `${this.baseApiUrl}/reports/calibration-maintenance/daily?date=${date}`;
-        console.log('📊 Fetching Daily Calibration Report:', url);
         return this.http.get<any>(url);
     }
 
     getMonthlyCalibrationReport(month: number, year: number): Observable<any> {
         const url = `${this.baseApiUrl}/reports/calibration-maintenance/monthly?month=${month}&year=${year}`;
-        console.log('📊 Fetching Monthly Calibration Report:', url);
         return this.http.get<any>(url);
     }
 }

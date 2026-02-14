@@ -36,7 +36,6 @@ export class Dashboard implements OnInit {
         // Get user role from localStorage or auth service
         const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
         this.userRole = user.role || '';
-        console.log('User Role:', this.userRole);
-        console.log('User Data:', user);
+       
     }
 }

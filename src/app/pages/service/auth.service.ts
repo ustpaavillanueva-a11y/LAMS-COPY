@@ -50,7 +50,6 @@ export class AuthService {
                 const user = JSON.parse(storedUser);
                 this.currentUser = user;
                 this.userContextService.setUserId(user.userId);
-                console.log('User context initialized from localStorage:', user);
             } catch (error) {
                 console.error('Error initializing user context:', error);
             }
@@ -68,7 +67,6 @@ export class AuthService {
                     // Set userId in UserContextService
                     this.userContextService.setUserId(response.user.user_id);
 
-                    console.log('User logged in successfully:', response.user);
                     return { success: true, user: response.user as User };
                 }
                 return { success: false, message: 'Login failed' };

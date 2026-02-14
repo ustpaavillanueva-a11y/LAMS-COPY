@@ -148,7 +148,6 @@ export class AssetReportComponent implements OnInit {
                 this.assets = data;
                 this.filteredAssets = data;
                 this.extractCategories();
-                console.log('✅ Assets loaded:', this.assets.length);
             },
             error: (err) => {
                 console.error('❌ Error loading assets:', err);

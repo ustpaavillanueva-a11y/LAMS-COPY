@@ -30,7 +30,6 @@ export class UserContextService {
         this.userIdSubject = new BehaviorSubject<string | null>(storedUserId || null);
         this.userId$ = this.userIdSubject.asObservable();
 
-        console.log('UserContextService initialized with userId:', storedUserId);
     }
 
     /**
@@ -40,7 +39,6 @@ export class UserContextService {
     setUserId(userId: string): void {
         this.userIdSubject.next(userId);
         localStorage.setItem('userId', userId);
-        console.log('UserId set:', userId);
     }
 
     /**
@@ -75,6 +73,5 @@ export class UserContextService {
     clearUserId(): void {
         this.userIdSubject.next(null);
         localStorage.removeItem('userId');
-        console.log('UserId cleared');
     }
 }

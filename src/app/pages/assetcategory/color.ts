@@ -140,10 +140,8 @@ export class ColorComponent implements OnInit {
             }
         }).then((result) => {
             if (result.isConfirmed && result.value) {
-                console.log('Creating color with data:', result.value);
                 this.assetService.createColor(result.value).subscribe({
                     next: (created) => {
-                        console.log('Color created successfully:', created);
                         this.items.push(created);
                         this.filteredItems = [...this.items];
                         this.messageService.add({ severity: 'success', summary: 'Created', detail: 'Color created' });

@@ -53,11 +53,9 @@ export class AppMenu implements OnInit {
 
     loadLaboratories() {
         const apiUrl = `${environment.apiUrl}/laboratories`;
-        console.log('📡 Fetching laboratories from:', apiUrl);
 
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data: any[]) => {
-                console.log('✅ Laboratories loaded:', data);
                 this.laboratories = data || [];
                 // Reload menu items to include laboratories
                 this.loadUserProfile();
@@ -324,13 +322,11 @@ export class AppMenu implements OnInit {
     }
 
     getLaboratoryMenuItems(): MenuItem[] {
-        console.log('🏢 getLaboratoryMenuItems called, laboratories:', this.laboratories);
         const items = (this.laboratories || []).map((lab) => ({
             label: lab.laboratoryName,
             icon: 'pi pi-fw pi-flask',
             routerLink: ['/app/pages/laboratory', lab.laboratoryId]
         }));
-        console.log('📋 Mapped menu items:', items);
         return items;
     }
 }

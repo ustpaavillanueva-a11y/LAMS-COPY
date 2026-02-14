@@ -42,7 +42,6 @@ export class MaintenanceService {
 
     getServiceMaintenances(): Observable<ServiceMaintenance[]> {
         const url = `${this.baseApiUrl}/service-maintenance`;
-        console.log('📡 Fetching Service Maintenances:', url);
         return this.http.get<ServiceMaintenance[]>(url).pipe(tap((data) => console.log('✅ Service Maintenances:', data)));
     }
 
@@ -60,7 +59,6 @@ export class MaintenanceService {
 
     getRequestStatuses(): Observable<RequestStatus[]> {
         const url = `${this.baseApiUrl}/request-status`;
-        console.log('📡 Fetching Request Statuses:', url);
         return this.http.get<RequestStatus[]>(url).pipe(tap((data) => console.log('✅ Request Statuses:', data)));
     }
 
@@ -78,7 +76,6 @@ export class MaintenanceService {
 
     getPriorityLevels(): Observable<PriorityLevel[]> {
         const url = `${this.baseApiUrl}/priority-levels`;
-        console.log('📡 Fetching Priority Levels:', url);
         return this.http.get<PriorityLevel[]>(url).pipe(tap((data) => console.log('✅ Priority Levels:', data)));
     }
 
@@ -96,7 +93,6 @@ export class MaintenanceService {
 
     getMaintenanceTypes(): Observable<MaintenanceType[]> {
         const url = `${this.baseApiUrl}/maintenance-types`;
-        console.log('📡 Fetching Maintenance Types:', url);
         return this.http.get<MaintenanceType[]>(url).pipe(tap((data) => console.log('✅ Maintenance Types:', data)));
     }
 
@@ -115,84 +111,72 @@ export class MaintenanceService {
     // Create Maintenance Request
     createMaintenanceRequest(body: MaintenanceRequestPayload): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-requests`;
-        console.log('📡 Creating Maintenance Request:', url, body);
         return this.http.post<any>(url, body);
     }
 
     // Get Maintenance Requests (list)
     getMaintenanceRequests(): Observable<any[]> {
         const url = `${this.baseApiUrl}/maintenance-requests`;
-        console.log('📡 Fetching Maintenance Requests:', url);
         return this.http.get<any[]>(url);
     }
 
     // Approve Maintenance Request
     approveMaintenanceRequest(approvalData: any): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-approvals`;
-        console.log('📡 Approving Maintenance Request:', url, approvalData);
         return this.http.post<any>(url, approvalData);
     }
 
     // Assign Technician to Maintenance Request
     assignTechnician(requestId: string, assignmentData: any): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-approvals/${requestId}/assign-technician`;
-        console.log('📡 Assigning Technician:', url, assignmentData);
         return this.http.post<any>(url, assignmentData);
     }
 
     // Complete Maintenance Approval
     completeMaintenanceApproval(id: string, completionData: any): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-approvals/${id}`;
-        console.log('📡 Completing Maintenance Approval:', url, completionData);
         return this.http.patch<any>(url, completionData);
     }
 
     // Get Maintenance Approval Details
     getMaintenanceApproval(id: string): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-approvals/${id}`;
-        console.log('📡 Fetching Maintenance Approval:', url);
         return this.http.get<any>(url);
     }
 
     // Get All Maintenance Approvals
     getMaintenanceApprovals(): Observable<any[]> {
         const url = `${this.baseApiUrl}/maintenance-approvals`;
-        console.log('📡 Fetching Maintenance Approvals:', url);
         return this.http.get<any[]>(url);
     }
 
     // Get Maintenance Approval Details by ID
     getMaintenanceApprovalDetails(id: string): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-approvals/${id}`;
-        console.log('📡 Fetching Maintenance Approval Details:', url);
         return this.http.get<any>(url);
     }
 
     // Get Maintenance Request by ID
     getMaintenanceRequest(id: string): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-requests/${id}`;
-        console.log('📡 Fetching Maintenance Request:', url);
         return this.http.get<any>(url);
     }
 
     // Update Maintenance Request
     updateMaintenanceRequest(id: string, body: Partial<MaintenanceRequestPayload>): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-requests/${id}`;
-        console.log('📡 Updating Maintenance Request:', url, body);
         return this.http.put<any>(url, body);
     }
 
     // Delete Maintenance Request
     deleteMaintenanceRequest(id: string): Observable<void> {
         const url = `${this.baseApiUrl}/maintenance-requests/${id}`;
-        console.log('📡 Deleting Maintenance Request:', url);
         return this.http.delete<void>(url);
     }
 
     // Get Lab Technicians
     getLabTechnicians(): Observable<any[]> {
         const url = `${this.baseApiUrl}/users/filter/lab-technicians`;
-        console.log('📡 Fetching Lab Technicians:', url);
         return this.http.get<any[]>(url);
     }
 }

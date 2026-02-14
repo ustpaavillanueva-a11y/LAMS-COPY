@@ -666,7 +666,6 @@ export class AssetsComponent implements OnInit {
         const currentUser = this.authService.getCurrentUser();
         this.isLabTech = currentUser?.role === 'LabTech';
         this.isSuperAdmin = currentUser?.role === 'SuperAdmin';
-        console.log('👤 Current user role:', currentUser?.role, 'Is LabTech:', this.isLabTech, 'Is SuperAdmin:', this.isSuperAdmin);
     }
 
     isCampusAdmin(): boolean {
@@ -675,22 +674,16 @@ export class AssetsComponent implements OnInit {
     }
 
     loadReferenceData() {
-        console.log('🔄 Loading reference data...');
         this.assetService.getPrograms().subscribe({
             next: (data) => {
-                console.log('📦 Raw programs data received:', data);
-                console.log('📦 Programs data type:', typeof data);
-                console.log('📦 Is Array:', Array.isArray(data));
+               
                 if (data && data.length > 0) {
-                    console.log('✅ Programs loaded successfully:', data.length, 'items');
-                    console.log('📦 First program:', data[0]);
+                    
                 }
                 this.programs = data || [];
-                console.log('📦 this.programs after assignment:', this.programs);
             },
             error: (error) => {
-                console.error('❌ Error loading programs:', error);
-                console.error('Status:', error?.status, 'Message:', error?.message);
+              
             }
         });
 
@@ -864,9 +857,7 @@ export class AssetsComponent implements OnInit {
 
             return matchesSearch && matchesCampus;
         });
-        console.log('🔍 Filter applied - Campus:', this.selectedCampus, 'Search:', this.searchValue);
-        console.log('🔍 Filtered assets count:', this.filteredAssets.length);
-        console.log('🔍 Filtered assets:', this.filteredAssets);
+       
     }
 
     getShortAssetId(assetId: string | undefined): string {
@@ -1094,9 +1085,7 @@ export class AssetsComponent implements OnInit {
 
     // Request Maintenance Handlers
     openRequestDialog(asset: Asset) {
-        console.log('📋 Request button clicked for asset:', asset);
-        console.log('Asset ID:', asset.assetId);
-        console.log('Asset Name:', asset.assetName);
+       
         this.requestAsset = asset;
         this.maintenanceRequest = { maintenanceName: asset.assetName || '', maintenanceType: '', serviceMaintenance: '', asset: String(asset.assetId || ''), priorityLevel: '', reason: '' };
         this.requestDialog = true;
@@ -1215,7 +1204,6 @@ export class AssetsComponent implements OnInit {
     }
 
     view(item: Asset) {
-        console.log('👁️ Viewing asset:', item);
         const assetName = item.assetName || item.AssetName || 'Unknown Asset';
         const icsData = item.inventoryCustodianSlip || {};
         const icsTableData = this.getIcsTableData(icsData);
@@ -1481,7 +1469,6 @@ export class AssetsComponent implements OnInit {
         const assetName = item.assetName || item.AssetName || 'Unknown Asset';
         const assetId = item.assetId;
 
-        console.log('🗑️ Deleting asset:', item);
         Swal.fire({
             title: 'Delete Asset?',
             text: `Are you sure you want to delete ${assetName}?`,
@@ -1493,14 +1480,11 @@ export class AssetsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log('✅ Confirmed delete for asset:', assetId);
 
                 // Call DELETE API
-                console.log('📡 Deleting asset with ID:', assetId);
 
                 this.assetService.deleteAsset(assetId as any).subscribe({
                     next: (response: any) => {
-                        console.log('✅ Asset deleted successfully:', response);
                         this.messageService.add({
                             severity: 'success',
                             summary: 'Deleted',

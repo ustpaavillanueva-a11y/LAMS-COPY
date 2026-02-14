@@ -77,7 +77,6 @@ export class BestSellingWidget implements OnInit {
                         color: colors[index % colors.length]
                     }));
 
-                console.log('✅ Most repaired assets loaded');
             },
             error: (err: any) => {
                 console.error('❌ Error loading maintenance requests:', err);

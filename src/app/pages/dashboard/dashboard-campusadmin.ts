@@ -181,7 +181,6 @@ export class DashboardCampusAdmin implements OnInit {
         this.http.get<number>(apiUrl).subscribe({
             next: (data) => {
                 this.departmentCount = data;
-                console.log('Department Count:', this.departmentCount);
             },
             error: (error) => {
                 console.error('Error loading department count:', error);
@@ -194,7 +193,6 @@ export class DashboardCampusAdmin implements OnInit {
         this.http.get<number>(apiUrl).subscribe({
             next: (data) => {
                 this.userCount = data;
-                console.log('User Count:', this.userCount);
             },
             error: (error) => {
                 console.error('Error loading user count:', error);
@@ -207,7 +205,6 @@ export class DashboardCampusAdmin implements OnInit {
         this.http.get<number>(apiUrl).subscribe({
             next: (data) => {
                 this.laboratoryCount = data;
-                console.log('Laboratory Count:', this.laboratoryCount);
             },
             error: (error) => {
                 console.error('Error loading laboratory count:', error);
@@ -220,7 +217,6 @@ export class DashboardCampusAdmin implements OnInit {
         this.http.get<number>(apiUrl).subscribe({
             next: (data) => {
                 this.assetCount = data;
-                console.log('Asset Count:', this.assetCount);
             },
             error: (error) => {
                 console.error('Error loading asset count:', error);
@@ -232,7 +228,6 @@ export class DashboardCampusAdmin implements OnInit {
         const apiUrl = `${environment.apiUrl}/assets/assets-by-laboratory`;
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data) => {
-                console.log('Assets by Laboratory:', data);
                 const labels = data.map((item) => item.laboratoryName);
                 const counts = data.map((item) => item.assetCount);
                 const colors = this.generateColors(data.length);
@@ -321,7 +316,6 @@ export class DashboardCampusAdmin implements OnInit {
         const apiUrl = `${environment.apiUrl}/assets/maintenance-requests-by-laboratory`;
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data) => {
-                console.log('Maintenance Requests by Laboratory:', data);
                 const labels = data.map((item) => item.laboratoryName);
                 const counts = data.map((item) => item.requestCount);
                 const colors = this.generateColors(data.length);
@@ -390,7 +384,6 @@ export class DashboardCampusAdmin implements OnInit {
         const apiUrl = `${environment.apiUrl}/assets/maintenance-requests-by-status`;
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data) => {
-                console.log('Maintenance Status:', data);
                 const labels = data.map((item) => item.status);
                 const counts = data.map((item) => item.count);
                 const colors = [
@@ -456,7 +449,6 @@ export class DashboardCampusAdmin implements OnInit {
                 // Sort by timestamp descending (newest first)
                 this.activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-                console.log('✅ Activities loaded and sorted:', this.activities);
             },
             error: (error) => {
                 console.error('Error loading activities:', error);

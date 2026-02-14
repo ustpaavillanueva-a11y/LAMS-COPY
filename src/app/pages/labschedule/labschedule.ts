@@ -323,7 +323,6 @@ export class LabScheduleComponent implements OnInit {
         const currentUser = this.authService.getCurrentUser();
         this.isCampusAdmin = currentUser?.role === 'CampusAdmin';
         this.isSuperAdmin = currentUser?.role === 'SuperAdmin';
-        console.log('👤 Current user role:', currentUser?.role, 'Is CampusAdmin:', this.isCampusAdmin, 'Is SuperAdmin:', this.isSuperAdmin);
     }
 
     // Initialize time slots from 07:00 AM to 09:00 PM (30-minute intervals)
@@ -367,10 +366,8 @@ export class LabScheduleComponent implements OnInit {
     }
 
     loadLaboratories() {
-        console.log('📡 Fetching laboratories from:', this.apiUrl);
         this.http.get<any[]>(this.apiUrl).subscribe({
             next: (data: any[]) => {
-                console.log('✅ Laboratories loaded:', data);
                 this.laboratories = data || [];
                 this.filteredLaboratories = [...this.laboratories];
 
@@ -389,10 +386,8 @@ export class LabScheduleComponent implements OnInit {
 
     loadCampuses() {
         const campusesUrl = `${environment.apiUrl}/campuses`;
-        console.log('📡 Fetching campuses from:', campusesUrl);
         this.http.get<any[]>(campusesUrl).subscribe({
             next: (data: any[]) => {
-                console.log('✅ Campuses loaded:', data);
                 this.campuses = data || [];
             },
             error: (error: any) => {
@@ -411,11 +406,9 @@ export class LabScheduleComponent implements OnInit {
 
             // Load schedules filtered by campus
             const campusSchedulesUrl = `${environment.apiUrl}/schedules/filter/by-campus/${this.selectedCampus.campusId}`;
-            console.log('📡 Fetching schedules by campus from:', campusSchedulesUrl);
 
             this.http.get<any[]>(campusSchedulesUrl).subscribe({
                 next: (data: any[]) => {
-                    console.log('✅ Campus schedules loaded:', data);
                     this.schedules = data || [];
                 },
                 error: (error: any) => {
@@ -434,16 +427,11 @@ export class LabScheduleComponent implements OnInit {
 
     loadUsers() {
         const usersUrl = `${environment.apiUrl}/users`;
-        console.log('📡 Fetching users from:', usersUrl);
 
         this.http.get<any[]>(usersUrl).subscribe({
             next: (data: any[]) => {
-                console.log('✅ Users loaded:', data);
-                console.log('📊 Total users:', data?.length || 0);
 
                 if (data && data.length > 0) {
-                    console.log('👤 First user:', data[0]);
-                    console.log('👥 User fields:', Object.keys(data[0]));
                     console.table(data);
                 }
 
@@ -465,16 +453,11 @@ export class LabScheduleComponent implements OnInit {
 
     loadSubjects() {
         const subjectsUrl = `${environment.apiUrl}/subjects`;
-        console.log('📡 Fetching subjects from:', subjectsUrl);
 
         this.http.get<any[]>(subjectsUrl).subscribe({
             next: (data: any[]) => {
-                console.log('✅ Subjects loaded:', data);
-                console.log('📊 Total subjects:', data?.length || 0);
 
                 if (data && data.length > 0) {
-                    console.log('📚 First subject:', data[0]);
-                    console.log('📚 Subject fields:', Object.keys(data[0]));
                     console.table(data);
                 }
 
@@ -496,8 +479,6 @@ export class LabScheduleComponent implements OnInit {
 
     onLaboratoryFilterChange() {
         if (this.selectedLaboratory) {
-            console.log('🔍 Filtering schedule for laboratory:', this.selectedLaboratory);
-            console.log('📋 Laboratory ID:', this.selectedLaboratory.laboratoryId);
             this.messageService.add({
                 severity: 'info',
                 summary: 'Filter Applied',
@@ -507,11 +488,9 @@ export class LabScheduleComponent implements OnInit {
             this.loadSchedules();
         } else if (this.selectedCampus) {
             // If no laboratory but campus is selected, load campus schedules
-            console.log('🔍 No laboratory selected, loading all campus schedules');
             const campusSchedulesUrl = `${environment.apiUrl}/schedules/filter/by-campus/${this.selectedCampus.campusId}`;
             this.http.get<any[]>(campusSchedulesUrl).subscribe({
                 next: (data: any[]) => {
-                    console.log('✅ Campus schedules loaded:', data);
                     this.schedules = data || [];
                 },
                 error: (error: any) => {
@@ -520,7 +499,6 @@ export class LabScheduleComponent implements OnInit {
                 }
             });
         } else {
-            console.log('🔍 Showing all laboratory schedules');
             this.messageService.add({
                 severity: 'info',
                 summary: 'Filter Cleared',
@@ -532,22 +510,16 @@ export class LabScheduleComponent implements OnInit {
 
     loadSchedules() {
         if (!this.selectedLaboratory) {
-            console.log('⚠️ No laboratory selected');
             this.schedules = [];
             return;
         }
 
         const scheduleUrl = `${environment.apiUrl}/laboratories/${this.selectedLaboratory.laboratoryId}/schedules`;
-        console.log('📡 Fetching schedules from:', scheduleUrl);
 
         this.http.get<any[]>(scheduleUrl).subscribe({
             next: (data: any[]) => {
-                console.log('✅ Schedules API Response:', data);
-                console.log('📊 Total schedules:', data?.length || 0);
 
                 if (data && data.length > 0) {
-                    console.log('🎯 First schedule:', data[0]);
-                    console.log('📋 Schedule fields:', Object.keys(data[0]));
                     console.table(data);
                 }
 
@@ -608,11 +580,9 @@ export class LabScheduleComponent implements OnInit {
         };
 
         const subjectsUrl = `${environment.apiUrl}/subjects`;
-        console.log('📡 Posting new subject to:', subjectsUrl, payload);
 
         this.http.post<any>(subjectsUrl, payload).subscribe({
             next: (response: any) => {
-                console.log('✅ Subject created successfully:', response);
 
                 this.messageService.add({
                     severity: 'success',
@@ -654,15 +624,11 @@ export class LabScheduleComponent implements OnInit {
             dayOfWeek: this.newSchedule.day
         };
 
-        console.log('📤 Saving schedule with payload:', payload);
-        console.log('🔗 Laboratory ID:', this.newSchedule.laboratory);
 
         const scheduleUrl = `${environment.apiUrl}/laboratories/${this.newSchedule.laboratory}/schedules`;
-        console.log('📡 Posting to:', scheduleUrl);
 
         this.http.post<any>(scheduleUrl, payload).subscribe({
             next: (response: any) => {
-                console.log('✅ Schedule created successfully:', response);
 
                 this.messageService.add({
                     severity: 'success',
@@ -788,7 +754,6 @@ export class LabScheduleComponent implements OnInit {
 
         // Each row is 30 minutes, so divide by 30
         const rowSpan = Math.ceil(durationMinutes / 30);
-        console.log(`📏 Schedule: ${schedule.subject?.subjectCode} | Start: ${schedule.startTime} (${startMinutes}min) | End: ${schedule.endTime} (${endMinutes}min) | Duration: ${durationMinutes}min | Rows: ${rowSpan}`);
 
         return rowSpan;
     }
@@ -808,7 +773,6 @@ export class LabScheduleComponent implements OnInit {
 
     // View schedule details - opens modal
     viewSchedule(schedule: any) {
-        console.log('👁️ Viewing schedule:', schedule);
         this.selectedSchedule = schedule;
         this.scheduleDetailsDialog = true;
     }
@@ -867,7 +831,6 @@ export class LabScheduleComponent implements OnInit {
         };
 
         const updateUrl = `${environment.apiUrl}/laboratories/${laboratoryId}/schedules/${scheduleId}`;
-        console.log('✏️ Updating schedule:', updateUrl, updateData);
 
         this.http.put(updateUrl, updateData).subscribe({
             next: () => {
@@ -909,11 +872,9 @@ export class LabScheduleComponent implements OnInit {
         // Confirm deletion
         if (confirm(`Are you sure you want to delete "${this.selectedSchedule.subject?.subjectName || 'this schedule'}"?`)) {
             const deleteUrl = `${environment.apiUrl}/laboratories/${laboratoryId}/schedules/${scheduleId}`;
-            console.log('🗑️ Deleting schedule:', deleteUrl);
 
             this.http.delete(deleteUrl).subscribe({
                 next: () => {
-                    console.log('✅ Schedule deleted successfully');
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Deleted',

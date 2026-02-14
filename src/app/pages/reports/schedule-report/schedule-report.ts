@@ -170,7 +170,6 @@ export class ScheduleReportComponent implements OnInit {
         this.http.get<any[]>(`${environment.apiUrl}/laboratories`).subscribe({
             next: (data) => {
                 this.laboratories = data;
-                console.log('✅ Laboratories loaded:', this.laboratories.length);
             },
             error: (err) => {
                 console.error('❌ Error loading laboratories:', err);
@@ -183,7 +182,6 @@ export class ScheduleReportComponent implements OnInit {
             next: (data) => {
                 this.schedules = data;
                 this.filteredSchedules = data;
-                console.log('✅ Schedules loaded:', this.schedules.length);
             },
             error: (err) => {
                 console.error('❌ Error loading schedules:', err);

@@ -242,7 +242,6 @@ export class PreventiveReportComponent implements OnInit {
         this.http.get<Laboratory[]>(apiUrl).subscribe({
             next: (data) => {
                 this.laboratories = data;
-                console.log('✅ Laboratories loaded:', data);
             },
             error: (error) => {
                 console.error('❌ Error loading laboratories:', error);
@@ -270,7 +269,6 @@ export class PreventiveReportComponent implements OnInit {
                 next: (data) => {
                     this.reportData = data;
                     this.isLoading = false;
-                    console.log('✅ Daily Preventive Report loaded:', data);
                 },
                 error: (error) => {
                     this.errorMessage = error.error?.message || 'Failed to generate daily report';
@@ -283,7 +281,6 @@ export class PreventiveReportComponent implements OnInit {
                 next: (data) => {
                     this.reportData = data;
                     this.isLoading = false;
-                    console.log('✅ Monthly Preventive Report loaded:', data);
                 },
                 error: (error) => {
                     this.errorMessage = error.error?.message || 'Failed to generate monthly report';

@@ -233,7 +233,6 @@ export class LaboratoriesComponent implements OnInit {
         this.route.paramMap.subscribe((params) => {
             const labId = params.get('id');
             if (labId) {
-                console.log('🔍 Loading specific laboratory with ID:', labId);
                 this.selectedLaboratoryId = labId;
                 this.loadLaboratories(labId);
             } else {
@@ -254,15 +253,10 @@ export class LaboratoriesComponent implements OnInit {
 
     loadLaboratories(laboratoryId?: string) {
         this.loading = true;
-        console.log('📡 Fetching laboratories from:', this.apiUrl);
 
         this.http.get<any[]>(this.apiUrl).subscribe({
             next: (data: any[]) => {
-                console.log('✅ Laboratories API Response:', data);
-                console.log('📊 Laboratories count:', data?.length || 0);
                 if (data && data.length > 0) {
-                    console.log('🏷️ First laboratory:', data[0]);
-                    console.log('🏷️ Laboratory fields:', Object.keys(data[0]));
                 }
                 console.table(data);
                 this.laboratories = data || [];
@@ -271,9 +265,7 @@ export class LaboratoriesComponent implements OnInit {
                 if (laboratoryId) {
                     const filtered = this.laboratories.filter((lab) => lab.laboratoryId === laboratoryId);
                     if (filtered.length > 0) {
-                        console.log('🎯 Found laboratory:', filtered[0]);
                         this.selectedLaboratoryData = filtered[0];
-                        console.log('📦 Assets in laboratory:', this.selectedLaboratoryData.assets?.length || 0);
                         this.filteredLaboratories = filtered;
                     } else {
                         console.warn('⚠️ Laboratory not found with ID:', laboratoryId);
@@ -309,8 +301,6 @@ export class LaboratoriesComponent implements OnInit {
     }
 
     onSelectionChange(event: any) {
-        console.log('✅ Selection Changed');
-        console.log('📊 Total Selected:', this.selectedLabs.length);
     }
 
     openNew() {
@@ -341,7 +331,6 @@ export class LaboratoriesComponent implements OnInit {
 
         this.http.post<any>(this.apiUrl, payload).subscribe({
             next: (response) => {
-                console.log('✅ Laboratory created:', response);
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
@@ -362,7 +351,6 @@ export class LaboratoriesComponent implements OnInit {
     }
 
     view(lab: any) {
-        console.log('👁️ Viewing laboratory:', lab);
         this.messageService.add({
             severity: 'info',
             summary: 'View Laboratory',
@@ -371,13 +359,11 @@ export class LaboratoriesComponent implements OnInit {
     }
 
     edit(lab: any) {
-        console.log('✏️ Editing laboratory:', lab);
         this.newLab = { ...lab };
         this.labDialog = true;
     }
 
     delete(lab: any) {
-        console.log('🗑️ Deleting laboratory:', lab);
         this.messageService.add({
             severity: 'warn',
             summary: 'Delete Laboratory',
@@ -387,7 +373,6 @@ export class LaboratoriesComponent implements OnInit {
 
     deleteSelected() {
         if (!this.selectedLabs || this.selectedLabs.length === 0) return;
-        console.log('🗑️ Deleting selected:', this.selectedLabs);
         this.messageService.add({
             severity: 'warn',
             summary: 'Delete',
@@ -416,7 +401,6 @@ export class LaboratoriesComponent implements OnInit {
 
     deleteSelectedAssets() {
         if (!this.selectedAssets || this.selectedAssets.length === 0) return;
-        console.log('🗑️ Deleting selected assets:', this.selectedAssets);
         this.messageService.add({
             severity: 'warn',
             summary: 'Delete',

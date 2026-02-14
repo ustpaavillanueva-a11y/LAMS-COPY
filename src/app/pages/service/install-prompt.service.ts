@@ -19,7 +19,6 @@ export class InstallPromptService {
 
     private initializeInstallPrompt() {
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('PWA install prompt triggered');
             // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
             // Stash the event so it can be triggered later
@@ -33,7 +32,6 @@ export class InstallPromptService {
         });
 
         window.addEventListener('appinstalled', () => {
-            console.log('PWA was installed');
             this.deferredPrompt = null;
             this.isInstallable$.next(false);
 
@@ -75,17 +73,14 @@ export class InstallPromptService {
 
                 this.deferredPrompt.userChoice.then((choiceResult: any) => {
                     if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
                         resolve(true);
                     } else {
-                        console.log('User dismissed the install prompt');
                         resolve(false);
                     }
                     this.deferredPrompt = null;
                     this.isInstallable$.next(false);
                 });
             } else {
-                console.log('No install prompt available');
                 resolve(false);
             }
         });

@@ -158,7 +158,6 @@ export class DashboardSuperAdmin implements OnInit {
         this.http.get<number>(apiUrl).subscribe({
             next: (data) => {
                 this.campusCount = data;
-                console.log('Campus Count:', this.campusCount);
             },
             error: (error) => {
                 console.error('Error loading campus count:', error);
@@ -171,7 +170,6 @@ export class DashboardSuperAdmin implements OnInit {
         this.http.get<number>(apiUrl).subscribe({
             next: (data) => {
                 this.userCount = data;
-                console.log('User Count:', this.userCount);
             },
             error: (error) => {
                 console.error('Error loading user count:', error);
@@ -184,7 +182,6 @@ export class DashboardSuperAdmin implements OnInit {
         this.http.get<number>(apiUrl).subscribe({
             next: (data) => {
                 this.assetCount = data;
-                console.log('Asset Count:', this.assetCount);
             },
             error: (error) => {
                 console.error('Error loading asset count:', error);
@@ -197,7 +194,6 @@ export class DashboardSuperAdmin implements OnInit {
         this.http.get<number>(apiUrl).subscribe({
             next: (data) => {
                 this.laboratoryCount = data;
-                console.log('Laboratory Count:', this.laboratoryCount);
             },
             error: (error) => {
                 console.error('Error loading laboratory count:', error);
@@ -209,7 +205,6 @@ export class DashboardSuperAdmin implements OnInit {
         const apiUrl = `${environment.apiUrl}/campuses/count/assets/by-campus`;
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data) => {
-                console.log('Assets by Campus:', data);
                 const labels = data.map((item) => item.campusName || item.campus);
                 const counts = data.map((item) => item.assetCount || item.count);
                 const colors = this.generateColors(data.length);
@@ -237,7 +232,6 @@ export class DashboardSuperAdmin implements OnInit {
         const apiUrl = `${environment.apiUrl}/assets/maintenance-requests-by-campus`;
         this.http.get<any[]>(apiUrl).subscribe({
             next: (data) => {
-                console.log('Maintenance Requests by Campus:', data);
                 const labels = data.map((item) => item.campusName);
                 const counts = data.map((item) => item.pendingRequests);
                 const colors = this.generateColors(data.length);
@@ -271,7 +265,6 @@ export class DashboardSuperAdmin implements OnInit {
                 // Sort by timestamp descending (newest first)
                 this.activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-                console.log('✅ Activities loaded and sorted:', this.activities);
             },
             error: (error) => {
                 console.error('Error loading activities:', error);

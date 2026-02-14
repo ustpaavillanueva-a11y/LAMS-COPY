@@ -328,7 +328,6 @@ export class CorrectiveReportComponent implements OnInit {
         this.http.get<PriorityLevel[]>(apiUrl).subscribe({
             next: (data) => {
                 this.priorityLevels = data;
-                console.log('✅ Priority levels loaded:', data);
             },
             error: (error) => {
                 console.error('❌ Error loading priority levels:', error);
@@ -352,7 +351,6 @@ export class CorrectiveReportComponent implements OnInit {
                 next: (data) => {
                     this.reportData = data;
                     this.isLoading = false;
-                    console.log('✅ Daily Corrective Report loaded:', data);
                 },
                 error: (error) => {
                     this.errorMessage = error.error?.message || 'Failed to generate daily report';
@@ -365,7 +363,6 @@ export class CorrectiveReportComponent implements OnInit {
                 next: (data) => {
                     this.reportData = data;
                     this.isLoading = false;
-                    console.log('✅ Monthly Corrective Report loaded:', data);
                 },
                 error: (error) => {
                     this.errorMessage = error.error?.message || 'Failed to generate monthly report';

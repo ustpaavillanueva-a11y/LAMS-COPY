@@ -116,7 +116,6 @@ export class UsersComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        console.log('UsersComponent initialized');
         this.loadUsers();
         this.loadCurrentUserRole();
         this.loadCampuses();
@@ -124,13 +123,10 @@ export class UsersComponent implements OnInit {
     }
 
     loadDepartments() {
-        console.log('Loading departments...');
         this.userService.getDepartments().subscribe({
             next: (response: any) => {
-                console.log('API Department Response:', response);
                 console.table(response);
                 this.departments = Array.isArray(response) ? response : response.data || [];
-                console.log('Departments set:', this.departments);
             },
             error: (error) => {
                 console.error('Error loading departments:', error);
@@ -139,12 +135,9 @@ export class UsersComponent implements OnInit {
     }
 
     loadCampuses() {
-        console.log('Loading campuses...');
         this.userService.getCampuses().subscribe({
             next: (response: any) => {
-                console.log('Campuses loaded:', response);
                 this.campuses = Array.isArray(response) ? response : response.data || [];
-                console.log('Campuses set:', this.campuses);
             },
             error: (error) => {
                 console.error('Error loading campuses:', error);
@@ -154,12 +147,10 @@ export class UsersComponent implements OnInit {
 
     loadCurrentUserRole() {
         const userId = this.userContextService.getUserId();
-        console.log('Loading current user role, userId:', userId);
         if (userId) {
             this.userService.getUserById(userId).subscribe({
                 next: (user: any) => {
                     this.currentUserRole = user.role || '';
-                    console.log('Current user role:', this.currentUserRole);
                 },
                 error: (error) => {
                     console.error('Error loading current user:', error);
@@ -169,15 +160,12 @@ export class UsersComponent implements OnInit {
     }
 
     loadUsers() {
-        console.log('Loading users...');
         this.loading = true;
         this.userService.getAllUsers().subscribe({
             next: (response: any) => {
-                console.log('Users loaded:', response);
                 this.users = Array.isArray(response) ? response : response.data || [];
                 this.filteredUsers = [...this.users];
                 this.loading = false;
-                console.log('Users set:', this.users);
             },
             error: (error) => {
                 console.error('Error loading users:', error);
@@ -222,13 +210,8 @@ export class UsersComponent implements OnInit {
     }
 
     onSelectionChange(event: any) {
-        console.log('Selection changed:', event);
-        console.log('Selected users:', this.selectedUsers);
         if (this.selectedUsers && this.selectedUsers.length > 0) {
-            console.log(
-                'Selected user IDs:',
-                this.selectedUsers.map((u: any) => u.userId || u.user_id)
-            );
+          
         }
     }
 
@@ -402,7 +385,6 @@ export class UsersComponent implements OnInit {
     }
     deleteUser(user: any) {
         const userId = user.userId || user.user_id;
-        console.log('Deleting single user:', userId, 'Full user object:', user);
 
         Swal.fire({
             title: 'Confirm Delete',
@@ -417,7 +399,6 @@ export class UsersComponent implements OnInit {
             if (result.isConfirmed) {
                 this.userService.deleteUser(userId).subscribe({
                     next: () => {
-                        console.log('User deleted successfully:', userId);
                         Swal.fire({
                             title: 'Deleted!',
                             text: 'User has been deleted successfully.',
@@ -463,10 +444,7 @@ export class UsersComponent implements OnInit {
         // Fetch full user data from backend
         this.userService.getUserById(userId).subscribe({
             next: (loggedInUser: any) => {
-                console.log('🔵 New User Dialog Opened');
-                console.log('Logged-in User Data:', loggedInUser);
-                console.log('Campus:', loggedInUser.campus || loggedInUser.Campus);
-                console.log('Department:', loggedInUser.department || loggedInUser.Department);
+             
 
                 // Store logged-in user data in sessionStorage for use in dialog
                 sessionStorage.setItem('loggedInUserData', JSON.stringify(loggedInUser));
@@ -819,7 +797,6 @@ export class UsersComponent implements OnInit {
                     newUserPayload.department = department;
                 }
 
-                console.log('📤 Creating user with payload:', newUserPayload);
 
                 this.userService.createUser(newUserPayload).subscribe({
                     next: () => {
@@ -867,12 +844,10 @@ export class UsersComponent implements OnInit {
 
                 this.selectedUsers.forEach((user) => {
                     const userId = user.userId || user.user_id;
-                    console.log('Deleting user:', userId, 'Full user object:', user);
 
                     this.userService.deleteUser(userId).subscribe({
                         next: () => {
                             deletedCount++;
-                            console.log(`User deleted: ${userId} (${deletedCount}/${this.selectedUsers.length})`);
                             if (deletedCount + failedCount === this.selectedUsers.length) {
                                 this.selectedUsers = [];
                                 this.loadUsers();

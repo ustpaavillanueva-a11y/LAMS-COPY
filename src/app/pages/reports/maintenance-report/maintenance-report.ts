@@ -175,7 +175,6 @@ export class MaintenanceReportComponent implements OnInit {
             next: (data) => {
                 this.maintenanceRequests = data;
                 this.filteredRequests = data;
-                console.log('✅ Maintenance requests loaded:', this.maintenanceRequests.length);
             },
             error: (err) => {
                 console.error('❌ Error loading maintenance requests:', err);

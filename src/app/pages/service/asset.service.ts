@@ -157,7 +157,6 @@ export class AssetService {
 
     // Reference data methods
     getLocations(): Observable<Location[]> {
-        console.log('📡 Fetching locations from:', `${this.baseApiUrl}/locations`);
         return this.http.get<Location[]>(`${this.baseApiUrl}/locations`).pipe(tap((data) => console.log('✅ getLocations API Response:', data)));
     }
     createLocation(body: Partial<Location>): Observable<Location> {
@@ -171,7 +170,6 @@ export class AssetService {
     }
 
     getSuppliers(): Observable<Supplier[]> {
-        console.log('📡 Fetching suppliers from:', `${this.baseApiUrl}/suppliers`);
         return this.http.get<Supplier[]>(`${this.baseApiUrl}/suppliers`).pipe(tap((data) => console.log('✅ getSuppliers API Response:', data)));
     }
     createSupplier(body: Partial<Supplier>): Observable<Supplier> {
@@ -185,7 +183,6 @@ export class AssetService {
     }
 
     getPrograms(): Observable<Program[]> {
-        console.log('📡 Fetching programs from:', `${this.baseApiUrl}/programs`);
         return this.http.get<Program[]>(`${this.baseApiUrl}/programs`).pipe(tap((data) => console.log('✅ getPrograms API Response:', data)));
     }
     createProgram(body: Partial<Program>): Observable<Program> {
@@ -234,7 +231,6 @@ export class AssetService {
 
     // Colors and Brands methods
     getColors(): Observable<Color[]> {
-        console.log('📡 Fetching colors from:', `${this.baseApiUrl}/colors`);
         return this.http.get<Color[]>(`${this.baseApiUrl}/colors`).pipe(tap((data) => console.log('✅ getColors API Response:', data)));
     }
     createColor(body: Partial<Color>): Observable<Color> {
@@ -248,7 +244,6 @@ export class AssetService {
     }
 
     getBrands(): Observable<Brand[]> {
-        console.log('📡 Fetching brands from:', `${this.baseApiUrl}/brands`);
         return this.http.get<Brand[]>(`${this.baseApiUrl}/brands`).pipe(tap((data) => console.log('✅ getBrands API Response:', data)));
     }
     createBrand(body: Partial<Brand>): Observable<Brand> {
@@ -263,7 +258,6 @@ export class AssetService {
 
     // Laboratory methods
     getLaboratories(): Observable<Laboratory[]> {
-        console.log('📡 Fetching laboratories from:', `${this.baseApiUrl}/laboratories`);
         return this.http.get<Laboratory[]>(`${this.baseApiUrl}/laboratories`).pipe(tap((data) => console.log('✅ getLaboratories API Response:', data)));
     }
 
@@ -290,7 +284,6 @@ export class AssetService {
 
     // ICS Data methods
     getAssetInventoryCustodianSlip(assetId: string): Observable<any> {
-        console.log('📡 Fetching ICS from:', `${this.baseApiUrl}/assets/${assetId}/inventoryCustodianSlip`);
         return this.http.get<any>(`${this.baseApiUrl}/assets/${assetId}/inventoryCustodianSlip`).pipe(tap((data) => console.log('✅ ICS API Response:', data)));
     }
 
@@ -298,7 +291,6 @@ export class AssetService {
     uploadQrCode(assetId: string, file: File): Observable<any> {
         const formData = new FormData();
         formData.append('file', file);
-        console.log(`📡 Uploading QR code to: ${this.baseApiUrl}/storage/qr-code/${assetId}`);
         return this.http.post<any>(`${this.baseApiUrl}/storage/qr-code/${assetId}`, formData).pipe(tap((response) => console.log('✅ QR Code upload successful:', response)));
     }
 

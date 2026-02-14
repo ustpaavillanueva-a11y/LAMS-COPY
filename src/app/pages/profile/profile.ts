@@ -150,7 +150,6 @@ export class ProfileComponent implements OnInit {
         const savedBackground = localStorage.getItem('backgroundImage');
         if (savedBackground) {
             this.backgroundImage = savedBackground;
-            console.log('Background image loaded from localStorage');
         } else {
             this.loadBackgroundImage();
         }
@@ -191,7 +190,6 @@ export class ProfileComponent implements OnInit {
         const userId = this.userContextService.getUserId();
 
         if (!userId) {
-            console.log('No userId found, using default background');
             return;
         }
 
@@ -200,7 +198,6 @@ export class ProfileComponent implements OnInit {
                 const imageUrl = response.url || response.imageUrl || response.data?.url;
                 if (imageUrl) {
                     this.backgroundImage = `url('${imageUrl}')`;
-                    console.log('Background image loaded:', imageUrl);
                 }
             },
             error: (error) => {
@@ -256,7 +253,6 @@ export class ProfileComponent implements OnInit {
             // Upload to backend
             this.storageService.uploadProfilePicture(file).subscribe({
                 next: (response) => {
-                    console.log('Profile picture uploaded successfully:', response);
 
                     // Update currentUser with new profile picture URL
                     if (response.url || response.imageUrl || response.data?.url) {
@@ -380,13 +376,11 @@ export class ProfileComponent implements OnInit {
 
                 this.storageService.uploadBackgroundPicture((this as any).selectedCoverFile).subscribe({
                     next: (response) => {
-                        console.log('Cover photo uploaded successfully:', response);
                         const imageUrl = response.url || response.imageUrl || response.data?.url;
                         if (imageUrl) {
                             this.backgroundImage = `url('${imageUrl}')`;
                             // Save to localStorage for persistence
                             localStorage.setItem('backgroundImage', this.backgroundImage);
-                            console.log('Background image saved to localStorage');
                         }
                         Swal.fire({
                             title: 'Success!',
@@ -488,9 +482,6 @@ export class ProfileComponent implements OnInit {
         } else {
             // Enter edit mode
             this.isEditMode = true;
-            console.log('🔵 Edit Mode Activated');
-            console.log('Department ID:', this.editFormData.Department);
-            console.log('Edit Form Data:', this.editFormData);
         }
     }
 
@@ -569,12 +560,10 @@ export class ProfileComponent implements OnInit {
                 }
 
                 // Log payload being sent to backend
-                console.log('📤 Sending to Backend:', updatePayload);
 
                 // Call backend API to update user
                 this.userService.updateUser(userId, updatePayload).subscribe({
                     next: (response) => {
-                        console.log('User updated successfully:', response);
 
                         // Update fetchedUserData with response
                         this.fetchedUserData = {
@@ -632,7 +621,6 @@ export class ProfileComponent implements OnInit {
      */
     logUserIdFromService() {
         const userId = this.userContextService.getUserId();
-        console.log('UserId from UserContextService:', userId);
 
         Swal.fire({
             title: 'User Context',
@@ -647,7 +635,6 @@ export class ProfileComponent implements OnInit {
      */
     subscribeToUserIdChanges() {
         this.userContextService.userId$.subscribe((userId) => {
-            console.log('UserId changed to:', userId);
         });
     }
 
@@ -656,11 +643,9 @@ export class ProfileComponent implements OnInit {
      * Demonstrates how to use UserService getUserProfile method
      */
     fetchUserDataByUserId() {
-        console.log('Fetching current user profile');
 
         this.userService.getUserProfile().subscribe({
             next: (userData) => {
-                console.log('User profile fetched successfully:', userData);
                 this.fetchedUserData = userData; // Store in component
                 this.buildProfileInfoItems(); // Rebuild info items
 
@@ -687,12 +672,9 @@ export class ProfileComponent implements OnInit {
      * Automatically fetch user profile on page load (no popups)
      */
     private fetchUserDataByUserIdAuto() {
-        console.log('Auto-fetching current user profile');
-        console.log('Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
 
         this.userService.getUserProfile().subscribe({
             next: (userData) => {
-                console.log('✓ User profile auto-fetched successfully:', userData);
                 this.fetchedUserData = userData; // Store in component
                 this.buildProfileInfoItems(); // Rebuild info items with new data
             },

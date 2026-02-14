@@ -101,20 +101,16 @@ export class CampusesComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        console.log('CampusesComponent initialized');
         this.loadCampuses();
     }
 
     loadCampuses() {
-        console.log('Loading campuses...');
         this.loading = true;
         this.userService.getCampuses().subscribe({
             next: (response: any) => {
-                console.log('Campuses loaded:', response);
                 this.campuses = Array.isArray(response) ? response : response.data || [];
                 this.filteredCampuses = [...this.campuses];
                 this.loading = false;
-                console.log('Campuses set:', this.campuses);
             },
             error: (error) => {
                 console.error('Error loading campuses:', error);
@@ -139,13 +135,8 @@ export class CampusesComponent implements OnInit {
     }
 
     onSelectionChange(event: any) {
-        console.log('Selection changed:', event);
-        console.log('Selected campuses:', this.selectedCampuses);
         if (this.selectedCampuses && this.selectedCampuses.length > 0) {
-            console.log(
-                'Selected campus IDs:',
-                this.selectedCampuses.map((c: any) => c.campusId)
-            );
+          
         }
     }
 
@@ -245,7 +236,7 @@ export class CampusesComponent implements OnInit {
 
     deleteCampus(campus: any) {
         const campusId = campus.campusId;
-        console.log('Deleting single campus:', campusId, 'Full campus object:', campus);
+     
 
         Swal.fire({
             title: 'Confirm Delete',
@@ -260,7 +251,6 @@ export class CampusesComponent implements OnInit {
             if (result.isConfirmed) {
                 this.userService.deleteCampus(campusId).subscribe({
                     next: () => {
-                        console.log('Campus deleted successfully:', campusId);
                         Swal.fire({
                             title: 'Deleted!',
                             text: 'Campus has been deleted successfully.',
@@ -373,12 +363,10 @@ export class CampusesComponent implements OnInit {
 
                 this.selectedCampuses.forEach((campus) => {
                     const campusId = campus.campusId;
-                    console.log('Deleting campus:', campusId);
 
                     this.userService.deleteCampus(campusId).subscribe({
                         next: () => {
                             deletedCount++;
-                            console.log(`Campus deleted: ${campusId} (${deletedCount}/${this.selectedCampuses.length})`);
                             if (deletedCount + failedCount === this.selectedCampuses.length) {
                                 this.selectedCampuses = [];
                                 this.loadCampuses();

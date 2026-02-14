@@ -686,22 +686,16 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
         // The API returns userId, not user_id
         const currentUserId = (currentUser as any)?.userId;
         const isMatch = currentUserId === technicianUserId;
-        console.log('🔍 Comparing:', { currentUserId, technicianUserId, isMatch });
         return isMatch;
     }
 
     getFilteredApprovedItems(): any[] {
-        console.log('📋 All approved items:', this.approvedItems);
-        console.log('👤 Current user:', this.authService.getCurrentUser());
-        console.log('🔬 Is LabTech?', this.isLabTech());
 
         if (this.isLabTech()) {
             const filtered = this.approvedItems.filter((item) => {
                 const isMatch = this.isCurrentUserTechnician(item.assignedTechnician?.userId);
-                console.log(`Item: ${item.maintenanceRequest?.maintenanceName} - Assigned: ${item.assignedTechnician?.userId} - Match: ${isMatch}`);
                 return isMatch;
             });
-            console.log('✅ Filtered items for LabTech:', filtered);
             return filtered;
         }
         return this.approvedItems;
@@ -730,9 +724,7 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
         this.loading = true;
         this.maintenanceService.getMaintenanceRequests?.()?.subscribe({
             next: (data: any[]) => {
-                console.log('Maintenance Requests API Response:', data);
                 if (data && data.length > 0) {
-                    console.log('First item structure:', JSON.stringify(data[0], null, 2));
                 }
                 this.items = data || [];
                 this.categorizeItems();
@@ -750,15 +742,12 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     loadApprovals() {
         this.maintenanceService.getMaintenanceApprovals().subscribe({
             next: (data: any[]) => {
-                console.log('Maintenance Approvals API Response:', data);
                 const allApprovals = data || [];
 
                 // Separate into approved (not completed) and completed
                 this.approvedItems = allApprovals.filter((item) => !item.isCompleted);
                 this.completedApprovedItems = allApprovals.filter((item) => item.isCompleted);
 
-                console.log('✅ Approved items (not completed):', this.approvedItems);
-                console.log('✅ Completed approved items:', this.completedApprovedItems);
                 console.table(this.approvedItems);
             },
             error: (error: any) => {
@@ -783,7 +772,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     onTabChange(event: any) {
-        console.log('Tab changed to index:', event.index);
         this.activeTabIndex = event.index;
         this.selectedItems = [];
     }
@@ -1003,11 +991,9 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     onSelectionChange(event: any) {
-        console.log('Selected items:', this.selectedItems);
     }
 
     approve(item: any) {
-        console.log('Approve clicked - Selected item:', item);
         this.selectedItem = item;
 
         // For LabTech, auto-assign themselves as technician
@@ -1030,13 +1016,11 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     loadTechnicians(campusId: string) {
         this.maintenanceService.getLabTechnicians().subscribe({
             next: (data: any[]) => {
-                console.log('✅ Lab Technicians loaded:', data);
                 // Map the data to add a fullName property for display
                 this.technicians = data.map((tech) => ({
                     ...tech,
                     fullName: [tech.firstName, tech.middleName, tech.lastName].filter((name) => name && name.trim()).join(' ')
                 }));
-                console.log('Technicians with fullName:', this.technicians);
             },
             error: (error: any) => {
                 console.error('Error loading technicians:', error);
@@ -1066,12 +1050,10 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             scheduledAt: this.approveFormData.scheduledAt
         };
 
-        console.log('Sending technician assignment payload:', assignmentPayload);
 
         // Use new endpoint: POST /api/maintenance-approvals/{requestId}/assign-technician
         this.maintenanceService.assignTechnician(this.selectedItem.requestId, assignmentPayload).subscribe({
             next: (response) => {
-                console.log('Technician assigned successfully:', response);
                 const technicianName = this.technicians.find((t) => t.userId === this.approveFormData.technicianId)?.firstName;
                 this.messageService.add({ severity: 'success', summary: 'Assigned', detail: `Maintenance assigned to ${technicianName}` });
                 this.approveModalVisible = false;
@@ -1130,13 +1112,10 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     view(item: any) {
-        console.log('👁️ View clicked - Item data:', item);
-        console.log('Has maintenanceApprovalId?', !!item.maintenanceApprovalId);
-        console.log('Request ID:', item.maintenanceRequestId || item.id || item.requestId);
+       
 
         // Check if it's an approval item (has maintenanceApprovalId) or a request item
         if (item.maintenanceApprovalId) {
-            console.log('📋 Showing approval details');
             // It's a completed approval - show approval details
             const html = `
                 <div style="text-align: left;">
@@ -1151,13 +1130,10 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             `;
             Swal.fire({ title: 'Maintenance Approval Details', html, icon: 'info' });
         } else {
-            console.log('📋 Fetching request details from API');
             // It's a request item - fetch from API
             const requestId = item.maintenanceRequestId || item.id || item.requestId;
-            console.log('Using requestId:', requestId);
             this.maintenanceService.getMaintenanceRequest(requestId).subscribe({
                 next: (data: any) => {
-                    console.log('✅ Request data fetched:', data);
                     const html = `
                         <div style="text-align: left;">
                             <p><strong>Name:</strong> ${data.maintenanceName || 'N/A'}</p>
@@ -1218,8 +1194,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     delete(item: any) {
         const requestId = item.requestId || item.maintenanceRequestId || item.id;
         const requestName = item.maintenanceName || 'Maintenance Request';
-        console.log('🗑️ Delete clicked - Item:', item);
-        console.log('Using requestId:', requestId);
 
         Swal.fire({
             title: 'Delete Maintenance Request',
@@ -1285,14 +1259,12 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     confirm(row: any) {
-        console.log('Confirm clicked - Selected approval item:', row);
         this.selectedItem = row;
         this.loading = true;
 
         // Fetch maintenance approval details from API
         this.maintenanceService.getMaintenanceApprovalDetails(row.maintenanceApprovalId).subscribe({
             next: (data: any) => {
-                console.log('Maintenance approval details loaded:', data);
                 this.confirmFormData = {
                     remarks: data.remarks || '',
                     actionTaken: data.actionTaken || '',
@@ -1329,11 +1301,9 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             actualReading: this.confirmFormData.actualReading.trim()
         };
 
-        console.log('Sending completion payload:', completionPayload);
 
         this.maintenanceService.completeMaintenanceApproval(this.selectedItem.maintenanceApprovalId, completionPayload).subscribe({
             next: (response: any) => {
-                console.log('Maintenance request completed successfully:', response);
                 this.messageService.add({ severity: 'success', summary: 'Completed', detail: 'Maintenance request marked as completed' });
                 this.confirmModalVisible = false;
 
@@ -1341,7 +1311,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
                 const index = this.approvedItems.findIndex((item) => item.maintenanceApprovalId === this.selectedItem.maintenanceApprovalId);
                 if (index > -1) {
                     this.approvedItems.splice(index, 1);
-                    console.log('Item removed from approved items');
                 }
 
                 this.loadItems();

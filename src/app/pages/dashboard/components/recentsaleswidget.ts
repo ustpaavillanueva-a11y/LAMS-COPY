@@ -51,7 +51,6 @@ export class RecentSalesWidget implements OnInit {
         this.assetService.getAssets().subscribe({
             next: (data: any[]) => {
                 this.assets = data.slice(0, 10);
-                console.log('✅ Recent Assets loaded');
             },
             error: (err: any) => {
                 console.error('❌ Error loading assets:', err);
