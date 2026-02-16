@@ -179,4 +179,10 @@ export class MaintenanceService {
         const url = `${this.baseApiUrl}/users/filter/lab-technicians`;
         return this.http.get<any[]>(url);
     }
+
+    // Decline Maintenance Request
+    declineMaintenanceRequest(requestId: string, reason: string): Observable<any> {
+        const url = `${this.baseApiUrl}/maintenance-approvals/${requestId}/decline`;
+        return this.http.post<any>(url, { reason });
+    }
 }

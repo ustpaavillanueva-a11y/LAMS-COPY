@@ -690,7 +690,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     getFilteredApprovedItems(): any[] {
-
         if (this.isLabTech()) {
             const filtered = this.approvedItems.filter((item) => {
                 const isMatch = this.isCurrentUserTechnician(item.assignedTechnician?.userId);
@@ -990,8 +989,7 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             .join('-');
     }
 
-    onSelectionChange(event: any) {
-    }
+    onSelectionChange(event: any) {}
 
     approve(item: any) {
         this.selectedItem = item;
@@ -1050,7 +1048,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             scheduledAt: this.approveFormData.scheduledAt
         };
 
-
         // Use new endpoint: POST /api/maintenance-approvals/{requestId}/assign-technician
         this.maintenanceService.assignTechnician(this.selectedItem.requestId, assignmentPayload).subscribe({
             next: (response) => {
@@ -1067,17 +1064,41 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     decline(item: any) {
+        console.log('🔴 Decline clicked - Item data:', item);
+        console.log('🔴 Request ID:', item.requestId);
         Swal.fire({
             title: 'Decline Maintenance Request',
-            text: `Decline "${item.maintenanceName}"?`,
+            html: `
+                <p style="margin-bottom: 1rem;">Decline "${item.maintenanceName}"?</p>
+                <textarea id="declineReason" class="swal2-textarea" placeholder="Enter reason for declining..."></textarea>
+            `,
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Decline',
-            cancelButtonText: 'Cancel'
+            cancelButtonText: 'Cancel',
+            preConfirm: () => {
+                const reason = (document.getElementById('declineReason') as HTMLTextAreaElement)?.value?.trim();
+                if (!reason) {
+                    Swal.showValidationMessage('Please enter a reason for declining');
+                    return false;
+                }
+                return reason;
+            }
         }).then((result) => {
-            if (result.isConfirmed) {
-                this.messageService.add({ severity: 'success', summary: 'Declined', detail: 'Maintenance request declined' });
-                this.loadItems();
+            if (result.isConfirmed && result.value) {
+                const reason = result.value;
+                console.log('🔴 Declining with reason:', reason);
+                this.maintenanceService.declineMaintenanceRequest(item.requestId, reason).subscribe({
+                    next: (response) => {
+                        console.log('✅ Decline successful:', response);
+                        this.messageService.add({ severity: 'success', summary: 'Declined', detail: 'Maintenance request declined successfully' });
+                        this.loadItems();
+                    },
+                    error: (error) => {
+                        console.error('❌ Error declining request:', error);
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to decline maintenance request: ' + (error.error?.message || error.message) });
+                    }
+                });
             }
         });
     }
@@ -1112,8 +1133,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     view(item: any) {
-       
-
         // Check if it's an approval item (has maintenanceApprovalId) or a request item
         if (item.maintenanceApprovalId) {
             // It's a completed approval - show approval details
@@ -1300,7 +1319,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             expectedReading: this.confirmFormData.expectedReading.trim(),
             actualReading: this.confirmFormData.actualReading.trim()
         };
-
 
         this.maintenanceService.completeMaintenanceApproval(this.selectedItem.maintenanceApprovalId, completionPayload).subscribe({
             next: (response: any) => {
