@@ -523,40 +523,39 @@ import Swal from 'sweetalert2';
         </p-dialog>
 
         <!-- Request Maintenance Dialog -->
-        <p-dialog [(visible)]="requestDialog" [style]="{ width: '650px' }" header="Request Maintenance" [modal]="true" [closable]="true" (onHide)="closeRequestDialog()">
+        <p-dialog [(visible)]="requestDialog" [style]="{ width: '380px' }" header="Request Maintenance" [modal]="true" [closable]="true" (onHide)="closeRequestDialog()">
             <ng-template #content>
-                <div class="grid grid-cols-12 gap-4 mt-2">
+                <div class="grid grid-cols-12 gap-1" style="font-size: 12px;">
                     <div class="col-span-12">
-                        <label class="block font-bold mb-2">Asset Name</label>
-                        <input pInputText [(ngModel)]="maintenanceRequest.maintenanceName" placeholder="Maintenance title / name" class="w-full" [disabled]="true" />
+                        <label class="text-xs text-gray-600">Asset</label>
+                        <input pInputText [(ngModel)]="maintenanceRequest.maintenanceName" class="w-full p-inputtext-sm" style="padding: 6px 8px;" [disabled]="true" />
                     </div>
                     <div class="col-span-6">
-                        <label class="block font-bold mb-2">Maintenance Type</label>
-                        <p-select [(ngModel)]="maintenanceRequest.maintenanceType" [options]="maintenanceTypesOptions" optionLabel="label" optionValue="value" placeholder="Select type" class="w-full" appendTo="body" />
+                        <label class="text-xs text-gray-600">Type *</label>
+                        <p-select [(ngModel)]="maintenanceRequest.maintenanceType" [options]="maintenanceTypesOptions" optionLabel="label" optionValue="value" placeholder="Select" class="w-full p-select-sm" appendTo="body" />
                     </div>
                     <div class="col-span-6">
-                        <label class="block font-bold mb-2">Service Maintenance</label>
-                        <p-select [(ngModel)]="maintenanceRequest.serviceMaintenance" [options]="serviceMaintenancesOptions" optionLabel="label" optionValue="value" placeholder="Select service" class="w-full" appendTo="body" />
+                        <label class="text-xs text-gray-600">Service *</label>
+                        <p-select [(ngModel)]="maintenanceRequest.serviceMaintenance" [options]="serviceMaintenancesOptions" optionLabel="label" optionValue="value" placeholder="Select" class="w-full p-select-sm" appendTo="body" />
                     </div>
                     <div class="col-span-6">
-                        <label class="block font-bold mb-2">asset (ID) *</label>
-                        <input pInputText [(ngModel)]="maintenanceRequest.asset" [value]="requestAsset?.assetId" class="w-full" [disabled]="true" />
-                        <small class="text-gray-500">Selected: {{ requestAsset?.assetName }}</small>
+                        <label class="text-xs text-gray-600">Asset ID</label>
+                        <input pInputText [(ngModel)]="maintenanceRequest.asset" class="w-full p-inputtext-sm" style="padding: 6px 8px;" [disabled]="true" />
                     </div>
                     <div class="col-span-6">
-                        <label class="block font-bold mb-2">Priority Level</label>
-                        <p-select [(ngModel)]="maintenanceRequest.priorityLevel" [options]="priorityLevelsOptions" optionLabel="label" optionValue="value" placeholder="Select priority" class="w-full" appendTo="body" />
+                        <label class="text-xs text-gray-600">Priority *</label>
+                        <p-select [(ngModel)]="maintenanceRequest.priorityLevel" [options]="priorityLevelsOptions" optionLabel="label" optionValue="value" placeholder="Select" class="w-full p-select-sm" appendTo="body" />
                     </div>
                     <div class="col-span-12">
-                        <label class="block font-bold mb-2">Reason *</label>
-                        <textarea pInputTextarea [(ngModel)]="maintenanceRequest.reason" rows="3" placeholder="Describe the reason for maintenance request..." class="w-full"></textarea>
+                        <label class="text-xs text-gray-600">Reason *</label>
+                        <textarea pInputTextarea [(ngModel)]="maintenanceRequest.reason" rows="2" placeholder="Describe the reason..." class="w-full" style="font-size: 12px; padding: 6px 8px;"></textarea>
                     </div>
                 </div>
             </ng-template>
             <ng-template #footer>
-                <div class="flex justify-end gap-2 w-full">
-                    <p-button label="Cancel" icon="pi pi-times" severity="secondary" text (onClick)="closeRequestDialog()" />
-                    <p-button label="Submit Request" icon="pi pi-check" (onClick)="submitMaintenanceRequest()" />
+                <div class="flex justify-end gap-1">
+                    <p-button label="Cancel" severity="secondary" text size="small" (onClick)="closeRequestDialog()" />
+                    <p-button label="Submit" size="small" (onClick)="submitMaintenanceRequest()" />
                 </div>
             </ng-template>
         </p-dialog>
