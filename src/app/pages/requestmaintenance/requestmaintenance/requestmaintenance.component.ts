@@ -1064,8 +1064,6 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     decline(item: any) {
-        console.log('🔴 Decline clicked - Item data:', item);
-        console.log('🔴 Request ID:', item.requestId);
         Swal.fire({
             title: 'Decline Maintenance Request',
             html: `
