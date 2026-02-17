@@ -160,4 +160,13 @@ export class UserService {
     deleteDepartment(departmentId: string): Observable<any> {
         return this.http.delete(`${environment.apiUrl}/departments/${departmentId}`);
     }
+
+    /**
+     * Reset user password
+     * @param userId - The user ID to reset password
+     * @returns Observable of reset response
+     */
+    resetPassword(userId: string): Observable<any> {
+        return this.http.patch(`${this.apiUrl}/${userId}/reset-password`, {});
+    }
 }

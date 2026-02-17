@@ -97,9 +97,9 @@ import Swal from 'sweetalert2';
                     </td>
                     <td>
                         <div class="flex gap-2">
-                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="viewUser(user)" />
-                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="editUser(user)" />
-                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="deleteUser(user)" />
+                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" pTooltip="View" (onClick)="viewUser(user)" />
+                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" pTooltip="Edit" (onClick)="editUser(user)" />
+                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" pTooltip="Delete" (onClick)="deleteUser(user)" />
                         </div>
                     </td>
                 </tr>
@@ -162,6 +162,21 @@ export class UsersComponent implements OnInit {
     }
 
     loadCurrentUserRole() {
+        // First try to get role from localStorage (faster, synchronous)
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+            try {
+                const user = JSON.parse(currentUser);
+                this.currentUserRole = user.role || '';
+                if (this.currentUserRole) {
+                    return; // Role found, no need for API call
+                }
+            } catch (error) {
+                console.error('Error parsing currentUser:', error);
+            }
+        }
+
+        // Fallback: fetch from API if not in localStorage
         const userId = this.userContextService.getUserId();
         if (userId) {
             this.userService.getUserById(userId).subscribe({
@@ -197,6 +212,53 @@ export class UsersComponent implements OnInit {
 
     isSuperAdmin(): boolean {
         return this.currentUserRole === 'SuperAdmin';
+    }
+
+    isCampusAdmin(): boolean {
+        return this.currentUserRole === 'CampusAdmin';
+    }
+
+    canResetPassword(): boolean {
+        return this.isSuperAdmin() || this.isCampusAdmin();
+    }
+
+    resetPassword(user: any) {
+        Swal.fire({
+            title: 'Reset Password',
+            html: `
+                <div style="text-align: center;">
+                    <i class="pi pi-exclamation-triangle" style="font-size: 48px; color: #f59e0b; margin-bottom: 16px;"></i>
+                    <p style="margin: 0; color: #666; font-size: 14px;">Are you sure you want to reset the password for</p>
+                    <p style="margin: 8px 0 0 0; font-weight: 600; color: #333; font-size: 16px;">${user.firstName} ${user.lastName}</p>
+                    <p style="margin: 8px 0 0 0; color: #888; font-size: 13px;">${user.email}</p>
+                </div>
+            `,
+            width: '400px',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Reset Password',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#f59e0b',
+            cancelButtonColor: '#6b7280'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.userService.resetPassword(user.userId).subscribe({
+                    next: () => {
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: `Password reset successfully for ${user.firstName} ${user.lastName}`
+                        });
+                    },
+                    error: (error) => {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: 'Failed to reset password: ' + (error.error?.message || error.message)
+                        });
+                    }
+                });
+            }
+        });
     }
 
     filterUsers() {
@@ -310,14 +372,17 @@ export class UsersComponent implements OnInit {
                             </select>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0; cursor: pointer;" onclick="document.getElementById('isActive').click();">
-                        <label style="font-weight: 500; color: #555; margin: 0; font-size: 13px; cursor: pointer;">Active Status</label>
-                        <div style="position: relative; display: inline-block; width: 48px; height: 24px;">
-                            <input id="isActive" type="checkbox" ${editData.isActive ? 'checked' : ''} style="opacity: 0; width: 0; height: 0; cursor: pointer;" />
-                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${editData.isActive ? '#667eea' : '#ddd'}; transition: 0.3s; border-radius: 24px;"></span>
-                            <span style="position: absolute; content: ''; height: 20px; width: 20px; left: ${editData.isActive ? '24px' : '2px'}; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%;"></span>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid #f0f0f0;">
+                        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="document.getElementById('isActive').click();">
+                            <label style="font-weight: 500; color: #555; margin: 0; font-size: 13px; cursor: pointer;">Active Status</label>
+                            <div style="position: relative; display: inline-block; width: 48px; height: 24px;">
+                                <input id="isActive" type="checkbox" ${editData.isActive ? 'checked' : ''} style="opacity: 0; width: 0; height: 0; cursor: pointer;" />
+                                <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${editData.isActive ? '#667eea' : '#ddd'}; transition: 0.3s; border-radius: 24px;"></span>
+                                <span style="position: absolute; content: ''; height: 20px; width: 20px; left: ${editData.isActive ? '24px' : '2px'}; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%;"></span>
+                            </div>
+                            <span id="statusText" style="font-size: 12px; color: ${editData.isActive ? '#22c55e' : '#ef4444'}; font-weight: 500;">${editData.isActive ? 'Active' : 'Inactive'}</span>
                         </div>
-                        <span id="statusText" style="font-size: 12px; color: ${editData.isActive ? '#22c55e' : '#ef4444'}; font-weight: 500;">${editData.isActive ? 'Active' : 'Inactive'}</span>
+                        ${this.canResetPassword() ? `<button id="resetPasswordBtn" type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'"><i class="pi pi-key" style="font-size: 12px;"></i> Reset Password</button>` : ''}
                     </div>
                 </div>
             `,
@@ -366,6 +431,17 @@ export class UsersComponent implements OnInit {
                     toggleCircle?.addEventListener('click', () => {
                         checkbox.checked = !checkbox.checked;
                         checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                }
+
+                // Reset Password button handler
+                const resetBtn = document.getElementById('resetPasswordBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        Swal.close();
+                        setTimeout(() => this.resetPassword(user), 300);
                     });
                 }
             }
