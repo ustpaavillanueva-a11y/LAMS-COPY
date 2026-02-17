@@ -10,6 +10,7 @@ import { ToastModule } from 'primeng/toast';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
+import { SelectModule } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../service/user.service';
@@ -19,7 +20,7 @@ import Swal from 'sweetalert2';
 @Component({
     selector: 'app-users',
     standalone: true,
-    imports: [CommonModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, TagModule, FormsModule],
+    imports: [CommonModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, TagModule, SelectModule, FormsModule],
     styleUrls: ['../../../assets/pages/_users.scss'],
     providers: [MessageService],
     template: `
@@ -34,6 +35,18 @@ import Swal from 'sweetalert2';
             </ng-template>
             <ng-template #end>
                 <div class="flex items-center gap-2">
+                    <p-select
+                        *ngIf="isSuperAdmin()"
+                        [(ngModel)]="selectedCampus"
+                        [options]="campuses"
+                        optionLabel="campusName"
+                        optionValue="campusId"
+                        placeholder="Filter by Campus"
+                        class="w-56"
+                        appendTo="body"
+                        [showClear]="true"
+                        (onChange)="filterUsers()"
+                    />
                     <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
@@ -104,6 +117,7 @@ export class UsersComponent implements OnInit {
     filteredUsers: any[] = [];
     selectedUsers: any[] = [];
     searchValue: string = '';
+    selectedCampus: string | null = null;
     loading: boolean = false;
     currentUserRole: string = '';
     campuses: any[] = [];
@@ -179,39 +193,49 @@ export class UsersComponent implements OnInit {
         });
     }
 
+    isSuperAdmin(): boolean {
+        return this.currentUserRole === 'SuperAdmin';
+    }
+
     filterUsers() {
-        if (!this.searchValue.trim()) {
-            this.filteredUsers = [...this.users];
-            return;
+        let filtered = [...this.users];
+
+        // Filter by campus (SuperAdmin only)
+        if (this.selectedCampus) {
+            filtered = filtered.filter((user) => user.campus?.campusId === this.selectedCampus);
         }
 
-        const search = this.searchValue.toLowerCase();
-        this.filteredUsers = this.users.filter(
-            (user) =>
-                String(user.userId || '')
-                    .toLowerCase()
-                    .includes(search) ||
-                String(user.firstName || '')
-                    .toLowerCase()
-                    .includes(search) ||
-                String(user.lastName || '')
-                    .toLowerCase()
-                    .includes(search) ||
-                String(user.middleName || '')
-                    .toLowerCase()
-                    .includes(search) ||
-                String(user.campus?.campusName || '')
-                    .toLowerCase()
-                    .includes(search) ||
-                String(user.role || '')
-                    .toLowerCase()
-                    .includes(search)
-        );
+        // Filter by search
+        if (this.searchValue.trim()) {
+            const search = this.searchValue.toLowerCase();
+            filtered = filtered.filter(
+                (user) =>
+                    String(user.userId || '')
+                        .toLowerCase()
+                        .includes(search) ||
+                    String(user.firstName || '')
+                        .toLowerCase()
+                        .includes(search) ||
+                    String(user.lastName || '')
+                        .toLowerCase()
+                        .includes(search) ||
+                    String(user.middleName || '')
+                        .toLowerCase()
+                        .includes(search) ||
+                    String(user.campus?.campusName || '')
+                        .toLowerCase()
+                        .includes(search) ||
+                    String(user.role || '')
+                        .toLowerCase()
+                        .includes(search)
+            );
+        }
+
+        this.filteredUsers = filtered;
     }
 
     onSelectionChange(event: any) {
         if (this.selectedUsers && this.selectedUsers.length > 0) {
-          
         }
     }
 
@@ -444,8 +468,6 @@ export class UsersComponent implements OnInit {
         // Fetch full user data from backend
         this.userService.getUserById(userId).subscribe({
             next: (loggedInUser: any) => {
-             
-
                 // Store logged-in user data in sessionStorage for use in dialog
                 sessionStorage.setItem('loggedInUserData', JSON.stringify(loggedInUser));
 
@@ -796,7 +818,6 @@ export class UsersComponent implements OnInit {
                 if (isCampusAdmin) {
                     newUserPayload.department = department;
                 }
-
 
                 this.userService.createUser(newUserPayload).subscribe({
                     next: () => {
