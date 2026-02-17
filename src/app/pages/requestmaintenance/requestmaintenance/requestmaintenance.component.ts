@@ -571,8 +571,8 @@ import Swal from 'sweetalert2';
                         <input type="text" class="form-control" [value]="getCurrentUserFullName()" disabled />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Remarks *</label>
-                        <textarea class="form-control" [(ngModel)]="approveFormData.remarks" placeholder="Enter remarks..."></textarea>
+                        <label class="form-label">Reason *</label>
+                        <textarea class="form-control" [(ngModel)]="approveFormData.reason" placeholder="Enter reason..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -599,11 +599,11 @@ import Swal from 'sweetalert2';
                         <label class="form-label">Observations</label>
                         <textarea class="form-control" [(ngModel)]="confirmFormData.observations" placeholder="Enter observations..."></textarea>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" *ngIf="isCalibrationRequest()">
                         <label class="form-label">Expected Reading</label>
                         <input type="text" class="form-control" [(ngModel)]="confirmFormData.expectedReading" placeholder="Enter expected reading..." />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" *ngIf="isCalibrationRequest()">
                         <label class="form-label">Actual Reading</label>
                         <input type="text" class="form-control" [(ngModel)]="confirmFormData.actualReading" placeholder="Enter actual reading..." />
                     </div>
@@ -637,7 +637,7 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     approveModalVisible: boolean = false;
     confirmModalVisible: boolean = false;
     technicians: any[] = [];
-    approveFormData: any = { technicianId: null, remarks: '', scheduledAt: null };
+    approveFormData: any = { technicianId: null, reason: '', scheduledAt: null };
     confirmFormData: any = {
         reason: '',
         actionTaken: '',
@@ -999,12 +999,12 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             const currentUser = this.authService.getCurrentUser();
             this.approveFormData = {
                 technicianId: (currentUser as any)?.userId,
-                remarks: '',
+                reason: '',
                 scheduledAt: null
             };
         } else {
             // For CampusAdmin, let them choose a technician
-            this.approveFormData = { technicianId: null, remarks: '', scheduledAt: null };
+            this.approveFormData = { technicianId: null, reason: '', scheduledAt: null };
             this.loadTechnicians(item.asset?.campus?.campusId);
         }
 
@@ -1037,14 +1037,14 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Scheduled Date is required' });
             return;
         }
-        if (!this.approveFormData.remarks.trim()) {
-            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Remarks is required' });
+        if (!this.approveFormData.reason.trim()) {
+            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Reason is required' });
             return;
         }
 
         const assignmentPayload = {
             technicianId: this.approveFormData.technicianId,
-            remarks: this.approveFormData.remarks.trim(),
+            reason: this.approveFormData.reason.trim(),
             scheduledAt: this.approveFormData.scheduledAt
         };
 
@@ -1148,8 +1148,8 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
                                 <td style="padding: 10px 12px; border: 1px solid #e2e8f0; color: #1e293b;">${scheduledDate}</td>
                             </tr>
                             <tr style="background: #f8fafc;">
-                                <td style="padding: 10px 12px; border: 1px solid #e2e8f0; font-weight: 600; color: #475569;">Remarks</td>
-                                <td style="padding: 10px 12px; border: 1px solid #e2e8f0; color: #1e293b;">${item.remarks || 'N/A'}</td>
+                                <td style="padding: 10px 12px; border: 1px solid #e2e8f0; font-weight: 600; color: #475569;">Reason</td>
+                                <td style="padding: 10px 12px; border: 1px solid #e2e8f0; color: #1e293b;">${item.reason || 'N/A'}</td>
                             </tr>
                             <tr>
                                 <td style="padding: 10px 12px; border: 1px solid #e2e8f0; font-weight: 600; color: #475569;">Action Taken</td>
@@ -1356,6 +1356,10 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
         a.download = 'maintenance-requests.csv';
         a.click();
         URL.revokeObjectURL(url);
+    }
+
+    isCalibrationRequest(): boolean {
+        return this.selectedItem?.maintenanceRequest?.maintenanceType?.maintenanceTypeName === 'Calibration';
     }
 
     confirm(row: any) {
