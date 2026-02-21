@@ -146,7 +146,7 @@ import Swal from 'sweetalert2';
         <p-toolbar styleClass="mb-4">
             <ng-template #start>
                 <div class="flex items-center gap-2">
-                    <p-button *ngIf="!isSuperAdmin && !isCampusAdmin()" label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNew()" />
+                    <p-button *ngIf="!isSuperAdmin && !isCampusAdmin() && !isFaculty" label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNew()" />
                     <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedAssets.length" />
                 </div>
             </ng-template>
@@ -574,6 +574,7 @@ export class AssetsComponent implements OnInit {
     loading: boolean = true;
     isLabTech: boolean = false;
     isSuperAdmin: boolean = false;
+    isFaculty: boolean = false;
 
     // Dialog and form
     assetDialog: boolean = false;
@@ -665,6 +666,7 @@ export class AssetsComponent implements OnInit {
         const currentUser = this.authService.getCurrentUser();
         this.isLabTech = currentUser?.role === 'LabTech';
         this.isSuperAdmin = currentUser?.role === 'SuperAdmin';
+        this.isFaculty = currentUser?.role === 'Faculty';
     }
 
     isCampusAdmin(): boolean {
@@ -675,15 +677,11 @@ export class AssetsComponent implements OnInit {
     loadReferenceData() {
         this.assetService.getPrograms().subscribe({
             next: (data) => {
-               
                 if (data && data.length > 0) {
-                    
                 }
                 this.programs = data || [];
             },
-            error: (error) => {
-              
-            }
+            error: (error) => {}
         });
 
         this.assetService.getSuppliers().subscribe({
@@ -856,7 +854,6 @@ export class AssetsComponent implements OnInit {
 
             return matchesSearch && matchesCampus;
         });
-       
     }
 
     getShortAssetId(assetId: string | undefined): string {
@@ -1084,7 +1081,6 @@ export class AssetsComponent implements OnInit {
 
     // Request Maintenance Handlers
     openRequestDialog(asset: Asset) {
-       
         this.requestAsset = asset;
         this.maintenanceRequest = { maintenanceName: asset.assetName || '', maintenanceType: '', serviceMaintenance: '', asset: String(asset.assetId || ''), priorityLevel: '', reason: '' };
         this.requestDialog = true;
@@ -1479,7 +1475,6 @@ export class AssetsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-
                 // Call DELETE API
 
                 this.assetService.deleteAsset(assetId as any).subscribe({
