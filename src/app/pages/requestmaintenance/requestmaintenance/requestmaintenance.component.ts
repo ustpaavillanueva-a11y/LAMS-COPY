@@ -353,7 +353,7 @@ import Swal from 'sweetalert2';
             <p-toolbar styleClass="mb-4">
                 <ng-template #start>
                     <div class="flex items-center gap-2">
-                        <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length" />
+                        <p-button *ngIf="!isLabTech()" label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length" />
                     </div>
                 </ng-template>
                 <ng-template #end>
@@ -522,7 +522,7 @@ import Swal from 'sweetalert2';
                                     <td>
                                         <div class="actions">
                                             <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" pTooltip="View" (onClick)="view(row)" />
-                                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" pTooltip="Delete" (onClick)="delete(row)" />
+                                            <p-button *ngIf="!isLabTech()" icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" pTooltip="Delete" (onClick)="delete(row)" />
                                         </div>
                                     </td>
                                 </tr>
