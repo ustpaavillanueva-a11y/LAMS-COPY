@@ -9,11 +9,11 @@ export interface User {
     user_id: string;
     email: string;
     password?: string;
-    FirstName: string;
-    LastName: string;
-    Department: string;
-    MobileNo: string;
-    Campus: string;
+    firstName: string;
+    lastName: string;
+    department: string;
+    mobileNo: string;
+    campus: string;
     role: string;
     profileImage?: string;
     token?: string;
@@ -60,6 +60,8 @@ export class AuthService {
         return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
             map((response) => {
                 if (response.user && response.access_token) {
+                    console.log('user', response.user);
+
                     this.currentUser = response.user as User;
                     localStorage.setItem('currentUser', JSON.stringify(response.user));
                     localStorage.setItem('token', response.access_token);

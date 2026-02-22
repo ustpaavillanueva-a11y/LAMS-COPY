@@ -404,7 +404,7 @@ export class AppTopbar {
             text: 'Are you sure you want to logout?',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Yes, Logout',
+            confirmButtonText: 'Signout',
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
