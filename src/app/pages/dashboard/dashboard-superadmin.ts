@@ -163,12 +163,13 @@ function createEventId() {
             }
 
             .fc .fc-toolbar-title {
-                font-size: 1.25rem;
+                font-size: 1.25em;
+                font-weight: 300;
             }
 
             .fc .fc-button {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.875rem;
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
             }
         `
     ]
