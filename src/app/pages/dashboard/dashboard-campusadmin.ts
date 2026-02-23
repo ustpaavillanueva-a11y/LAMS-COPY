@@ -1,101 +1,128 @@
-import { Component, OnInit } from '@angular/core';
+import listPlugin from '@fullcalendar/list';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { UIChart } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { CalendarOptions, DateSelectArg, EventClickArg, EventApi } from '@fullcalendar/core';
+import interactionPlugin from '@fullcalendar/interaction';
+import dayGridPlugin from '@fullcalendar/daygrid';
+
+const INITIAL_EVENTS = [
+    {
+        id: 'demo-event-1',
+        title: 'Event 1',
+        start: new Date().toISOString().split('T')[0],
+        allDay: true
+    }
+];
+
+function createEventId() {
+    return String(Math.random());
+}
 
 @Component({
     selector: 'app-dashboard-campusadmin',
     standalone: true,
-    imports: [CommonModule, UIChart, TableModule],
+    imports: [CommonModule, UIChart, TableModule, FullCalendarModule],
     template: `
         <div class="p-6">
-            <!-- Top Section: Cards and Donut Chart -->
-            <div class="flex gap-6">
-                <!-- Left Side: Cards in 2 columns -->
-                <div class="w-1/2">
-                    <div class="grid grid-cols-2 gap-6">
-                        <!-- Total Departments Card -->
-                        <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Departments</p>
-                                    <h3 class="text-4xl font-bold text-primary dark:text-primary mt-2">{{ departmentCount }}</h3>
-                                </div>
-                                <div class="bg-primary bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                    <i class="pi pi-sitemap text-2xl text-primary"></i>
-                                </div>
+            <!-- Top Section: Cards and Calendar -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Left Side: Stats Cards -->
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Total Departments Card -->
+                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Departments</p>
+                                <h3 class="text-4xl font-bold text-primary dark:text-primary mt-2">{{ departmentCount }}</h3>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
+                                <i class="pi pi-sitemap text-2xl text-primary"></i>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Total Users Card -->
-                        <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Users</p>
-                                    <h3 class="text-4xl font-bold text-green-600 dark:text-green-500 mt-2">{{ userCount }}</h3>
-                                </div>
-                                <div class="bg-green-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                    <i class="pi pi-users text-2xl text-green-600 dark:text-green-500"></i>
-                                </div>
+                    <!-- Total Users Card -->
+                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Users</p>
+                                <h3 class="text-4xl font-bold text-green-600 dark:text-green-500 mt-2">{{ userCount }}</h3>
+                            </div>
+                            <div class="bg-green-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
+                                <i class="pi pi-users text-2xl text-green-600 dark:text-green-500"></i>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Total Laboratories Card -->
-                        <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Laboratories</p>
-                                    <h3 class="text-4xl font-bold text-blue-600 dark:text-blue-500 mt-2">{{ laboratoryCount }}</h3>
-                                </div>
-                                <div class="bg-blue-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                    <i class="pi pi-desktop text-2xl text-blue-600 dark:text-blue-500"></i>
-                                </div>
+                    <!-- Total Laboratories Card -->
+                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Laboratories</p>
+                                <h3 class="text-4xl font-bold text-blue-600 dark:text-blue-500 mt-2">{{ laboratoryCount }}</h3>
+                            </div>
+                            <div class="bg-blue-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
+                                <i class="pi pi-desktop text-2xl text-blue-600 dark:text-blue-500"></i>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Total Assets Card -->
-                        <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Assets</p>
-                                    <h3 class="text-4xl font-bold text-orange-600 dark:text-orange-500 mt-2">{{ assetCount }}</h3>
-                                </div>
-                                <div class="bg-orange-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                    <i class="pi pi-box text-2xl text-orange-600 dark:text-orange-500"></i>
-                                </div>
+                    <!-- Total Assets Card -->
+                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Assets</p>
+                                <h3 class="text-4xl font-bold text-orange-600 dark:text-orange-500 mt-2">{{ assetCount }}</h3>
+                            </div>
+                            <div class="bg-orange-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
+                                <i class="pi pi-box text-2xl text-orange-600 dark:text-orange-500"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Side: Donut Chart -->
-                <div
-                    class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 w-1/2 h-85 relative
-                "
-                >
-                    <p class="text-xl font-semibold dark:text-white absolute top-2 left-1/2 transform -translate-x-1/2">Maintenance Requests Status</p>
-                    <div class="flex flex-col items-center justify-center h-full">
-                        <div class="w-90">
-                            <p-chart type="doughnut" [data]="maintenanceStatusChartData" [options]="donutChartOptions"></p-chart>
-                        </div>
-                    </div>
+                <!-- Right Side: Calendar -->
+                <div class="lg:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Calendar</h3>
+                    <full-calendar [options]="calendarOptions()">
+                        <ng-template #eventContent let-arg>
+                            <b>{{ arg.timeText }}</b>
+                            <i>{{ arg.event.title }}</i>
+                        </ng-template>
+                    </full-calendar>
                 </div>
             </div>
 
             <!-- Charts Row -->
             <div class="flex gap-6 mt-6">
                 <!-- Assets by Laboratory Chart -->
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 w-1/2">
+                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 flex-1">
                     <h3 class="text-xl font-semibold mb-4 dark:text-white">Assets by Laboratory</h3>
                     <p-chart type="bar" [data]="assetsByLaboratoryChartData" [options]="chartOptions"></p-chart>
                 </div>
 
                 <!-- Maintenance Requests by Laboratory Chart -->
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 w-1/2">
+                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 flex-1">
                     <h3 class="text-xl font-semibold mb-4 dark:text-white">Maintenance Requests by Laboratory</h3>
                     <p-chart type="bar" [data]="maintenanceRequestsChartData" [options]="getHorizontalChartOptions()"></p-chart>
+                </div>
+            </div>
+
+            <!-- Donut Chart Row -->
+            <div class="flex gap-6 mt-6">
+                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 flex-1">
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white text-center">Maintenance Requests Status</h3>
+                    <div class="flex justify-center">
+                        <div class="w-80">
+                            <p-chart type="doughnut" [data]="maintenanceStatusChartData" [options]="donutChartOptions"></p-chart>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -146,6 +173,20 @@ import { TableModule } from 'primeng/table';
             :host {
                 display: block;
             }
+
+            .fc {
+                max-width: 100%;
+            }
+
+            .fc .fc-toolbar-title {
+                font-size: 1em;
+                font-weight: 300;
+            }
+
+            .fc .fc-button {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
         `
     ]
 })
@@ -160,6 +201,27 @@ export class DashboardCampusAdmin implements OnInit {
     chartOptions: any;
     donutChartOptions: any;
     activities: any[] = [];
+
+    // Calendar properties
+    calendarOptions = signal<CalendarOptions>({
+        plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        initialView: 'dayGridMonth',
+        initialEvents: INITIAL_EVENTS,
+        weekends: true,
+        editable: true,
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        select: this.handleDateSelect.bind(this),
+        eventClick: this.handleEventClick.bind(this),
+        eventsSet: this.handleEvents.bind(this)
+    });
+    currentEvents = signal<EventApi[]>([]);
 
     constructor(private http: HttpClient) {}
 
@@ -448,7 +510,6 @@ export class DashboardCampusAdmin implements OnInit {
 
                 // Sort by timestamp descending (newest first)
                 this.activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
             },
             error: (error) => {
                 console.error('Error loading activities:', error);
@@ -466,5 +527,31 @@ export class DashboardCampusAdmin implements OnInit {
             USER_DELETED: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
         };
         return classes[actionType] || 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+    }
+
+    // Calendar event handlers
+    handleDateSelect(selectInfo: DateSelectArg) {
+        const title = prompt('Please enter a new title for your event');
+        const calendarApi = selectInfo.view.calendar;
+        calendarApi.unselect();
+        if (title) {
+            calendarApi.addEvent({
+                id: createEventId(),
+                title,
+                start: selectInfo.startStr,
+                end: selectInfo.endStr,
+                allDay: selectInfo.allDay
+            });
+        }
+    }
+
+    handleEventClick(clickInfo: EventClickArg) {
+        if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+            clickInfo.event.remove();
+        }
+    }
+
+    handleEvents(events: EventApi[]) {
+        this.currentEvents.set(events);
     }
 }

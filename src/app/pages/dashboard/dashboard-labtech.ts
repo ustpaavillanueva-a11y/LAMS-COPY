@@ -1,18 +1,38 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { UIChart } from 'primeng/chart';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { CalendarOptions, DateSelectArg, EventClickArg, EventApi } from '@fullcalendar/core';
+import interactionPlugin from '@fullcalendar/interaction';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
+
+let eventGuid = 0;
+const TODAY_STR = new Date().toISOString().replace(/T.*$/, '');
+
+export const INITIAL_EVENTS = [
+    { id: String(eventGuid++), title: 'All-day event', start: TODAY_STR },
+    { id: String(eventGuid++), title: 'Timed event', start: TODAY_STR + 'T12:00:00' }
+];
+
+export function createEventId() {
+    return String(eventGuid++);
+}
 
 @Component({
     selector: 'app-dashboard-labtech',
     standalone: true,
-    imports: [CommonModule, UIChart],
+    imports: [CommonModule, UIChart, FullCalendarModule],
     template: `
         <div class="p-6">
-            <div class="flex flex-col md:flex-row gap-6">
-                <!-- Left column: stacked cards -->
-                <div class="w-full md:w-1/2 flex flex-col gap-6">
+            <!-- Top Section: Cards and Calendar -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Left Side: Stats Cards -->
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Overdue Approvals Card -->
                     <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
                         <div class="flex items-center justify-between">
                             <div>
@@ -25,6 +45,7 @@ import { UIChart } from 'primeng/chart';
                         </div>
                     </div>
 
+                    <!-- Requests For Approval Card -->
                     <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
                         <div class="flex items-center justify-between">
                             <div>
@@ -36,16 +57,30 @@ import { UIChart } from 'primeng/chart';
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Right column: donut chart -->
-                <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-82 flex flex-col items-center justify-start relative pt-10">
-                    <h4 class="text-lg font-semibold dark:text-white absolute top-4 left-1/2 transform -translate-x-1/2 whitespace-nowrap">Requests by Service Type</h4>
-                    <div class="w-85 h-85">
-                        <p-chart type="doughnut" [data]="serviceTypeChartData" [options]="donutChartOptions"></p-chart>
+                    <!-- Donut Chart for Requests by Service Type -->
+                    <div class="md:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <h4 class="text-lg font-semibold dark:text-white text-center mb-4">Requests by Service Type</h4>
+                        <div class="flex justify-center">
+                            <div class="w-64">
+                                <p-chart type="doughnut" [data]="serviceTypeChartData" [options]="donutChartOptions"></p-chart>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Right Side: Calendar -->
+                <div class="lg:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Calendar</h3>
+                    <full-calendar [options]="calendarOptions()">
+                        <ng-template #eventContent let-arg>
+                            <b>{{ arg.timeText }}</b>
+                            <i>{{ arg.event.title }}</i>
+                        </ng-template>
+                    </full-calendar>
+                </div>
             </div>
+
             <!-- Bottom charts row -->
             <div class="flex flex-col md:flex-row gap-6 mt-6">
                 <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-96">
@@ -72,7 +107,28 @@ import { UIChart } from 'primeng/chart';
                 </div>
             </div>
         </div>
-    `
+    `,
+    styles: [
+        `
+            :host {
+                display: block;
+            }
+
+            .fc {
+                max-width: 100%;
+            }
+
+            .fc .fc-toolbar-title {
+                font-size: 1.25em;
+                font-weight: 300;
+            }
+
+            .fc .fc-button {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+        `
+    ]
 })
 export class DashboardLabTech implements OnInit {
     overdueApprovalsCount: number = 0;
@@ -85,6 +141,27 @@ export class DashboardLabTech implements OnInit {
     horizontalChartOptions: any;
     scheduleByDayChartData: any;
     scheduleByLabChartData: any;
+
+    // Calendar properties
+    calendarOptions = signal<CalendarOptions>({
+        plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        initialView: 'dayGridMonth',
+        initialEvents: INITIAL_EVENTS,
+        weekends: true,
+        editable: true,
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        select: this.handleDateSelect.bind(this),
+        eventClick: this.handleEventClick.bind(this),
+        eventsSet: this.handleEvents.bind(this)
+    });
+    currentEvents = signal<EventApi[]>([]);
 
     constructor(private http: HttpClient) {}
 
@@ -342,5 +419,31 @@ export class DashboardLabTech implements OnInit {
             colors.push(palette[i % palette.length]);
         }
         return colors;
+    }
+
+    // Calendar event handlers
+    handleDateSelect(selectInfo: DateSelectArg) {
+        const title = prompt('Please enter a new title for your event');
+        const calendarApi = selectInfo.view.calendar;
+        calendarApi.unselect();
+        if (title) {
+            calendarApi.addEvent({
+                id: createEventId(),
+                title,
+                start: selectInfo.startStr,
+                end: selectInfo.endStr,
+                allDay: selectInfo.allDay
+            });
+        }
+    }
+
+    handleEventClick(clickInfo: EventClickArg) {
+        if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+            clickInfo.event.remove();
+        }
+    }
+
+    handleEvents(events: EventApi[]) {
+        this.currentEvents.set(events);
     }
 }
