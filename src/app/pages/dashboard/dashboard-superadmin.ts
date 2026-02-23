@@ -30,53 +30,72 @@ function createEventId() {
     imports: [CommonModule, UIChart, TableModule, FullCalendarModule],
     template: `
         <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Campuses</p>
-                            <h3 class="text-4xl font-bold text-primary dark:text-primary mt-2">{{ campusCount }}</h3>
+            <!-- Top Row: Campuses, Users, and Calendar -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Left Side: Stats Cards -->
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Total Campuses Card -->
+                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Campuses</p>
+                                <h3 class="text-4xl font-bold text-primary dark:text-primary mt-2">{{ campusCount }}</h3>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
+                                <i class="pi pi-building text-2xl text-primary"></i>
+                            </div>
                         </div>
-                        <div class="bg-primary bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                            <i class="pi pi-building text-2xl text-primary"></i>
+                    </div>
+
+                    <!-- Total Users Card -->
+                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Users</p>
+                                <h3 class="text-4xl font-bold text-green-600 dark:text-green-500 mt-2">{{ userCount }}</h3>
+                            </div>
+                            <div class="bg-green-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
+                                <i class="pi pi-users text-2xl text-green-600 dark:text-green-500"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Assets Card -->
+                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Assets</p>
+                                <h3 class="text-4xl font-bold text-blue-600 dark:text-blue-500 mt-2">{{ assetCount }}</h3>
+                            </div>
+                            <div class="bg-blue-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
+                                <i class="pi pi-box text-2xl text-blue-600 dark:text-blue-500"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Laboratories Card -->
+                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Laboratories</p>
+                                <h3 class="text-4xl font-bold text-orange-600 dark:text-orange-500 mt-2">{{ laboratoryCount }}</h3>
+                            </div>
+                            <div class="bg-orange-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
+                                <i class="pi pi-desktop text-2xl text-orange-600 dark:text-orange-500"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Users</p>
-                            <h3 class="text-4xl font-bold text-green-600 dark:text-green-500 mt-2">{{ userCount }}</h3>
-                        </div>
-                        <div class="bg-green-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                            <i class="pi pi-users text-2xl text-green-600 dark:text-green-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Assets</p>
-                            <h3 class="text-4xl font-bold text-blue-600 dark:text-blue-500 mt-2">{{ assetCount }}</h3>
-                        </div>
-                        <div class="bg-blue-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                            <i class="pi pi-box text-2xl text-blue-600 dark:text-blue-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Laboratories</p>
-                            <h3 class="text-4xl font-bold text-orange-600 dark:text-orange-500 mt-2">{{ laboratoryCount }}</h3>
-                        </div>
-                        <div class="bg-orange-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                            <i class="pi pi-desktop text-2xl text-orange-600 dark:text-orange-500"></i>
-                        </div>
-                    </div>
+                <!-- Right Side: Calendar -->
+                <div class="lg:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Calendar</h3>
+                    <full-calendar [options]="calendarOptions()">
+                        <ng-template #eventContent let-arg>
+                            <b>{{ arg.timeText }}</b>
+                            <i>{{ arg.event.title }}</i>
+                        </ng-template>
+                    </full-calendar>
                 </div>
             </div>
 
@@ -130,17 +149,6 @@ function createEventId() {
                         </tr>
                     </ng-template>
                 </p-table>
-            </div>
-
-            <!-- Calendar Section -->
-            <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 mt-6">
-                <h3 class="text-xl font-semibold mb-4 dark:text-white">Calendar</h3>
-                <full-calendar [options]="calendarOptions()">
-                    <ng-template #eventContent let-arg>
-                        <b>{{ arg.timeText }}</b>
-                        <i>{{ arg.event.title }}</i>
-                    </ng-template>
-                </full-calendar>
             </div>
         </div>
     `,
