@@ -35,55 +35,63 @@ function createEventId() {
                 <!-- Left Side: Stats Cards -->
                 <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Total Departments Card -->
-                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Departments</p>
-                                <h3 class="text-4xl font-bold text-primary dark:text-primary mt-2">{{ departmentCount }}</h3>
+                    <div class="stat-card stat-card-purple group">
+                        <div class="stat-card-bg"></div>
+                        <div class="stat-card-content">
+                            <div class="stat-icon-wrapper stat-icon-purple">
+                                <i class="pi pi-sitemap text-2xl"></i>
                             </div>
-                            <div class="bg-primary bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                <i class="pi pi-sitemap text-2xl text-primary"></i>
+                            <div class="stat-info">
+                                <p class="stat-label">Total Departments</p>
+                                <h3 class="stat-value">{{ departmentCount }}</h3>
                             </div>
                         </div>
+                        <div class="stat-decoration"></div>
                     </div>
 
                     <!-- Total Users Card -->
-                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Users</p>
-                                <h3 class="text-4xl font-bold text-green-600 dark:text-green-500 mt-2">{{ userCount }}</h3>
+                    <div class="stat-card stat-card-green group">
+                        <div class="stat-card-bg"></div>
+                        <div class="stat-card-content">
+                            <div class="stat-icon-wrapper stat-icon-green">
+                                <i class="pi pi-users text-2xl"></i>
                             </div>
-                            <div class="bg-green-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                <i class="pi pi-users text-2xl text-green-600 dark:text-green-500"></i>
+                            <div class="stat-info">
+                                <p class="stat-label">Total Users</p>
+                                <h3 class="stat-value">{{ userCount }}</h3>
                             </div>
                         </div>
+                        <div class="stat-decoration"></div>
                     </div>
 
                     <!-- Total Laboratories Card -->
-                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Laboratories</p>
-                                <h3 class="text-4xl font-bold text-blue-600 dark:text-blue-500 mt-2">{{ laboratoryCount }}</h3>
+                    <div class="stat-card stat-card-blue group">
+                        <div class="stat-card-bg"></div>
+                        <div class="stat-card-content">
+                            <div class="stat-icon-wrapper stat-icon-blue">
+                                <i class="pi pi-desktop text-2xl"></i>
                             </div>
-                            <div class="bg-blue-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                <i class="pi pi-desktop text-2xl text-blue-600 dark:text-blue-500"></i>
+                            <div class="stat-info">
+                                <p class="stat-label">Total Laboratories</p>
+                                <h3 class="stat-value">{{ laboratoryCount }}</h3>
                             </div>
                         </div>
+                        <div class="stat-decoration"></div>
                     </div>
 
                     <!-- Total Assets Card -->
-                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Assets</p>
-                                <h3 class="text-4xl font-bold text-orange-600 dark:text-orange-500 mt-2">{{ assetCount }}</h3>
+                    <div class="stat-card stat-card-orange group">
+                        <div class="stat-card-bg"></div>
+                        <div class="stat-card-content">
+                            <div class="stat-icon-wrapper stat-icon-orange">
+                                <i class="pi pi-box text-2xl"></i>
                             </div>
-                            <div class="bg-orange-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                <i class="pi pi-box text-2xl text-orange-600 dark:text-orange-500"></i>
+                            <div class="stat-info">
+                                <p class="stat-label">Total Assets</p>
+                                <h3 class="stat-value">{{ assetCount }}</h3>
                             </div>
                         </div>
+                        <div class="stat-decoration"></div>
                     </div>
                 </div>
 
@@ -186,6 +194,114 @@ function createEventId() {
             .fc .fc-button {
                 padding: 0.3rem 0.6rem;
                 font-size: 0.75rem;
+            }
+
+            /* Stat Card Styles */
+            .stat-card {
+                position: relative;
+                overflow: hidden;
+                border-radius: 1rem;
+                padding: 1.5rem;
+                min-height: 140px;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            }
+
+            .stat-card-bg {
+                position: absolute;
+                inset: 0;
+                opacity: 1;
+            }
+
+            .stat-card-purple .stat-card-bg {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .stat-card-green .stat-card-bg {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+
+            .stat-card-blue .stat-card-bg {
+                background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            }
+
+            .stat-card-orange .stat-card-bg {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .stat-card-content {
+                position: relative;
+                z-index: 10;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .stat-icon-wrapper {
+                width: 60px;
+                height: 60px;
+                border-radius: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                color: white;
+                transition: all 0.3s ease;
+            }
+
+            .stat-card:hover .stat-icon-wrapper {
+                transform: scale(1.1) rotate(5deg);
+            }
+
+            .stat-info {
+                flex: 1;
+            }
+
+            .stat-label {
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: rgba(255, 255, 255, 0.85);
+                margin-bottom: 0.25rem;
+            }
+
+            .stat-value {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: white;
+                line-height: 1;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .stat-decoration {
+                position: absolute;
+                right: -30px;
+                bottom: -30px;
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .stat-card:hover .stat-decoration {
+                transform: scale(1.2);
+            }
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.05);
             }
         `
     ]
