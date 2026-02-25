@@ -20,6 +20,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../service/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-labschedule',
@@ -430,7 +431,6 @@ export class LabScheduleComponent implements OnInit {
 
         this.http.get<any[]>(usersUrl).subscribe({
             next: (data: any[]) => {
-
                 if (data && data.length > 0) {
                     console.table(data);
                 }
@@ -456,7 +456,6 @@ export class LabScheduleComponent implements OnInit {
 
         this.http.get<any[]>(subjectsUrl).subscribe({
             next: (data: any[]) => {
-
                 if (data && data.length > 0) {
                     console.table(data);
                 }
@@ -479,10 +478,15 @@ export class LabScheduleComponent implements OnInit {
 
     onLaboratoryFilterChange() {
         if (this.selectedLaboratory) {
-            this.messageService.add({
-                severity: 'info',
-                summary: 'Filter Applied',
-                detail: `Showing schedules for: ${this.selectedLaboratory.laboratoryName}`
+            // this.messageService.add({
+            //     severity: 'info',
+            //     summary: 'Filter Applied',
+            //     detail: `Showing schedules for: ${this.selectedLaboratory.laboratoryName}`
+            // });
+            Swal.fire({
+                title: 'Filter Applied',
+                text: `Showing schedules for: ${this.selectedLaboratory.laboratoryName}`,
+                icon: 'info'
             });
             // Load schedules for selected laboratory
             this.loadSchedules();
@@ -518,7 +522,6 @@ export class LabScheduleComponent implements OnInit {
 
         this.http.get<any[]>(scheduleUrl).subscribe({
             next: (data: any[]) => {
-
                 if (data && data.length > 0) {
                     console.table(data);
                 }
@@ -583,11 +586,17 @@ export class LabScheduleComponent implements OnInit {
 
         this.http.post<any>(subjectsUrl, payload).subscribe({
             next: (response: any) => {
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: `Subject "${this.newSubject.subjectName}" created successfully`
+                // this.messageService.add({
+                //     severity: 'success',
+                //     summary: 'Success',
+                //     detail: `Subject "${this.newSubject.subjectName}" created successfully`
+                // });
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: `Subject "${this.newSubject.subjectName}" created successfully`,
+                    showConfirmButton: false,
+                    timer: 1500
                 });
 
                 this.closeSubjectDialog();
@@ -624,16 +633,14 @@ export class LabScheduleComponent implements OnInit {
             dayOfWeek: this.newSchedule.day
         };
 
-
         const scheduleUrl = `${environment.apiUrl}/laboratories/${this.newSchedule.laboratory}/schedules`;
 
         this.http.post<any>(scheduleUrl, payload).subscribe({
             next: (response: any) => {
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Lab schedule created successfully'
+                Swal.fire({
+                    title: 'Good job!',
+                    text: 'Lab schedule created successfully!',
+                    icon: 'success'
                 });
 
                 this.closeDialog();

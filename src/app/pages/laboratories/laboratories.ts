@@ -19,6 +19,7 @@ import { MessageService } from 'primeng/api';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ActivatedRoute } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-laboratories',
@@ -324,10 +325,10 @@ export class LaboratoriesComponent implements OnInit {
 
         this.http.post<any>(this.apiUrl, payload).subscribe({
             next: (response) => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Laboratory created successfully'
+                Swal.fire({
+                    title: 'Good job!',
+                    text: 'Laboratory created successfully!',
+                    icon: 'success'
                 });
                 this.closeDialog();
                 this.loadLaboratories();

@@ -144,7 +144,11 @@ export class ProgramComponent implements OnInit {
                     next: (created) => {
                         this.items.push(created);
                         this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Created', detail: 'Program created' });
+                        Swal.fire({
+                            title: 'Good job!',
+                            text: 'Brand created successfully!',
+                            icon: 'success'
+                        });
                     },
                     error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Create failed' })
                 });

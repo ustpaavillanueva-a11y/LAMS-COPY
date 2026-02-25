@@ -69,7 +69,7 @@ import Swal from 'sweetalert2';
                     <td>{{ row.brandName }}</td>
                     <td>
                         <div class="flex gap-2">
-                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(row)" />
+                            <!-- <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(row)" /> -->
                             <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="edit(row)" />
                             <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" />
                         </div>
@@ -121,8 +121,7 @@ export class BrandComponent implements OnInit {
         this.filteredItems = this.items.filter((item) => item.brandName?.toLowerCase().includes(this.searchValue.toLowerCase()));
     }
 
-    onSelectionChange(event: any) {
-    }
+    onSelectionChange(event: any) {}
 
     openNewDialog() {
         Swal.fire({
@@ -145,7 +144,11 @@ export class BrandComponent implements OnInit {
                     next: (created) => {
                         this.items.push(created);
                         this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Created', detail: 'Brand created' });
+                        Swal.fire({
+                            title: 'Good job!',
+                            text: 'Brand created successfully!',
+                            icon: 'success'
+                        });
                     },
                     error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Create failed' })
                 });

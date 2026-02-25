@@ -82,7 +82,7 @@ export function createEventId() {
             </div>
 
             <!-- Bottom charts row -->
-            <div class="flex flex-col md:flex-row gap-6 mt-6">
+            <!-- <div class="flex flex-col md:flex-row gap-6 mt-6">
                 <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-96">
                     <h3 class="text-xl font-semibold mb-4 dark:text-white">Assets by Supplier</h3>
                     <p-chart type="bar" [data]="assetsBySupplierChartData" [options]="barChartOptions"></p-chart>
@@ -92,7 +92,7 @@ export function createEventId() {
                     <h3 class="text-xl font-semibold mb-4 dark:text-white">Assets by Brand</h3>
                     <p-chart type="bar" [data]="assetsByBrandChartData" [options]="horizontalChartOptions"></p-chart>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Lab schedule mock charts row -->
             <div class="flex flex-col md:flex-row gap-6 mt-6">

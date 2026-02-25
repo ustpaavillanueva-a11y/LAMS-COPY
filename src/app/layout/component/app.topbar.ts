@@ -30,7 +30,7 @@ import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
                     <img src="assets/icons/icon-48x48.png" class=" w-8 h-8 " alt="logo" />
                     <span>LAMS</span>
                 </a>
-            </div>      
+            </div>
 
             <div class="layout-topbar-actions">
                 <div class="layout-config-menu">
@@ -569,12 +569,24 @@ export class AppTopbar {
                 localStorage.removeItem('authToken');
                 this.router.navigate(['/auth/login']);
 
+                let timerInterval: any;
                 Swal.fire({
-                    title: 'Logged Out',
-                    text: 'You have been successfully logged out.',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
+                    title: 'Logging out...',
+                    html: 'You will be redirected in <b></b> milliseconds.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        const timer = Swal.getPopup()?.querySelector('b');
+                        timerInterval = setInterval(() => {
+                            if (timer) {
+                                timer.textContent = `${Swal.getTimerLeft()}`;
+                            }
+                        }, 100);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    }
                 });
             }
         });

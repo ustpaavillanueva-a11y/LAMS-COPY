@@ -144,7 +144,11 @@ export class ColorComponent implements OnInit {
                     next: (created) => {
                         this.items.push(created);
                         this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Created', detail: 'Color created' });
+                        Swal.fire({
+                            title: 'Good job!',
+                            text: 'Brand created successfully!',
+                            icon: 'success'
+                        });
                     },
                     error: (error) => {
                         console.error('Error creating color:', error);
