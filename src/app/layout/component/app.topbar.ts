@@ -26,11 +26,11 @@ import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
                 <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
                     <i class="pi pi-bars"></i>
                 </button>
-                <a class="layout-topbar-logo">
+                <a class="layout-topbar-logo" routerLink="/app/dashboard" style="cursor: pointer;">
                     <img src="assets/icons/icon-48x48.png" class=" w-8 h-8 " alt="logo" />
                     <span>LAMS</span>
                 </a>
-            </div>
+            </div>      
 
             <div class="layout-topbar-actions">
                 <div class="layout-config-menu">
