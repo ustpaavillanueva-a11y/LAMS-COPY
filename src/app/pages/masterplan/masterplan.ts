@@ -14,20 +14,27 @@ import { environment } from '../../../environments/environment';
     standalone: true,
     imports: [CommonModule, ToolbarModule, ButtonModule, RippleModule, TableModule, InputTextModule, FormsModule],
     template: `
-        <p-toolbar styleClass="mb-4">
+        <p-toolbar styleClass="mb-4 master-toolbar">
+            <!-- LEFT TITLE -->
             <ng-template #start>
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-calendar text-2xl" style="color:#667eea"></i>
-                    <span class="text-xl font-bold">Master Plan</span>
+                <div class="toolbar-title">
+                    <i class="pi pi-calendar"></i>
+                    <span>Master Plan</span>
                 </div>
             </ng-template>
 
+            <!-- RIGHT FILTER AREA -->
             <ng-template #end>
-                <div class="flex items-center gap-4">
+                <div class="filter-container">
+                    <div class="filter-label">
+                        <i class="pi pi-filter"></i>
+                        <span>Filters</span>
+                    </div>
+
                     <!-- YEAR -->
-                    <div class="flex items-center gap-2">
-                        <label class="font-semibold">Year:</label>
-                        <select [(ngModel)]="selectedYear" (ngModelChange)="onFilterChange()" class="p-inputtext">
+                    <div class="filter-group">
+                        <label>Year</label>
+                        <select [(ngModel)]="selectedYear" (ngModelChange)="onFilterChange()" class="filter-input">
                             <option value="">All Years</option>
                             <option *ngFor="let year of years" [value]="year">
                                 {{ year }}
@@ -36,9 +43,9 @@ import { environment } from '../../../environments/environment';
                     </div>
 
                     <!-- LAB -->
-                    <div class="flex items-center gap-2">
-                        <label class="font-semibold">Laboratory:</label>
-                        <select [(ngModel)]="selectedLaboratory" (ngModelChange)="onFilterChange()" class="p-inputtext">
+                    <div class="filter-group">
+                        <label>Laboratory</label>
+                        <select [(ngModel)]="selectedLaboratory" (ngModelChange)="onFilterChange()" class="filter-input">
                             <option value="">Select Laboratory</option>
                             <option *ngFor="let lab of laboratories" [value]="lab.laboratoryId">
                                 {{ lab.laboratoryName }}
@@ -47,9 +54,9 @@ import { environment } from '../../../environments/environment';
                     </div>
 
                     <!-- CATEGORY -->
-                    <div class="flex items-center gap-2">
-                        <label class="font-semibold">Category:</label>
-                        <select [(ngModel)]="selectedCategory" (ngModelChange)="onFilterChange()" class="p-inputtext">
+                    <div class="filter-group">
+                        <label>Category</label>
+                        <select [(ngModel)]="selectedCategory" (ngModelChange)="onFilterChange()" class="filter-input">
                             <option value="">All Categories</option>
                             <option *ngFor="let category of categories" [value]="category">
                                 {{ category }}
@@ -57,12 +64,14 @@ import { environment } from '../../../environments/environment';
                         </select>
                     </div>
 
-                    <!-- TOGGLE BUTTON -->
-                    <p-button [label]="showSchedule ? 'Hide Schedule' : 'Show Schedule'" icon="pi pi-calendar" severity="info" [outlined]="true" (onClick)="toggleSchedule()"> </p-button>
+                    <!-- ACTION BUTTONS -->
+                    <div class="filter-actions">
+                        <p-button [label]="showSchedule ? 'Hide Schedule' : 'Show Schedule'" icon="pi pi-calendar" severity="info" [outlined]="true" (onClick)="toggleSchedule()"> </p-button>
 
-                    <p-button label="Print" icon="pi pi-print" severity="secondary" [outlined]="true" />
+                        <p-button label="Print" icon="pi pi-print" severity="secondary" [outlined]="true" />
 
-                    <p-button label="Export" icon="pi pi-upload" severity="success" [outlined]="true" />
+                        <p-button label="Export" icon="pi pi-upload" severity="success" [outlined]="true" />
+                    </div>
                 </div>
             </ng-template>
         </p-toolbar>
@@ -100,7 +109,7 @@ import { environment } from '../../../environments/environment';
                                 <td>{{ item.equipment?.assetId || 'N/A' }}</td>
 
                                 <td style="text-align:left">
-                                    {{ item.equipment?.equipmentName || 'N/A' }}
+                                    {{ item.equipment?.assetName || 'N/A' }}
                                 </td>
 
                                 <td>{{ item.quantity || 1 }}</td>
@@ -180,6 +189,84 @@ import { environment } from '../../../environments/environment';
             .schedule-header {
                 background: #10b981;
             }
+            .master-toolbar {
+                background: var(--surface-card);
+                border-radius: 12px;
+                padding: 12px 16px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            }
+
+            /* TITLE */
+            .toolbar-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 1.2rem;
+                font-weight: 700;
+            }
+
+            .toolbar-title i {
+                font-size: 1.6rem;
+                color: #667eea;
+            }
+
+            /* FILTER CONTAINER */
+            .filter-container {
+                display: flex;
+                align-items: flex-end;
+                gap: 18px;
+                background: #f8fafc;
+                padding: 14px 18px;
+                border-radius: 10px;
+                border: 1px solid #e5e7eb;
+            }
+
+            /* FILTER LABEL */
+            .filter-label {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-weight: 600;
+                color: #475569;
+                margin-right: 10px;
+            }
+
+            /* GROUP */
+            .filter-group {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .filter-group label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: #64748b;
+            }
+
+            /* INPUT */
+            .filter-input {
+                padding: 6px 10px;
+                border-radius: 6px;
+                border: 1px solid #cbd5e1;
+                min-width: 160px;
+                background: white;
+                transition: 0.2s;
+            }
+
+            .filter-input:focus {
+                outline: none;
+                border-color: #6366f1;
+                box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+            }
+
+            /* ACTION BUTTONS */
+            .filter-actions {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-left: 10px;
+            }
         `
     ]
 })
@@ -233,6 +320,8 @@ export class MasterPlanComponent implements OnInit {
                 }
             })
             .subscribe((data) => {
+                console.log(data);
+
                 let allEquipment = data.equipmentMaintenances || [];
 
                 this.equipmentList = this.selectedCategory ? allEquipment.filter((x: any) => x.equipment?.category === this.selectedCategory) : allEquipment;
