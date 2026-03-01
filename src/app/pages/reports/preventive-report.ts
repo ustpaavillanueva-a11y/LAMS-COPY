@@ -249,24 +249,33 @@ interface Laboratory {
                         <div style="display: flex; justify-content: space-between; margin-top: 40px; font-size: 10px; gap: 10px;">
                             <div style="text-align: center; flex: 1;">
                                 <div style="font-weight: bold; color: #8B4513; margin-bottom: 5px;">Performed by:</div>
-                                <p-select [(ngModel)]="previewData.performedBy" [options]="users" placeholder="Select user" [filter]="true" styleClass="w-full" style="width: 100%;">
+                                <p-select [(ngModel)]="previewData.performedBy" [options]="usersWithOthers" placeholder="Select user" [filter]="true" styleClass="w-full" style="width: 100%;" (onChange)="onPerformedByChange($event)">
                                     <ng-template let-user pTemplate="item"> {{ user.firstName }} {{ user.lastName }} </ng-template>
                                     <ng-template let-user pTemplate="selectedItem"> {{ user.firstName }} {{ user.lastName }} </ng-template>
                                 </p-select>
+                                @if (isPerformedByOther) {
+                                    <input type="text" [(ngModel)]="performedByManual" placeholder="Enter name" pInputText class="w-full" style="margin-top: 5px; font-size: 10px;" />
+                                }
                             </div>
                             <div style="text-align: center; flex: 1;">
                                 <div style="font-weight: bold; color: #8B4513; margin-bottom: 5px;">Assisted by:</div>
-                                <p-select [(ngModel)]="previewData.assistedBy" [options]="users" placeholder="Select user" [filter]="true" styleClass="w-full" style="width: 100%;">
+                                <p-select [(ngModel)]="previewData.assistedBy" [options]="usersWithOthers" placeholder="Select user" [filter]="true" styleClass="w-full" style="width: 100%;" (onChange)="onAssistedByChange($event)">
                                     <ng-template let-user pTemplate="item"> {{ user.firstName }} {{ user.lastName }} </ng-template>
                                     <ng-template let-user pTemplate="selectedItem"> {{ user.firstName }} {{ user.lastName }} </ng-template>
                                 </p-select>
+                                @if (isAssistedByOther) {
+                                    <input type="text" [(ngModel)]="assistedByManual" placeholder="Enter name" pInputText class="w-full" style="margin-top: 5px; font-size: 10px;" />
+                                }
                             </div>
                             <div style="text-align: center; flex: 1;">
                                 <div style="font-weight: bold; color: #8B4513; margin-bottom: 5px;">Noted by:</div>
-                                <p-select [(ngModel)]="previewData.notedBy" [options]="users" placeholder="Select user" [filter]="true" styleClass="w-full" style="width: 100%;">
+                                <p-select [(ngModel)]="previewData.notedBy" [options]="usersWithOthers" placeholder="Select user" [filter]="true" styleClass="w-full" style="width: 100%;" (onChange)="onNotedByChange($event)">
                                     <ng-template let-user pTemplate="item"> {{ user.firstName }} {{ user.lastName }} </ng-template>
                                     <ng-template let-user pTemplate="selectedItem"> {{ user.firstName }} {{ user.lastName }} </ng-template>
                                 </p-select>
+                                @if (isNotedByOther) {
+                                    <input type="text" [(ngModel)]="notedByManual" placeholder="Enter name" pInputText class="w-full" style="margin-top: 5px; font-size: 10px;" />
+                                }
                             </div>
                         </div>
                     </div>
@@ -294,8 +303,15 @@ export class PreventiveReportComponent implements OnInit {
 
     laboratories: Laboratory[] = [];
     users: UserData[] = [];
+    usersWithOthers: any[] = [];
 
     showPreview: boolean = false;
+    isPerformedByOther: boolean = false;
+    isAssistedByOther: boolean = false;
+    isNotedByOther: boolean = false;
+    performedByManual: string = '';
+    assistedByManual: string = '';
+    notedByManual: string = '';
     previewData: any = {
         laboratoryName: '',
         reportDate: '',
@@ -407,6 +423,8 @@ export class PreventiveReportComponent implements OnInit {
         this.userService.getAllUsers().subscribe({
             next: (data) => {
                 this.users = data;
+                // Add "Others" option at the end
+                this.usersWithOthers = [...data, { userId: 'others', firstName: 'Others', lastName: '(Manual Input)', isOthers: true }];
             },
             error: (error) => {
                 console.error('❌ Error loading users:', error);
@@ -741,6 +759,27 @@ export class PreventiveReportComponent implements OnInit {
         return `${user.firstName || ''} ${user.lastName || ''}`.trim();
     }
 
+    onPerformedByChange(event: any): void {
+        this.isPerformedByOther = event.value?.isOthers === true;
+        if (!this.isPerformedByOther) {
+            this.performedByManual = '';
+        }
+    }
+
+    onAssistedByChange(event: any): void {
+        this.isAssistedByOther = event.value?.isOthers === true;
+        if (!this.isAssistedByOther) {
+            this.assistedByManual = '';
+        }
+    }
+
+    onNotedByChange(event: any): void {
+        this.isNotedByOther = event.value?.isOthers === true;
+        if (!this.isNotedByOther) {
+            this.notedByManual = '';
+        }
+    }
+
     openPreview(): void {
         if (!this.reportData || !this.reportData.records) {
             console.warn('No data to preview');
@@ -817,9 +856,9 @@ export class PreventiveReportComponent implements OnInit {
             .join('');
 
         const recommendations = this.escapeHtml(this.previewData.recommendation);
-        const performedBy = this.escapeHtml(this.getUserFullName(this.previewData.performedBy));
-        const assistedBy = this.escapeHtml(this.getUserFullName(this.previewData.assistedBy));
-        const notedBy = this.escapeHtml(this.getUserFullName(this.previewData.notedBy));
+        const performedBy = this.escapeHtml(this.isPerformedByOther ? this.performedByManual : this.getUserFullName(this.previewData.performedBy));
+        const assistedBy = this.escapeHtml(this.isAssistedByOther ? this.assistedByManual : this.getUserFullName(this.previewData.assistedBy));
+        const notedBy = this.escapeHtml(this.isNotedByOther ? this.notedByManual : this.getUserFullName(this.previewData.notedBy));
 
         const documentContent = `
             <!DOCTYPE html>
