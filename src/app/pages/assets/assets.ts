@@ -680,7 +680,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.programs = data || [];
-            },
+            }
         });
 
         this.assetService.getSuppliers().subscribe({
@@ -688,8 +688,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.suppliers = data || [];
-            },
-            
+            }
         });
 
         this.assetService.getLocations().subscribe({
@@ -697,8 +696,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.locations = data || [];
-            },
-         
+            }
         });
 
         this.assetService.getStatuses().subscribe({
@@ -706,8 +704,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.statuses = data || [];
-            },
-           
+            }
         });
 
         this.assetService.getColors().subscribe({
@@ -715,8 +712,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.colors = data || [];
-            },
-            
+            }
         });
 
         this.assetService.getBrands().subscribe({
@@ -724,8 +720,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.brands = data || [];
-            },
-          
+            }
         });
 
         this.assetService.getLaboratories().subscribe({
@@ -733,8 +728,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.laboratories = data || [];
-            },
-           
+            }
         });
 
         this.userService.getCampuses().subscribe({
@@ -742,8 +736,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.campuses = data || [];
-            },
-          
+            }
         });
 
         this.assetService.getUsers().subscribe({
@@ -751,8 +744,7 @@ export class AssetsComponent implements OnInit {
                 if (data && data.length > 0) {
                 }
                 this.users = data || [];
-            },
-           
+            }
         });
     }
 
@@ -864,8 +856,7 @@ export class AssetsComponent implements OnInit {
                 next: (icsData) => {
                     // Update the asset object with ICS data
                     asset.inventoryCustodianSlip = icsData;
-                },
-              
+                }
             });
         }
     }
@@ -889,8 +880,7 @@ export class AssetsComponent implements OnInit {
                 this.assetService.getAssetInventoryCustodianSlip(asset.assetId).subscribe({
                     next: (icsData) => {
                         asset.inventoryCustodianSlip = icsData;
-                    },
-                   
+                    }
                 });
             }
         }
@@ -1080,7 +1070,6 @@ export class AssetsComponent implements OnInit {
 
         this.maintenanceService.createMaintenanceRequest(payload).subscribe({
             next: () => {
-              
                 Swal.fire({
                     title: 'Good job!',
                     text: 'Maintenance request submitted successfully!',
@@ -1089,7 +1078,6 @@ export class AssetsComponent implements OnInit {
                 this.closeRequestDialog();
             },
             error: (error) => {
-             
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -1576,7 +1564,7 @@ export class AssetsComponent implements OnInit {
         if (qrCode) {
             Swal.fire({
                 title: 'QR Code',
-                html: `<img src="${qrCode}" alt="QR Code" style="max-width: 400px; border-radius: 8px;" />`,
+                html: `<img src="${qrCode}" alt="QR Code" style="width: 4in; height: 4in; border-radius: 8px; object-fit: contain;" />`,
                 confirmButtonText: 'Close'
             });
         }
