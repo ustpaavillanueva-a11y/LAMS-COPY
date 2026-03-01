@@ -259,7 +259,7 @@ interface Laboratory {
                             <div style="text-align: center; flex: 1;">
                                 <div style="font-weight: bold; color: #8B4513;">Noted by:</div>
                                 <div style="height: 50px; border-bottom: 1px solid black; margin: 10px 0;"></div>
-                                <div style="font-size: 9px; color: #0066cc; font-weight: bold;">Head, Maintenance Unit</div>
+                                <input [(ngModel)]="previewData.notedBy" style="border: none; text-align: center; width: 100%; font-size: 9px;" placeholder="Name" />
                             </div>
                         </div>
                     </div>
@@ -294,7 +294,8 @@ export class PreventiveReportComponent implements OnInit {
         tableRows: [],
         recommendation: '',
         performedBy: '',
-        assistedBy: ''
+        assistedBy: '',
+        notedBy: ''
     };
 
     reportTypes = [
@@ -668,19 +669,19 @@ export class PreventiveReportComponent implements OnInit {
                     <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
                         <tr>
                             <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
-                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 25px;">Performed by:</div>
+                                <div style="font-weight: bold; color: black; font-size: 11px; margin-bottom: 25px;">Performed by:</div>
                                 <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 10px;"></div>
-                                <div style="font-size: 8px;">${performedBy}</div>
+                                <div style="font-size: 10px; margin-top: 5px;">${performedBy}</div>
                             </td>
                             <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
-                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 25px;">Assisted by:</div>
+                                <div style="font-weight: bold; color: black; font-size: 11px; margin-bottom: 25px;">Assisted by:</div>
                                 <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 10px;"></div>
-                                <div style="font-size: 8px;">${assistedBy}</div>
+                                <div style="font-size: 10px; margin-top: 5px;">${assistedBy}</div>
                             </td>
                             <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
-                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 25px;">Noted by:</div>
+                                <div style="font-weight: bold; color: black; font-size: 11px; margin-bottom: 25px;">Noted by:</div>
                                 <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 10px;"></div>
-                                <div style="font-size: 8px; color: #0066cc; font-weight: bold;">Head, Maintenance Unit</div>
+                                <div style="font-size: 10px; color: black; font-weight: bold; margin-top: 5px;">Head, Maintenance Unit</div>
                             </td>
                         </tr>
                     </table>
@@ -737,7 +738,8 @@ export class PreventiveReportComponent implements OnInit {
             })),
             recommendation: this.reportData.recommendations || '',
             performedBy: this.reportData.performedBy || '',
-            assistedBy: this.reportData.assistedBy || ''
+            assistedBy: this.reportData.assistedBy || '',
+            notedBy: this.reportData.notedBy || 'Head, Maintenance Unit'
         };
 
         // Pad table rows to minimum 8
@@ -790,6 +792,7 @@ export class PreventiveReportComponent implements OnInit {
         const recommendations = this.escapeHtml(this.previewData.recommendation);
         const performedBy = this.escapeHtml(this.previewData.performedBy);
         const assistedBy = this.escapeHtml(this.previewData.assistedBy);
+        const notedBy = this.escapeHtml(this.previewData.notedBy);
 
         const documentContent = `
             <!DOCTYPE html>
@@ -930,19 +933,19 @@ export class PreventiveReportComponent implements OnInit {
                     <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
                         <tr>
                             <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
-                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Performed by:</div>
+                                <div style="font-weight: bold; color: black; font-size: 11px; margin-bottom: 15px;">Performed by:</div>
                                 <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
-                                <div style="font-size: 8px;">${performedBy}</div>
+                                <div style="font-size: 10px; margin-top: 5px;">${performedBy}</div>
                             </td>
                             <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
-                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Assisted by:</div>
+                                <div style="font-weight: bold; color: black; font-size: 11px; margin-bottom: 15px;">Assisted by:</div>
                                 <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
-                                <div style="font-size: 8px;">${assistedBy}</div>
+                                <div style="font-size: 10px; margin-top: 5px;">${assistedBy}</div>
                             </td>
                             <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
-                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Noted by:</div>
+                                <div style="font-weight: bold; color: black; font-size: 11px; margin-bottom: 15px;">Noted by:</div>
                                 <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
-                                <div style="font-size: 8px; color: #0066cc; font-weight: bold;">Head, Maintenance Unit</div>
+                                <div style="font-size: 10px; margin-top: 5px;">${notedBy}</div>
                             </td>
                         </tr>
                     </table>
