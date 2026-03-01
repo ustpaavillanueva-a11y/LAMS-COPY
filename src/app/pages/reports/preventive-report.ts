@@ -662,23 +662,25 @@ export class PreventiveReportComponent implements OnInit {
                     </div>
 
                     <!-- Signature Section -->
-                    <div class="signature-section">
-                        <div class="signature-block">
-                            <div class="signature-label">Performed by:</div>
-                            <div class="signature-line"></div>
-                            <div style="font-size: 9px;">${performedBy}</div>
-                        </div>
-                        <div class="signature-block">
-                            <div class="signature-label">Assisted by:</div>
-                            <div class="signature-line"></div>
-                            <div style="font-size: 9px;">${assistedBy}</div>
-                        </div>
-                        <div class="signature-block">
-                            <div class="signature-label">Noted by:</div>
-                            <div class="signature-line"></div>
-                            <div style="font-size: 9px; color: #0066cc; font-weight: bold;">Head, Maintenance Unit</div>
-                        </div>
-                    </div>
+                    <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
+                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Performed by:</div>
+                                <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
+                                <div style="font-size: 8px;">${performedBy}</div>
+                            </td>
+                            <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
+                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Assisted by:</div>
+                                <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
+                                <div style="font-size: 8px;">${assistedBy}</div>
+                            </td>
+                            <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
+                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Noted by:</div>
+                                <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
+                                <div style="font-size: 8px; color: #0066cc; font-weight: bold;">Head, Maintenance Unit</div>
+                            </td>
+                        </tr>
+                    </table>
                 </body>
             </html>
         `;
@@ -853,25 +855,26 @@ export class PreventiveReportComponent implements OnInit {
                             word-wrap: break-word;
                         }
                         .signature-section {
-                            margin-top: 30px;
+                            margin-top: 15px;
                             display: flex;
                             justify-content: space-between;
-                            font-size: 10px;
+                            font-size: 8px;
+                            gap: 5px;
                         }
                         .signature-block {
                             flex: 1;
                             text-align: center;
                         }
                         .signature-line {
-                            margin-top: 40px;
+                            margin-top: 15px;
                             border-bottom: 1px solid black;
-                            height: 20px;
-                            margin-bottom: 5px;
+                            height: 12px;
+                            margin-bottom: 2px;
                         }
                         .signature-label {
                             font-weight: bold;
                             color: #8B4513;
-                            font-size: 10px;
+                            font-size: 8px;
                         }
                     </style>
                 </head>
@@ -915,23 +918,25 @@ export class PreventiveReportComponent implements OnInit {
                     </div>
 
                     <!-- Signature Section -->
-                    <div class="signature-section">
-                        <div class="signature-block">
-                            <div class="signature-label">Performed by:</div>
-                            <div class="signature-line"></div>
-                            <div style="font-size: 9px;">${performedBy}</div>
-                        </div>
-                        <div class="signature-block">
-                            <div class="signature-label">Assisted by:</div>
-                            <div class="signature-line"></div>
-                            <div style="font-size: 9px;">${assistedBy}</div>
-                        </div>
-                        <div class="signature-block">
-                            <div class="signature-label">Noted by:</div>
-                            <div class="signature-line"></div>
-                            <div style="font-size: 9px; color: #0066cc; font-weight: bold;">Head, Maintenance Unit</div>
-                        </div>
-                    </div>
+                    <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
+                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Performed by:</div>
+                                <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
+                                <div style="font-size: 8px;">${performedBy}</div>
+                            </td>
+                            <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
+                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Assisted by:</div>
+                                <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
+                                <div style="font-size: 8px;">${assistedBy}</div>
+                            </td>
+                            <td style="width: 33%; text-align: center; padding: 5px; vertical-align: top;">
+                                <div style="font-weight: bold; color: #8B4513; font-size: 8px; margin-bottom: 15px;">Noted by:</div>
+                                <div style="border-bottom: 1px solid black; height: 12px; margin-bottom: 2px;"></div>
+                                <div style="font-size: 8px; color: #0066cc; font-weight: bold;">Head, Maintenance Unit</div>
+                            </td>
+                        </tr>
+                    </table>
                 </body>
             </html>
         `;
