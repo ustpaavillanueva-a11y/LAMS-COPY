@@ -62,7 +62,7 @@ import Swal from 'sweetalert2';
                         <label class="font-semibold">Campus:</label>
                         <p-select [(ngModel)]="selectedCampus" [options]="campuses" optionLabel="campusName" placeholder="All Campuses" [showClear]="true" styleClass="w-48" appendTo="body" (onChange)="onCampusFilterChange()" />
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2" *ngIf="!isFaculty">
                         <label class="font-semibold">Laboratory:</label>
                         <p-select
                             [(ngModel)]="selectedLaboratory"
@@ -87,13 +87,13 @@ import Swal from 'sweetalert2';
         </div>
 
         <!-- Show message when no laboratory is selected - CampusAdmin/LabTech -->
-        <div *ngIf="!selectedLaboratory && !isSuperAdmin" class="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-lg mt-4">
+        <div *ngIf="!selectedLaboratory && !isSuperAdmin && !isFaculty" class="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-lg mt-4">
             <i class="pi pi-calendar text-6xl text-gray-300 mb-4"></i>
             <h3 class="text-xl font-semibold text-gray-500 mb-2">No Laboratory Selected</h3>
             <p class="text-gray-400">Please select a laboratory to view the schedule.</p>
         </div>
 
-        <div class="lab-schedule-container" *ngIf="selectedLaboratory">
+        <div class="lab-schedule-container" *ngIf="selectedLaboratory || isFaculty">
             <div class="schedule-table-wrapper">
                 <table class="schedule-table">
                     <thead>
@@ -318,7 +318,12 @@ export class LabScheduleComponent implements OnInit {
         this.loadLaboratories();
         this.loadUsers();
         this.loadSubjects();
-        // Note: loadSchedules is called by loadLaboratories after selecting a laboratory
+
+        // Auto-load schedules for Faculty users
+        if (this.isFaculty) {
+            this.loadSchedules();
+        }
+        // Note: For other roles, loadSchedules is called after selecting a laboratory
     }
 
     checkUserRole() {
@@ -466,24 +471,13 @@ export class LabScheduleComponent implements OnInit {
     }
 
     loadSchedules() {
-        if (!this.selectedLaboratory) {
-            this.schedules = [];
-            return;
-        }
-
-        // Faculty users use a different endpoint
+        // Faculty users load all their schedules without laboratory filter
         if (this.isFaculty) {
-            const currentUser = this.authService.getCurrentUser();
-            if (!currentUser?.user_id) {
-                this.schedules = [];
-                return;
-            }
-
-            const scheduleUrl = `${environment.apiUrl}/schedules/filter/by-faculty/${currentUser.user_id}`;
+            const scheduleUrl = `${environment.apiUrl}/faculty-schedules`;
             this.http.get<any[]>(scheduleUrl).subscribe({
                 next: (data: any[]) => {
-                    // Filter by selected laboratory
-                    this.schedules = data.filter((schedule: any) => schedule.laboratory?.laboratoryId === this.selectedLaboratory.laboratoryId) || [];
+                    // Show all schedules for Faculty (no laboratory filter)
+                    this.schedules = data || [];
 
                     if (this.schedules.length > 0) {
                         console.table(this.schedules);
@@ -495,7 +489,12 @@ export class LabScheduleComponent implements OnInit {
                 }
             });
         } else {
-            // SuperAdmin, CampusAdmin, LabTech use the laboratory endpoint
+            // SuperAdmin, CampusAdmin, LabTech require laboratory selection
+            if (!this.selectedLaboratory) {
+                this.schedules = [];
+                return;
+            }
+
             const scheduleUrl = `${environment.apiUrl}/laboratories/${this.selectedLaboratory.laboratoryId}/schedules`;
 
             this.http.get<any[]>(scheduleUrl).subscribe({
