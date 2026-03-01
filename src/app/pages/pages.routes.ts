@@ -17,6 +17,7 @@ import { PreventiveReportComponent } from './reports/preventive-report';
 import { CorrectiveReportComponent } from './reports/corrective-report';
 import { CalibrationReportComponent } from './reports/calibration-report';
 import { MasterPlanComponent } from './masterplan/masterplan';
+import { ActivitiesComponent } from './activities/activities';
 
 export const pageRoutes: Routes = [
     { path: 'users', component: UsersComponent },
@@ -40,6 +41,8 @@ export const pageRoutes: Routes = [
     { path: 'reports/preventive', component: PreventiveReportComponent },
     { path: 'reports/corrective', component: CorrectiveReportComponent },
     { path: 'reports/calibration', component: CalibrationReportComponent },
+    // Activities/Logs
+    { path: 'activities', component: ActivitiesComponent },
     { path: '**', redirectTo: '/notfound' }
 ];
 

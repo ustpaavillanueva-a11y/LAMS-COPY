@@ -93,6 +93,10 @@ import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
                                 <i class="pi pi-cog"></i>
                                 <span>Account Settings</span>
                             </a>
+                            <a class="profile-dropdown-item" (click)="navigateToActivities()">
+                                <i class="pi pi-history"></i>
+                                <span>Activity Logs</span>
+                            </a>
                             <div class="profile-dropdown-divider"></div>
                             <a class="profile-dropdown-item sign-out" (click)="logout()">
                                 <i class="pi pi-sign-out"></i>
@@ -553,6 +557,10 @@ export class AppTopbar {
 
     navigateToAccount() {
         this.router.navigate(['/app/account']);
+    }
+
+    navigateToActivities() {
+        this.router.navigate(['/app/pages/activities']);
     }
 
     logout() {
