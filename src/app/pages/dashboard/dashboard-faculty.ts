@@ -188,9 +188,34 @@ export class DashboardFaculty implements OnInit {
         selectable: true,
         selectMirror: true,
         dayMaxEvents: true,
+        views: {
+            dayGridMonth: {
+                displayEventTime: false
+            }
+        },
         select: this.handleDateSelect.bind(this),
         eventClick: this.handleEventClick.bind(this),
-        eventsSet: this.handleEvents.bind(this)
+        eventsSet: this.handleEvents.bind(this),
+        eventContent: (arg) => {
+            const view = arg.view.type;
+            const props = arg.event.extendedProps;
+
+            // For Month view, show simplified text
+            if (view === 'dayGridMonth') {
+                if (props['type'] === 'schedule') {
+                    // Show only subject
+                    return { html: `<div class="fc-event-title">${props['subject'] || 'N/A'}</div>` };
+                } else if (props['type'] === 'maintenance') {
+                    // Show only maintenanceType
+                    return { html: `<div class="fc-event-title">${props['maintenanceType'] || 'Maintenance'}</div>` };
+                } else if (props['type'] === 'custom') {
+                    // Show title for custom events
+                    return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+                }
+            }
+            // For other views (Week, Day, List), use default title
+            return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+        }
     });
     currentEvents = signal<EventApi[]>([]);
 
@@ -384,6 +409,11 @@ export class DashboardFaculty implements OnInit {
         const calendarApi = selectInfo.view.calendar;
         calendarApi.unselect();
 
+        // Log the selected date
+        console.log('Selected Date:', selectInfo.start);
+        console.log('Selected Date (ISO):', selectInfo.start.toISOString());
+        console.log('Selected Date (Locale):', selectInfo.start.toLocaleString());
+
         Swal.fire({
             title: 'Add New Event',
             html: `
@@ -463,6 +493,7 @@ export class DashboardFaculty implements OnInit {
                     <div style="text-align: left; padding: 10px;">
                         <p><strong>Title:</strong> ${event.title}</p>
                         <p><strong>Description:</strong> ${props['description'] || 'No description'}</p>
+                        <p><strong>Created By:</strong> ${props['createdBy'] || 'Unknown'}</p>
                         <p><strong>Date:</strong> ${new Date(event.start!).toLocaleString()}</p>
                         ${event.end ? `<p><strong>End:</strong> ${new Date(event.end).toLocaleString()}</p>` : ''}
                     </div>

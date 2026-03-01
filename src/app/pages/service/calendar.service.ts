@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -10,7 +10,7 @@ export interface CalendarEvent {
     start: string;
     end?: string;
     extendedProps: {
-        type: 'schedule' | 'maintenance'; // schedule or maintenance
+        type: 'schedule' | 'maintenance' | 'custom'; // schedule, maintenance, or custom
         campus?: string;
         lab?: string;
         location?: string;
@@ -25,6 +25,8 @@ export interface CalendarEvent {
         assignedTo?: string;
         equipment?: string;
         description?: string;
+        createdBy?: string;
+        campusId?: string;
         color?: string;
     };
 }
@@ -41,21 +43,42 @@ export class CalendarService {
      * Get calendar events from unified endpoint (role-based on backend)
      */
     getCalendarEvents(): Observable<CalendarEvent[]> {
-        return this.http.get<any>(`${this.baseApiUrl}/calendar/events`).pipe(
-            map((response) => {
+        // Fetch both calendar events and posted events simultaneously
+        return forkJoin({
+            calendarEvents: this.http.get<any>(`${this.baseApiUrl}/calendar/events`).pipe(
+                catchError((error) => {
+                    console.error('Error loading calendar events:', error);
+                    return of({ data: { schedules: [], maintenance: [] } });
+                })
+            ),
+            postedEvents: this.http.get<any>(`${this.baseApiUrl}/calendar/events/posts`).pipe(
+                catchError((error) => {
+                    console.error('Error loading posted events:', error);
+                    return of({ data: [] });
+                })
+            )
+        }).pipe(
+            map(({ calendarEvents, postedEvents }) => {
                 const events: CalendarEvent[] = [];
 
                 // Process schedules
-                if (response.data?.schedules && Array.isArray(response.data.schedules)) {
-                    response.data.schedules.forEach((schedule: any) => {
+                if (calendarEvents.data?.schedules && Array.isArray(calendarEvents.data.schedules)) {
+                    calendarEvents.data.schedules.forEach((schedule: any) => {
                         events.push(this.createScheduleEvent(schedule));
                     });
                 }
 
                 // Process maintenance
-                if (response.data?.maintenance && Array.isArray(response.data.maintenance)) {
-                    response.data.maintenance.forEach((maintenance: any) => {
+                if (calendarEvents.data?.maintenance && Array.isArray(calendarEvents.data.maintenance)) {
+                    calendarEvents.data.maintenance.forEach((maintenance: any) => {
                         events.push(this.createMaintenanceEvent(maintenance));
+                    });
+                }
+
+                // Process custom posted events
+                if (postedEvents.data && Array.isArray(postedEvents.data)) {
+                    postedEvents.data.forEach((event: any) => {
+                        events.push(this.createCustomEvent(event));
                     });
                 }
 
@@ -63,7 +86,7 @@ export class CalendarService {
                 return events;
             }),
             catchError((error) => {
-                console.error('Error loading calendar events:', error);
+                console.error('Error loading all calendar events:', error);
                 return of([]);
             })
         );
@@ -89,7 +112,7 @@ export class CalendarService {
 
         return {
             id: `schedule-${schedule.scheduleId}`,
-            title: `${schedule.subjectCode || 'Lab'} - ${schedule.subject || 'N/A'}`,
+            title: schedule.subject || 'N/A',
             start: startDateTime.toISOString(),
             end: endDateTime.toISOString(),
             extendedProps: {
@@ -165,6 +188,26 @@ export class CalendarService {
         nextDate.setDate(today.getDate() + daysUntilTarget);
 
         return nextDate;
+    }
+
+    /**
+     * Create a calendar event from a custom event object
+     */
+    private createCustomEvent(event: any): CalendarEvent {
+        const eventDate = event.createdAt ? new Date(event.createdAt) : new Date();
+
+        return {
+            id: `custom-${event.calendarEventId || Date.now()}`,
+            title: event.title || 'Custom Event',
+            start: eventDate.toISOString(),
+            extendedProps: {
+                type: 'custom',
+                description: event.description || '',
+                createdBy: event.createdBy || 'Unknown',
+                campusId: event.campusId || '',
+                color: '#9333ea' // Purple for custom events
+            }
+        };
     }
 
     /**
