@@ -52,7 +52,7 @@ import Swal from 'sweetalert2';
         <p-toolbar styleClass="mb-4">
             <ng-template #start>
                 <div class="flex items-center gap-2">
-                    <p-button label="New Schedule" icon="pi pi-plus" severity="secondary" (onClick)="openNew()" *ngIf="!isCampusAdmin && !isSuperAdmin" />
+                    <p-button label="New Schedule" icon="pi pi-plus" severity="secondary" (onClick)="openNew()" *ngIf="!isCampusAdmin && !isSuperAdmin && !isFaculty" />
                     <p-button label="Print" icon="pi pi-print" severity="secondary" outlined />
                 </div>
             </ng-template>
@@ -291,6 +291,7 @@ export class LabScheduleComponent implements OnInit {
     selectedLaboratory: any = null;
     isCampusAdmin: boolean = false;
     isSuperAdmin: boolean = false;
+    isFaculty: boolean = false;
 
     // Dialog state
     scheduleDialog: boolean = false;
@@ -324,6 +325,7 @@ export class LabScheduleComponent implements OnInit {
         const currentUser = this.authService.getCurrentUser();
         this.isCampusAdmin = currentUser?.role === 'CampusAdmin';
         this.isSuperAdmin = currentUser?.role === 'SuperAdmin';
+        this.isFaculty = currentUser?.role === 'Faculty';
     }
 
     // Initialize time slots from 07:00 AM to 09:00 PM (30-minute intervals)
@@ -469,17 +471,43 @@ export class LabScheduleComponent implements OnInit {
             return;
         }
 
-        const scheduleUrl = `${environment.apiUrl}/laboratories/${this.selectedLaboratory.laboratoryId}/schedules`;
-
-        this.http.get<any[]>(scheduleUrl).subscribe({
-            next: (data: any[]) => {
-                if (data && data.length > 0) {
-                    console.table(data);
-                }
-
-                this.schedules = data || [];
+        // Faculty users use a different endpoint
+        if (this.isFaculty) {
+            const currentUser = this.authService.getCurrentUser();
+            if (!currentUser?.user_id) {
+                this.schedules = [];
+                return;
             }
-        });
+
+            const scheduleUrl = `${environment.apiUrl}/schedules/filter/by-faculty/${currentUser.user_id}`;
+            this.http.get<any[]>(scheduleUrl).subscribe({
+                next: (data: any[]) => {
+                    // Filter by selected laboratory
+                    this.schedules = data.filter((schedule: any) => schedule.laboratory?.laboratoryId === this.selectedLaboratory.laboratoryId) || [];
+
+                    if (this.schedules.length > 0) {
+                        console.table(this.schedules);
+                    }
+                },
+                error: (error: any) => {
+                    console.error('Error loading faculty schedules:', error);
+                    this.schedules = [];
+                }
+            });
+        } else {
+            // SuperAdmin, CampusAdmin, LabTech use the laboratory endpoint
+            const scheduleUrl = `${environment.apiUrl}/laboratories/${this.selectedLaboratory.laboratoryId}/schedules`;
+
+            this.http.get<any[]>(scheduleUrl).subscribe({
+                next: (data: any[]) => {
+                    if (data && data.length > 0) {
+                        console.table(data);
+                    }
+
+                    this.schedules = data || [];
+                }
+            });
+        }
     }
 
     openNew() {
