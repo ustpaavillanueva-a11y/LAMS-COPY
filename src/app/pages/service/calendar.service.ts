@@ -194,7 +194,7 @@ export class CalendarService {
      * Create a calendar event from a custom event object
      */
     private createCustomEvent(event: any): CalendarEvent {
-        const eventDate = event.createdAt ? new Date(event.createdAt) : new Date();
+        const eventDate = event.eventDate ? new Date(event.eventDate) : new Date();
 
         return {
             id: `custom-${event.calendarEventId || Date.now()}`,

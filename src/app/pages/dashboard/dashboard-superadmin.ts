@@ -12,6 +12,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { CalendarService } from '../service/calendar.service';
 import Swal from 'sweetalert2';
+import { SelectModule } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
 
 const INITIAL_EVENTS = [
     {
@@ -29,7 +31,7 @@ function createEventId() {
 @Component({
     selector: 'app-dashboard-superadmin',
     standalone: true,
-    imports: [CommonModule, UIChart, TableModule, FullCalendarModule],
+    imports: [CommonModule, UIChart, TableModule, FullCalendarModule, SelectModule, FormsModule],
     template: `
         <div class="p-6">
             <!-- Top Row: Campuses, Users, and Calendar -->
@@ -91,7 +93,23 @@ function createEventId() {
 
                 <!-- Right Side: Calendar -->
                 <div class="lg:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Calendar</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold dark:text-white">Calendar</h3>
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Campus:</label>
+                            <p-select
+                                [(ngModel)]="selectedCampusFilter"
+                                [options]="campuses"
+                                optionLabel="campusName"
+                                optionValue="campusId"
+                                placeholder="All Campuses"
+                                [showClear]="true"
+                                styleClass="w-48"
+                                appendTo="body"
+                                (onChange)="onCampusFilterChange()"
+                            />
+                        </div>
+                    </div>
                     <full-calendar [options]="calendarOptions()">
                         <ng-template #eventContent let-arg>
                             <b>{{ arg.timeText }}</b>
@@ -270,6 +288,9 @@ export class DashboardSuperAdmin implements OnInit {
     maintenanceRequestsChartData: any;
     chartOptions: any;
     activities: any[] = [];
+    campuses: any[] = [];
+    selectedCampusFilter: string | null = null;
+    allCalendarEvents: any[] = [];
     // handleDateSelect: any;
     // handleEventClick: any;
 
@@ -287,6 +308,7 @@ export class DashboardSuperAdmin implements OnInit {
         this.loadAssetsByCampus();
         this.loadMaintenanceRequestsByCampus();
         this.loadActivities();
+        this.loadCampuses();
         this.loadCalendarEvents();
         this.initChartOptions();
     }
@@ -527,22 +549,56 @@ export class DashboardSuperAdmin implements OnInit {
     loadCalendarEvents() {
         this.calendarService.getCalendarEvents().subscribe({
             next: (events) => {
-                this.calendarOptions.update((options) => ({
-                    ...options,
-                    events: events.map((event) => ({
-                        id: event.id,
-                        title: event.title,
-                        start: event.start,
-                        end: event.end,
-                        extendedProps: event.extendedProps,
-                        backgroundColor: event.extendedProps.color,
-                        borderColor: event.extendedProps.color
-                    }))
-                }));
-                this.changeDetector.detectChanges();
+                // Store all events
+                this.allCalendarEvents = events;
+                // Apply campus filter
+                this.filterAndDisplayEvents();
             },
             error: (error) => {
                 console.error('Error loading calendar events:', error);
+            }
+        });
+    }
+
+    filterAndDisplayEvents() {
+        let filteredEvents = this.allCalendarEvents;
+
+        // Filter by campus if selected
+        if (this.selectedCampusFilter) {
+            filteredEvents = this.allCalendarEvents.filter((event) => {
+                const campusId = event.extendedProps?.campusId;
+                return campusId === this.selectedCampusFilter;
+            });
+        }
+
+        // Update calendar with filtered events
+        this.calendarOptions.update((options) => ({
+            ...options,
+            events: filteredEvents.map((event) => ({
+                id: event.id,
+                title: event.title,
+                start: event.start,
+                end: event.end,
+                extendedProps: event.extendedProps,
+                backgroundColor: event.extendedProps.color,
+                borderColor: event.extendedProps.color
+            }))
+        }));
+        this.changeDetector.detectChanges();
+    }
+
+    onCampusFilterChange() {
+        this.filterAndDisplayEvents();
+    }
+
+    loadCampuses() {
+        const apiUrl = `${environment.apiUrl}/campuses`;
+        this.http.get<any[]>(apiUrl).subscribe({
+            next: (data) => {
+                this.campuses = data || [];
+            },
+            error: (error) => {
+                console.error('Error loading campuses:', error);
             }
         });
     }
@@ -606,7 +662,8 @@ export class DashboardSuperAdmin implements OnInit {
                 this.http
                     .post<any>(apiUrl, {
                         title: result.value.title,
-                        description: result.value.description || ''
+                        description: result.value.description || '',
+                        eventDate: selectInfo.start.toISOString()
                     })
                     .subscribe({
                         next: (response: any) => {

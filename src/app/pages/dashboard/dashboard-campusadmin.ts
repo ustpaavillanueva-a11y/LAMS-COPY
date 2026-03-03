@@ -781,7 +781,8 @@ export class DashboardCampusAdmin implements OnInit {
                 this.http
                     .post<any>(apiUrl, {
                         title: result.value.title,
-                        description: result.value.description || ''
+                        description: result.value.description || '',
+                        eventDate: selectInfo.start.toISOString()
                     })
                     .subscribe({
                         next: (response: any) => {
