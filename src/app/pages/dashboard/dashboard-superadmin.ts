@@ -14,6 +14,8 @@ import { CalendarService } from '../service/calendar.service';
 import Swal from 'sweetalert2';
 import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
+import { ActivitiesService, Activity } from '../service/activities.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 const INITIAL_EVENTS = [
     {
@@ -31,7 +33,7 @@ function createEventId() {
 @Component({
     selector: 'app-dashboard-superadmin',
     standalone: true,
-    imports: [CommonModule, UIChart, TableModule, FullCalendarModule, SelectModule, FormsModule],
+    imports: [CommonModule, UIChart, TableModule, FullCalendarModule, SelectModule, FormsModule, ProgressSpinnerModule],
     template: `
         <div class="p-6">
             <!-- Top Row: Campuses, Users, and Calendar -->
@@ -132,43 +134,78 @@ function createEventId() {
             </div>
 
             <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 mt-6">
-                <h3 class="text-xl font-semibold mb-4 dark:text-white">Recent Activity</h3>
-                <p-table
-                    [value]="activities"
-                    [rows]="5"
-                    [paginator]="true"
-                    [rowsPerPageOptions]="[5, 10, 20, 30]"
-                    [rowHover]="true"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} activities"
-                    [showCurrentPageReport]="true"
-                    [tableStyle]="{ 'min-width': '100%' }"
-                >
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="min-width:15rem">Action Type</th>
-                            <th style="min-width:20rem">Target Name</th>
-                            <th style="min-width:18rem">Actor</th>
-                            <th style="min-width:18rem">Timestamp</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-activity>
-                        <tr>
-                            <td>
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getActionTypeClass(activity.actionType)">
-                                    {{ activity.actionType }}
-                                </span>
-                            </td>
-                            <td class="dark:text-white">{{ activity.targetName }}</td>
-                            <td class="dark:text-white">{{ activity.actor?.firstName }} {{ activity.actor?.lastName }}</td>
-                            <td class="dark:text-gray-400">{{ activity.timestamp | date: 'short' }}</td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="4" class="text-center py-5 dark:text-gray-400">No activities found</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-1 dark:text-white">Recent Activity</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">View system activity history and logs</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activity View -->
+                <ng-container>
+                    <!-- Loading Spinner -->
+                    <div *ngIf="isLoadingSystemLogs" class="flex justify-center items-center py-8">
+                        <p-progressSpinner />
+                    </div>
+
+                    <!-- Table -->
+                    <p-table
+                        [value]="systemLogs"
+                        [rows]="10"
+                        [paginator]="true"
+                        [rowsPerPageOptions]="[10, 20, 50]"
+                        [tableStyle]="{ 'min-width': '100%' }"
+                        [loading]="isLoadingSystemLogs"
+                        *ngIf="!isLoadingSystemLogs && systemLogs.length > 0"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} activities"
+                        [showCurrentPageReport]="true"
+                    >
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 20%">Trans #</th>
+                                <th style="width: 25%">Date/Time</th>
+                                <th style="width: 55%">Activities</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-row>
+                            <tr>
+                                <td>
+                                    <span class="font-semibold text-blue-600">{{ row.activityId }}</span>
+                                </td>
+                                <td class="dark:text-white">
+                                    {{ formatDateTime(row.timestamp) }}
+                                </td>
+                                <td>
+                                    <div class="flex flex-col gap-1">
+                                        <div>
+                                            <span class="font-semibold dark:text-white">{{ getActivityTitle(row) }}</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                                            {{ row.description }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                            <span [ngClass]="getStatusClass(row.status)" class="px-2 py-1 rounded">{{ row.status }}</span>
+                                            <span class="ml-2">{{ row.userRole }}</span>
+                                            <span class="ml-2">by {{ row.actor?.firstName }} {{ row.actor?.lastName }}</span>
+                                            <span class="ml-2" *ngIf="row.ipAddress">IP: {{ row.ipAddress }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="3" class="text-center py-4 dark:text-gray-400">No system logs found.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+                    <!-- Empty State -->
+                    <div *ngIf="!isLoadingSystemLogs && systemLogs.length === 0" class="text-center py-8 text-gray-600 dark:text-gray-400">
+                        <i class="pi pi-inbox text-4xl mb-3"></i>
+                        <p>No system logs found.</p>
+                    </div>
+                </ng-container>
             </div>
         </div>
     `,
@@ -288,6 +325,8 @@ export class DashboardSuperAdmin implements OnInit {
     maintenanceRequestsChartData: any;
     chartOptions: any;
     activities: any[] = [];
+    systemLogs: Activity[] = [];
+    isLoadingSystemLogs = false;
     campuses: any[] = [];
     selectedCampusFilter: string | null = null;
     allCalendarEvents: any[] = [];
@@ -297,7 +336,8 @@ export class DashboardSuperAdmin implements OnInit {
     constructor(
         private http: HttpClient,
         private changeDetector: ChangeDetectorRef,
-        private calendarService: CalendarService
+        private calendarService: CalendarService,
+        private activitiesService: ActivitiesService
     ) {}
 
     ngOnInit() {
@@ -307,7 +347,7 @@ export class DashboardSuperAdmin implements OnInit {
         this.loadLaboratoryCount();
         this.loadAssetsByCampus();
         this.loadMaintenanceRequestsByCampus();
-        this.loadActivities();
+        this.loadSystemLogs(); // Load system logs by default for SuperAdmin
         this.loadCampuses();
         this.loadCalendarEvents();
         this.initChartOptions();
@@ -431,6 +471,20 @@ export class DashboardSuperAdmin implements OnInit {
         });
     }
 
+    loadSystemLogs(): void {
+        this.isLoadingSystemLogs = true;
+        this.activitiesService.getSystemLogs().subscribe({
+            next: (response) => {
+                this.systemLogs = response.activities;
+                this.isLoadingSystemLogs = false;
+            },
+            error: (error) => {
+                console.error('Error loading system logs:', error);
+                this.isLoadingSystemLogs = false;
+            }
+        });
+    }
+
     generateColors(count: number): Array<{ bg: string; border: string }> {
         const colorPalette = [
             { bg: 'rgba(59, 130, 246, 0.6)', border: 'rgb(59, 130, 246)' }, // Blue
@@ -543,6 +597,42 @@ export class DashboardSuperAdmin implements OnInit {
             USER_DELETED: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
         };
         return classes[actionType] || 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+    }
+
+    getActivityTitle(activity: Activity): string {
+        const actionType = activity.actionType || '';
+        const entityType = activity.entityType || '';
+
+        // Format action type to readable text
+        const formatted = actionType
+            .split('_')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+
+        return `${formatted} - ${activity.targetName || entityType}`;
+    }
+
+    formatDateTime(timestamp: string): string {
+        const date = new Date(timestamp);
+        return date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+    }
+
+    getStatusClass(status: string): string {
+        if (status === 'Success') {
+            return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+        } else if (status === 'Failed') {
+            return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+        } else {
+            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+        }
     }
 
     //// Load Calendar Events
