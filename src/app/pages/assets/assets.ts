@@ -225,8 +225,8 @@ import Swal from 'sweetalert2';
                         <button pButton icon="pi pi-qrcode" class="p-button-rounded p-button-text" (click)="viewQrCode(asset.qrCode)" pTooltip="View QR Code"></button>
                     </td>
                     <td>
-                        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning" (click)="edit(asset)" pTooltip="Edit"></button>
-                        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="delete(asset)" pTooltip="Delete"></button>
+                        <button *ngIf="!isFaculty" pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning" (click)="edit(asset)" pTooltip="Edit"></button>
+                        <button *ngIf="!isFaculty" pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="delete(asset)" pTooltip="Delete"></button>
                         <button pButton icon="pi pi-wrench" class="p-button-rounded p-button-text p-button-info" (click)="requestMaintenance(asset)" pTooltip="Request Maintenance"></button>
                     </td>
                 </tr>
@@ -645,9 +645,19 @@ export class AssetsComponent implements OnInit {
 
     checkUserRole() {
         const currentUser = this.authService.getCurrentUser();
+        console.log('=== CHECK USER ROLE (Assets Page) ===');
+        console.log('Current User:', currentUser);
+        console.log('User Role:', currentUser?.role);
+
         this.isLabTech = currentUser?.role === 'LabTech';
         this.isSuperAdmin = currentUser?.role === 'SuperAdmin';
         this.isFaculty = currentUser?.role === 'Faculty';
+
+        console.log('isLabTech:', this.isLabTech);
+        console.log('isSuperAdmin:', this.isSuperAdmin);
+        console.log('isFaculty:', this.isFaculty);
+        console.log('isCampusAdmin:', this.isCampusAdmin());
+        console.log('===================================');
     }
 
     isCampusAdmin(): boolean {
@@ -1538,11 +1548,21 @@ export class AssetsComponent implements OnInit {
     }
 
     requestMaintenance(item: Asset) {
+        console.log('=== REQUEST MAINTENANCE ===');
+        console.log('Asset:', item);
+        console.log('Asset ID:', item?.assetId);
+        console.log('User Role - isFaculty:', this.isFaculty);
+        console.log('User Role - isLabTech:', this.isLabTech);
+        console.log('User Role - isSuperAdmin:', this.isSuperAdmin);
+
         if (!item?.assetId) {
             this.messageService.add({ severity: 'warn', summary: 'Missing ID', detail: 'Asset ID is required to request maintenance' });
+            console.log('ERROR: Missing asset ID');
             return;
         }
-        this.router.navigate(['/requestmaintenance'], { queryParams: { assetId: item.assetId } });
+
+        console.log('Opening maintenance request dialog');
+        this.openRequestDialog(item);
     }
 
     exportCSV() {
