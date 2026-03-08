@@ -95,15 +95,15 @@ export function createEventId() {
                 </div>
             </div> -->
 
-            <!-- Lab schedule mock charts row -->
+            <!-- Lab schedule charts row -->
             <div class="flex flex-col md:flex-row gap-6 mt-6">
                 <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-96">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Schedules by Day (Mock)</h3>
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Schedules by Day</h3>
                     <p-chart type="bar" [data]="scheduleByDayChartData" [options]="barChartOptions"></p-chart>
                 </div>
 
                 <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-96">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Schedules by Laboratory (Mock)</h3>
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Schedules by Laboratory</h3>
                     <p-chart type="bar" [data]="scheduleByLabChartData" [options]="horizontalChartOptions"></p-chart>
                 </div>
             </div>
@@ -238,7 +238,7 @@ export class DashboardLabTech implements OnInit {
         this.loadAssetsByBrand();
         this.initBarOptions();
         this.initHorizontalBarOptions();
-        this.initMockScheduleCharts();
+        this.loadScheduleCharts(); // Changed from initMockScheduleCharts
     }
 
     loadOverdueApprovalsCount() {
@@ -425,6 +425,193 @@ export class DashboardLabTech implements OnInit {
                     grid: { display: false, drawBorder: false }
                 }
             }
+        };
+    }
+
+    loadScheduleCharts() {
+        console.log('=== LOADING SCHEDULE CHARTS DATA ===');
+
+        // First, fetch all laboratories
+        const laboratoriesUrl = `${environment.apiUrl}/laboratories`;
+
+        this.http.get<any[]>(laboratoriesUrl).subscribe({
+            next: (labs) => {
+                console.log('Laboratories fetched:', labs?.length || 0);
+
+                if (!labs || labs.length === 0) {
+                    console.log('No laboratories found');
+                    this.initEmptyScheduleCharts();
+                    return;
+                }
+
+                // Fetch schedules for all laboratories
+                const scheduleRequests = labs.map((lab) => this.http.get<any[]>(`${environment.apiUrl}/laboratories/${lab.laboratoryId}/schedules`));
+
+                // Wait for all schedule requests to complete
+                const allSchedules: any[] = [];
+                let completedRequests = 0;
+
+                scheduleRequests.forEach((request, index) => {
+                    request.subscribe({
+                        next: (schedules) => {
+                            if (schedules && schedules.length > 0) {
+                                allSchedules.push(...schedules);
+                            }
+                            completedRequests++;
+
+                            // When all requests are done, process the data
+                            if (completedRequests === scheduleRequests.length) {
+                                console.log('Total schedules fetched:', allSchedules.length);
+                                console.log('Sample schedule:', allSchedules[0]);
+
+                                if (allSchedules.length > 0) {
+                                    const dayCount = this.countSchedulesByDay(allSchedules);
+                                    this.populateScheduleByDayChart(dayCount);
+
+                                    const labCount = this.countSchedulesByLaboratory(allSchedules);
+                                    this.populateScheduleByLabChart(labCount);
+                                } else {
+                                    this.initEmptyScheduleCharts();
+                                }
+
+                                console.log('===================================');
+                            }
+                        },
+                        error: (error) => {
+                            console.error(`Error loading schedules for lab ${index}:`, error);
+                            completedRequests++;
+
+                            if (completedRequests === scheduleRequests.length) {
+                                console.log('Total schedules fetched:', allSchedules.length);
+                                if (allSchedules.length > 0) {
+                                    const dayCount = this.countSchedulesByDay(allSchedules);
+                                    this.populateScheduleByDayChart(dayCount);
+
+                                    const labCount = this.countSchedulesByLaboratory(allSchedules);
+                                    this.populateScheduleByLabChart(labCount);
+                                } else {
+                                    this.initEmptyScheduleCharts();
+                                }
+                                console.log('===================================');
+                            }
+                        }
+                    });
+                });
+            },
+            error: (error) => {
+                console.error('Error loading laboratories for schedule charts:', error);
+                this.initEmptyScheduleCharts();
+            }
+        });
+    }
+
+    countSchedulesByDay(schedules: any[]): Map<string, number> {
+        const dayCount = new Map<string, number>();
+        const daysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        // Initialize all days with 0
+        daysOrder.forEach((day) => dayCount.set(day, 0));
+
+        // Count schedules by day
+        schedules.forEach((schedule) => {
+            const day = schedule.dayOfWeek || schedule.day;
+            if (day) {
+                const currentCount = dayCount.get(day) || 0;
+                dayCount.set(day, currentCount + 1);
+            }
+        });
+
+        console.log('Schedule count by day:', Object.fromEntries(dayCount));
+        return dayCount;
+    }
+
+    countSchedulesByLaboratory(schedules: any[]): Map<string, number> {
+        const labCount = new Map<string, number>();
+
+        schedules.forEach((schedule) => {
+            // Handle different laboratory property formats
+            const labName = schedule.laboratory?.laboratoryName || schedule.laboratory?.labName || schedule.laboratoryName || 'Unknown Lab';
+
+            const currentCount = labCount.get(labName) || 0;
+            labCount.set(labName, currentCount + 1);
+        });
+
+        console.log('Schedule count by laboratory:', Object.fromEntries(labCount));
+        return labCount;
+    }
+
+    populateScheduleByDayChart(dayCount: Map<string, number>) {
+        const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const fullDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const dayCounts = fullDays.map((day) => dayCount.get(day) || 0);
+        const dayColors = this.generateColors(dayLabels.length);
+
+        this.scheduleByDayChartData = {
+            labels: dayLabels,
+            datasets: [
+                {
+                    label: 'Schedules',
+                    data: dayCounts,
+                    backgroundColor: dayColors.map((c) => c.bg),
+                    borderColor: dayColors.map((c) => c.border),
+                    borderWidth: 1
+                }
+            ]
+        };
+    }
+
+    populateScheduleByLabChart(labCount: Map<string, number>) {
+        // Convert map to arrays and sort by count (descending)
+        const labEntries = Array.from(labCount.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10); // Top 10 laboratories
+
+        const labLabels = labEntries.map((entry) => entry[0]);
+        const labCounts = labEntries.map((entry) => entry[1]);
+        const labColors = this.generateColors(labLabels.length);
+
+        this.scheduleByLabChartData = {
+            labels: labLabels,
+            datasets: [
+                {
+                    label: 'Schedules',
+                    data: labCounts,
+                    backgroundColor: labColors.map((c) => c.bg),
+                    borderColor: labColors.map((c) => c.border),
+                    borderWidth: 1
+                }
+            ]
+        };
+    }
+
+    initEmptyScheduleCharts() {
+        const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const dayColors = this.generateColors(dayLabels.length);
+
+        this.scheduleByDayChartData = {
+            labels: dayLabels,
+            datasets: [
+                {
+                    label: 'Schedules',
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: dayColors.map((c) => c.bg),
+                    borderColor: dayColors.map((c) => c.border),
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        this.scheduleByLabChartData = {
+            labels: ['No Data'],
+            datasets: [
+                {
+                    label: 'Schedules',
+                    data: [0],
+                    backgroundColor: ['rgba(209, 213, 219, 0.7)'],
+                    borderColor: ['rgb(209, 213, 219)'],
+                    borderWidth: 1
+                }
+            ]
         };
     }
 
