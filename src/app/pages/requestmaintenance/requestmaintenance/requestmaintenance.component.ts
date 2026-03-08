@@ -720,10 +720,15 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     loadItems() {
+        console.log('=== LOADING MAINTENANCE REQUESTS ===');
         this.loading = true;
         this.maintenanceService.getMaintenanceRequests?.()?.subscribe({
             next: (data: any[]) => {
+                console.log('Raw maintenance requests data:', data);
+                console.log('Total requests fetched:', data?.length || 0);
+
                 if (data && data.length > 0) {
+                    console.log('Sample request:', data[0]);
                 }
                 this.items = data || [];
                 this.categorizeItems();
@@ -731,6 +736,7 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
                 this.loading = false;
             },
             error: (error: any) => {
+                console.error('Error loading maintenance requests:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -742,15 +748,23 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     loadApprovals() {
+        console.log('=== LOADING MAINTENANCE APPROVALS ===');
         this.maintenanceService.getMaintenanceApprovals().subscribe({
             next: (data: any[]) => {
+                console.log('Raw approvals data:', data);
+                console.log('Total approvals fetched:', data?.length || 0);
+
                 const allApprovals = data || [];
 
                 // Separate into approved (not completed) and completed
                 this.approvedItems = allApprovals.filter((item) => !item.isCompleted);
                 this.completedApprovedItems = allApprovals.filter((item) => item.isCompleted);
 
+                console.log('--- APPROVED TAB DATA ---');
+                console.log('Approved items (not completed):', this.approvedItems.length);
                 console.table(this.approvedItems);
+                console.log('Completed approved items:', this.completedApprovedItems.length);
+                console.log('==========================');
             },
             error: (error: any) => {
                 console.error('Error loading maintenance approvals:', error);
@@ -760,8 +774,18 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     categorizeItems() {
+        console.log('=== CATEGORIZING ITEMS ===');
         this.pendingItems = this.items.filter((item) => item.maintenanceStatus?.requestStatusName?.toLowerCase() === 'pending');
         this.completedItems = this.items.filter((item) => item.maintenanceStatus?.requestStatusName?.toLowerCase() === 'completed');
+
+        console.log('--- PENDING TAB DATA ---');
+        console.log('Pending items:', this.pendingItems.length);
+        console.table(this.pendingItems);
+
+        console.log('--- COMPLETED TAB DATA ---');
+        console.log('Completed items:', this.completedItems.length);
+        console.table(this.completedItems);
+        console.log('========================');
     }
 
     filterByTab() {
@@ -779,8 +803,21 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     }
 
     onActiveIndexChange(index: number) {
+        const tabNames = ['Pending', 'Approved', 'Completed'];
+        console.log(`=== TAB CHANGED TO: ${tabNames[index]} ===`);
+        console.log('Active tab index:', index);
+
         this.activeTabIndex = index;
         this.selectedItems = [];
+
+        if (index === 0) {
+            console.log('Showing pending items:', this.pendingItems.length);
+        } else if (index === 1) {
+            console.log('Showing approved items:', this.approvedItems.length);
+        } else if (index === 2) {
+            console.log('Showing completed items:', this.completedItems.length);
+        }
+        console.log('==============================');
     }
 
     filter() {
