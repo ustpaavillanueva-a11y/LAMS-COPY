@@ -165,47 +165,6 @@ function createEventId() {
                     </div>
                 </div>
             </div>
-
-            <!-- Recent Activity Table -->
-            <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 mt-6 w-full">
-                <h3 class="text-xl font-semibold mb-4 dark:text-white">Recent Activity</h3>
-                <p-table
-                    [value]="activities"
-                    [rows]="5"
-                    [paginator]="true"
-                    [rowsPerPageOptions]="[5, 10, 20, 30]"
-                    [rowHover]="true"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} activities"
-                    [showCurrentPageReport]="true"
-                    [tableStyle]="{ 'min-width': '100%' }"
-                >
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="min-width:15rem">Action Type</th>
-                            <th style="min-width:20rem">Target Name</th>
-                            <th style="min-width:18rem">Actor</th>
-                            <th style="min-width:18rem">Timestamp</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-activity>
-                        <tr>
-                            <td>
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getActionTypeClass(activity.actionType)">
-                                    {{ activity.actionType }}
-                                </span>
-                            </td>
-                            <td class="dark:text-white">{{ activity.targetName }}</td>
-                            <td class="dark:text-white">{{ activity.actor?.firstName }} {{ activity.actor?.lastName }}</td>
-                            <td class="dark:text-gray-400">{{ activity.timestamp | date: 'short' }}</td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="4" class="text-center py-5 dark:text-gray-400">No activities found</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
         </div>
     `,
     styles: [
@@ -391,7 +350,6 @@ export class DashboardCampusAdmin implements OnInit {
     maintenanceStatusChartData: any;
     chartOptions: any;
     donutChartOptions: any;
-    activities: any[] = [];
 
     // Calendar properties
     calendarOptions = signal<CalendarOptions>({
@@ -454,7 +412,6 @@ export class DashboardCampusAdmin implements OnInit {
         this.loadAssetsByLaboratory();
         this.loadMaintenanceRequestsByLaboratory();
         this.loadMaintenanceStatus();
-        this.loadActivities();
         this.loadCalendarEvents();
         this.initChartOptions();
         this.initDonutChartOptions();
@@ -945,25 +902,6 @@ export class DashboardCampusAdmin implements OnInit {
                 }
             }
         };
-    }
-
-    loadActivities() {
-        // Activities endpoint not available - using empty array for now
-        // TODO: Implement activities endpoint or use alternative data source
-        console.log('Activities endpoint not available');
-        this.activities = [];
-    }
-
-    getActionTypeClass(actionType: string): string {
-        const classes: { [key: string]: string } = {
-            ASSET_CREATED: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
-            ASSET_UPDATED: 'bg-cyan-100 dark:bg-cyan-900 text-cyan-700 dark:text-cyan-300',
-            ASSET_DELETED: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
-            USER_REGISTERED: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
-            USER_UPDATED: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300',
-            USER_DELETED: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
-        };
-        return classes[actionType] || 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
     }
 
     //// Load Calendar Events

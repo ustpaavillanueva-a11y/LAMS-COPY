@@ -114,7 +114,7 @@ import { ToastModule } from 'primeng/toast';
                                 <td>{{ item.equipment?.assetId || 'N/A' }}</td>
 
                                 <td style="text-align:left">
-                                    {{ item.equipment?.assetName || 'N/A' }}
+                                    {{ item.equipment?.equipmentName || 'N/A' }}
                                 </td>
 
                                 <td>{{ item.quantity || 1 }}</td>
@@ -169,42 +169,109 @@ import { ToastModule } from 'primeng/toast';
         </div>
 
         <!-- EDIT DIALOG -->
-        <p-dialog [(visible)]="showEditDialog" [modal]="true" [style]="{ width: '600px' }" [draggable]="false" [resizable]="false">
+        <p-dialog [(visible)]="showEditDialog" [modal]="true" [style]="{ width: '650px' }" [draggable]="false" [resizable]="false" styleClass="maintenance-dialog">
             <ng-template pTemplate="header">
-                <h3 style="margin: 0">Edit {{ getMaintenanceTypeTitle() }} Schedule</h3>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                        <i class="pi pi-calendar text-white" style="font-size: 24px;"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1e293b;">Edit {{ getMaintenanceTypeTitle() }} Schedule</h3>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">Manage maintenance dates for equipment</p>
+                    </div>
+                </div>
             </ng-template>
 
-            <div style="padding: 20px">
-                <p style="margin-bottom: 20px; color: #64748b"><strong>Equipment:</strong> {{ selectedEquipment?.equipment?.assetName }}</p>
-
-                <div style="margin-bottom: 15px">
-                    <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #475569"> Select Dates for {{ getMaintenanceTypeTitle() }} </label>
-                    <p style="font-size: 13px; color: #64748b; margin-bottom: 10px">Click on dates to add/remove maintenance schedules</p>
-                    <input
-                        type="date"
-                        (change)="onDateSelected($event)"
-                        min="{{ selectedYear }}-01-01"
-                        max="{{ selectedYear }}-12-31"
-                        class="date-input"
-                        style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; margin-bottom: 15px;"
-                    />
+            <div style="padding: 24px;">
+                <!-- Equipment Info Card -->
+                <div style="padding: 16px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 12px; border: 2px solid #667eea30; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="pi pi-box text-white" style="font-size: 20px;"></i>
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Equipment</p>
+                            <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ selectedEquipment?.equipment?.equipmentName }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; max-height: 300px; overflow-y: auto;">
-                    <p style="font-weight: 600; color: #475569; margin-bottom: 10px">Selected Dates:</p>
-                    <div *ngIf="selectedDates.length === 0" style="color: #94a3b8; font-style: italic">No dates selected</div>
-                    <div *ngFor="let date of selectedDates" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border-radius: 6px; margin-bottom: 8px; border: 1px solid #e2e8f0">
-                        <span style="color: #334155">{{ formatDisplayDate(date) }}</span>
-                        <button (click)="removeDate(date)" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px 8px; font-weight: 600">
-                            <i class="pi pi-times"></i>
-                        </button>
+                <!-- Date Picker Section -->
+                <div style="margin-bottom: 24px;">
+                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-weight: 600; font-size: 15px; color: #334155;">
+                        <i class="pi pi-calendar-plus" style="color: #667eea;"></i>
+                        Select Maintenance Dates
+                    </label>
+                    <p style="font-size: 13px; color: #64748b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                        <i class="pi pi-info-circle" style="font-size: 14px;"></i>
+                        Choose dates when maintenance should be performed
+                    </p>
+                    <div style="position: relative;">
+                        <input
+                            type="date"
+                            (change)="onDateSelected($event)"
+                            min="{{ selectedYear }}-01-01"
+                            max="{{ selectedYear }}-12-31"
+                            class="date-input"
+                            style="width: 100%; padding: 14px 16px; padding-left: 48px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-weight: 500; transition: all 0.2s; outline: none; color: #334155;"
+                        />
+                        <i class="pi pi-calendar" style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 16px; pointer-events: none;"></i>
+                    </div>
+                </div>
+
+                <!-- Selected Dates Section -->
+                <div style="background: #f8fafc; border-radius: 12px; padding: 20px; border: 2px solid #e2e8f0;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                        <p style="margin: 0; font-weight: 600; font-size: 15px; color: #334155; display: flex; align-items: center; gap: 8px;">
+                            <i class="pi pi-check-circle" style="color: #10b981;"></i>
+                            Selected Dates
+                        </p>
+                        <span style="background: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+                            {{ selectedDates.length }}
+                        </span>
+                    </div>
+
+                    <div style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
+                        <div *ngIf="selectedDates.length === 0" style="text-align: center; padding: 32px 20px;">
+                            <i class="pi pi-calendar" style="font-size: 48px; color: #cbd5e1; margin-bottom: 12px;"></i>
+                            <p style="color: #94a3b8; font-style: italic; margin: 0; font-size: 14px;">No dates selected yet</p>
+                            <p style="color: #cbd5e1; font-size: 12px; margin: 4px 0 0 0;">Add dates using the calendar above</p>
+                        </div>
+
+                        <div
+                            *ngFor="let date of selectedDates; let i = index"
+                            style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: white; border-radius: 10px; margin-bottom: 10px; border: 2px solid #e2e8f0; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+                        >
+                            <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                                <div style="width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <span style="color: white; font-weight: 700; font-size: 14px;">{{ i + 1 }}</span>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; font-weight: 600; color: #1e293b; font-size: 15px;">{{ formatDisplayDate(date) }}</p>
+                                    <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">{{ getMaintenanceTypeTitle() }} maintenance</p>
+                                </div>
+                            </div>
+                            <button
+                                (click)="removeDate(date)"
+                                style="background: #fee2e2; border: none; color: #ef4444; cursor: pointer; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; transition: all 0.2s; display: flex; align-items: center; gap: 6px;"
+                                onmouseover="this.style.background='#fecaca'; this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.background='#fee2e2'; this.style.transform='scale(1)'"
+                            >
+                                <i class="pi pi-trash" style="font-size: 13px;"></i>
+                                Remove
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <ng-template pTemplate="footer">
-                <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="showEditDialog = false"></p-button>
-                <p-button label="Save Changes" severity="primary" (onClick)="saveMaintenanceChanges()"></p-button>
+                <div style="display: flex; gap: 12px; padding: 16px 24px; border-top: 2px solid #f1f5f9;">
+                    <p-button label="Cancel" icon="pi pi-times" severity="secondary" [outlined]="true" (onClick)="showEditDialog = false" styleClass="flex-1"></p-button>
+                    <p-button label="Save Changes" icon="pi pi-check" severity="primary" (onClick)="saveMaintenanceChanges()" styleClass="flex-1"></p-button>
+                </div>
             </ng-template>
         </p-dialog>
 
@@ -349,6 +416,50 @@ import { ToastModule } from 'primeng/toast';
                 display: inline-block;
                 padding-right: 20px;
             }
+
+            /* ENHANCED MODAL STYLES */
+            :host ::ng-deep .maintenance-dialog .p-dialog-header {
+                padding: 24px 24px 20px 24px;
+                border-bottom: 2px solid #f1f5f9;
+            }
+
+            :host ::ng-deep .maintenance-dialog .p-dialog-content {
+                padding: 0;
+            }
+
+            :host ::ng-deep .maintenance-dialog .p-dialog-footer {
+                padding: 0;
+                border-top: none;
+            }
+
+            /* Date Input Focus */
+            .date-input:focus {
+                border-color: #667eea !important;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+            }
+
+            .date-input:hover {
+                border-color: #cbd5e1;
+            }
+
+            /* Scrollbar Styling */
+            :host ::ng-deep .maintenance-dialog ::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            :host ::ng-deep .maintenance-dialog ::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 10px;
+            }
+
+            :host ::ng-deep .maintenance-dialog ::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+
+            :host ::ng-deep .maintenance-dialog ::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
         `
     ]
 })
@@ -402,13 +513,12 @@ export class MasterPlanComponent implements OnInit {
     }
 
     fetchMasterPlanData() {
-        const apiUrl = `${environment.apiUrl}/reports/master-plan/annual`;
+        const apiUrl = `${environment.apiUrl}/laboratories/${this.selectedLaboratory}/maintenance-plans`;
 
         this.http
             .get<any>(apiUrl, {
                 params: {
-                    year: this.selectedYear,
-                    laboratoryId: this.selectedLaboratory
+                    year: this.selectedYear
                 }
             })
             .subscribe((data) => {
@@ -442,30 +552,34 @@ export class MasterPlanComponent implements OnInit {
     getScheduleText(item: any, type: string) {
         if (!item?.monthlyData) return '-';
 
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
         // For inventory, check both inventoryCreated and inventoryUpdated
         if (type === 'inventory') {
-            const inventoryMonths = item.monthlyData
+            const inventoryDays = item.monthlyData
                 .filter((m: any) => {
                     const created = m.maintenance?.inventoryCreated;
                     const updated = m.maintenance?.inventoryUpdated;
                     return (created && created !== '') || (updated && updated !== '');
                 })
-                .map((m: any) => months[m.month - 1]);
-            return inventoryMonths.join(', ') || '-';
+                .map((m: any) => {
+                    const dateStr = m.maintenance?.inventoryCreated || m.maintenance?.inventoryUpdated;
+                    const date = new Date(dateStr);
+                    return date.getDate();
+                });
+            return inventoryDays.join(', ') || '-';
         }
 
         // For preventive, corrective, calibration
-        return (
-            item.monthlyData
-                .filter((m: any) => {
-                    const value = m.maintenance?.[type];
-                    return value && value !== '';
-                })
-                .map((m: any) => months[m.month - 1])
-                .join(', ') || '-'
-        );
+        const days = item.monthlyData
+            .filter((m: any) => {
+                const value = m.maintenance?.[type];
+                return value && value !== '';
+            })
+            .map((m: any) => {
+                const dateStr = m.maintenance?.[type];
+                const date = new Date(dateStr);
+                return date.getDate();
+            });
+        return days.join(', ') || '-';
     }
 
     saveExcelFile(buffer: any): void {
@@ -599,49 +713,33 @@ export class MasterPlanComponent implements OnInit {
 
     formatDisplayDate(dateStr: string): string {
         const date = new Date(dateStr);
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        return `${date.getDate()}`;
     }
 
     saveMaintenanceChanges() {
         const updates: Promise<any>[] = [];
 
-        // Create a map of month numbers to selected dates in that month
-        const monthDateMap = new Map<number, string>();
+        const assetId = this.selectedEquipment?.equipment?.assetId;
 
+        if (!assetId) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Asset ID not found'
+            });
+            return;
+        }
+
+        // Create a POST request for each selected date
         this.selectedDates.forEach((dateStr) => {
-            const date = new Date(dateStr);
-            const month = date.getMonth() + 1; // 1-12
-            // If multiple dates in same month, keep the first one
-            if (!monthDateMap.has(month)) {
-                monthDateMap.set(month, dateStr);
-            }
-        });
+            const payload = {
+                assetId: assetId,
+                maintenanceType: this.editMaintenanceType,
+                scheduledDate: dateStr
+            };
 
-        // Update all months
-        this.editMonthlyData.forEach((month) => {
-            if (!month.recordId) {
-                console.warn(`No record ID for ${month.monthName}`);
-                return;
-            }
-
-            const payload: any = {};
-            const dateForMonth = monthDateMap.get(month.month);
-
-            if (this.editMaintenanceType === 'inventory') {
-                if (dateForMonth) {
-                    payload.inventoryCreated = dateForMonth;
-                    payload.inventoryUpdated = dateForMonth;
-                } else {
-                    payload.inventoryCreated = '';
-                    payload.inventoryUpdated = '';
-                }
-            } else {
-                payload[this.editMaintenanceType] = dateForMonth || '';
-            }
-
-            const apiUrl = `${environment.apiUrl}/reports/master-plan/records/${month.recordId}`;
-            updates.push(this.http.patch(apiUrl, payload).toPromise());
+            const apiUrl = `${environment.apiUrl}/laboratories/${this.selectedLaboratory}/maintenance-plans`;
+            updates.push(this.http.post(apiUrl, payload).toPromise());
         });
 
         Promise.all(updates)
