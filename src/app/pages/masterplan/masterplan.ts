@@ -527,11 +527,47 @@ export class MasterPlanComponent implements OnInit {
                 }
             })
             .subscribe((data) => {
-                console.log(data);
+                console.log('=== MASTER PLAN DATA ===');
+                console.log('Raw data:', data);
 
                 let allEquipment = data.equipmentMaintenances || [];
 
-                this.equipmentList = this.selectedCategory ? allEquipment.filter((x: any) => x.equipment?.category === this.selectedCategory) : allEquipment;
+                // Split equipment with multiple serial numbers for display
+                const expandedEquipment: any[] = [];
+
+                allEquipment.forEach((item: any) => {
+                    const serialNumber = item.equipment?.serialNumber;
+
+                    // Check if serial number contains comma (multiple serials)
+                    if (serialNumber && serialNumber.includes(',')) {
+                        // Split by comma and create one row per serial
+                        const serials = serialNumber.split(',').map((s: string) => s.trim());
+                        console.log(`📦 Expanding equipment ${item.equipment?.assetId}: ${serials.length} serials`);
+
+                        serials.forEach((serial: string, index: number) => {
+                            // Create a copy of the equipment for each serial
+                            const expandedItem = {
+                                ...item,
+                                equipment: {
+                                    ...item.equipment,
+                                    serialNumber: serial
+                                },
+                                quantity: 1, // 1 per row
+                                _displayId: `${item.equipment?.assetId}_${index}` // Unique identifier
+                            };
+                            expandedEquipment.push(expandedItem);
+                        });
+                    } else {
+                        // Single serial number, add as-is
+                        expandedEquipment.push(item);
+                    }
+                });
+
+                console.log('Expanded equipment for display:', expandedEquipment.length);
+                console.log('========================');
+
+                // Apply category filter to expanded list
+                this.equipmentList = this.selectedCategory ? expandedEquipment.filter((x: any) => x.equipment?.category === this.selectedCategory) : expandedEquipment;
             });
     }
 
