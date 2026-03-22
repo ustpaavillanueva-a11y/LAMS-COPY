@@ -196,6 +196,7 @@ import Swal from 'sweetalert2';
                     <th pSortableColumn="assetId" style="width:7rem">Asset ID <p-sortIcon field="assetId" /></th>
                     <th pSortableColumn="assetName" style="width:8rem">Asset Name <p-sortIcon field="assetName" /></th>
                     <th style="width:7rem">Property Number</th>
+                    <th style="width:7rem">Serial Number</th>
                     <th style="width:7rem">Campus</th>
                     <th style="width:7rem">Lab</th>
                     <th style="width:7rem">Issued To</th>
@@ -212,6 +213,7 @@ import Swal from 'sweetalert2';
                     <td>{{ getShortAssetId(asset.assetId) }}</td>
                     <td>{{ asset.assetName }}</td>
                     <td>{{ asset.propertyNumber }}</td>
+                    <td>{{ asset.inventoryCustodianSlip?.serialNumber || 'N/A' }}</td>
                     <td>{{ asset.campus?.campusName || 'N/A' }}</td>
                     <td>{{ asset.laboratories?.laboratoryName || 'N/A' }}</td>
                     <td>{{ asset.issuedTo || 'Not assigned' }}</td>
@@ -356,8 +358,21 @@ import Swal from 'sweetalert2';
                                 />
                             </div>
                             <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Quantity *</label>
-                                <p-inputNumber [(ngModel)]="newAsset.inventoryCustodianSlip.quantity" [useGrouping]="false" placeholder="Enter quantity" class="w-full" />
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">
+                                    Quantity *
+                                    <span style="font-size: 11px; font-weight: 400; color: #64748b; margin-left: 8px;">(Auto-set based on serial numbers)</span>
+                                </label>
+                                <p-inputNumber
+                                    [(ngModel)]="newAsset.inventoryCustodianSlip.quantity"
+                                    [useGrouping]="false"
+                                    placeholder="Auto-calculated from serial numbers"
+                                    class="w-full"
+                                    [readonly]="serialNumbers.length > 0"
+                                    [disabled]="serialNumbers.length > 0"
+                                />
+                                <p *ngIf="serialNumbers.length > 0" style="margin: 4px 0 0 0; font-size: 11px; color: #10b981;">
+                                    <i class="pi pi-info-circle"></i> Quantity automatically set to {{ serialNumbers.length }} (matching serial numbers count)
+                                </p>
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Unit of Measure *</label>
@@ -424,13 +439,55 @@ import Swal from 'sweetalert2';
                                 />
                             </div>
                             <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Serial Number</label>
-                                <input
-                                    pInputText
-                                    [(ngModel)]="newAsset.inventoryCustodianSlip.serialNumber"
-                                    placeholder="Serial number"
-                                    style="width: 100%; padding: 11px 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 13px; background: #fafafa; transition: all 0.3s;"
-                                />
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;"> Serial Number(s) * </label>
+
+                                <!-- Info box -->
+                                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; display: flex; gap: 10px; align-items: start;">
+                                    <i class="pi pi-info-circle" style="color: #3b82f6; font-size: 16px; margin-top: 2px;"></i>
+                                    <div style="flex: 1;">
+                                        <p style="margin: 0; font-size: 12px; color: #1e40af; font-weight: 600; margin-bottom: 4px;">Multiple Serial Numbers</p>
+                                        <p style="margin: 0; font-size: 11px; color: #1e3a8a; line-height: 1.4;">Add multiple serial numbers for this asset. Each serial will be displayed as a separate row in the table for easier tracking.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Input to add serial numbers -->
+                                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                                    <input
+                                        pInputText
+                                        [(ngModel)]="tempSerialNumber"
+                                        placeholder="Enter serial number"
+                                        (keyup.enter)="addSerialNumber()"
+                                        style="flex: 1; padding: 11px 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 13px; background: #fafafa; transition: all 0.3s;"
+                                    />
+                                    <button
+                                        pButton
+                                        type="button"
+                                        icon="pi pi-plus"
+                                        label="Add"
+                                        (click)="addSerialNumber()"
+                                        [disabled]="!tempSerialNumber || !tempSerialNumber.trim()"
+                                        style="padding: 11px 16px; border-radius: 6px; font-size: 13px;"
+                                    ></button>
+                                </div>
+
+                                <!-- List of added serial numbers -->
+                                <div *ngIf="serialNumbers.length > 0" style="background: #f8fafc; border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0;">
+                                    <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 600; color: #64748b;">Added Serial Numbers ({{ serialNumbers.length }})</p>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        <div
+                                            *ngFor="let serial of serialNumbers; let i = index"
+                                            style="display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px;"
+                                        >
+                                            <span style="color: #334155; font-weight: 500;">{{ serial }}</span>
+                                            <button pButton type="button" icon="pi pi-times" (click)="removeSerialNumber(i)" class="p-button-rounded p-button-text p-button-sm p-button-danger" style="width: 24px; height: 24px; padding: 0;"></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Empty state message -->
+                                <p *ngIf="serialNumbers.length === 0" style="margin: 0; font-size: 12px; color: #ef4444; font-weight: 500; background: #fef2f2; padding: 8px 12px; border-radius: 6px; border: 1px solid #fecaca;">
+                                    <i class="pi pi-exclamation-triangle"></i> At least one serial number is required. Each serial number will create a separate asset.
+                                </p>
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Model Number</label>
@@ -561,6 +618,10 @@ export class AssetsComponent implements OnInit {
     assetDialog: boolean = false;
     currentStep: number = 0;
     newAsset: any = this.getEmptyAsset();
+
+    // Serial numbers management
+    serialNumbers: string[] = [];
+    tempSerialNumber: string = '';
 
     // Request maintenance dialog state
     requestDialog: boolean = false;
@@ -768,14 +829,45 @@ export class AssetsComponent implements OnInit {
                 console.log('Raw data from API:', data);
                 console.log('Number of assets:', data?.length || 0);
 
+                // Split assets with multiple serial numbers for display
+                const expandedAssets: Asset[] = [];
+
                 if (data && data.length > 0) {
-                    data.forEach((asset, index) => {});
+                    data.forEach((asset) => {
+                        const serialNumber = asset.inventoryCustodianSlip?.serialNumber;
+
+                        // Check if serial number contains comma (multiple serials)
+                        if (serialNumber && serialNumber.includes(',')) {
+                            // Split by comma and create one row per serial
+                            const serials = serialNumber.split(',').map((s: string) => s.trim());
+                            console.log(`📦 Expanding asset ${asset.assetId}: ${serials.length} serials`);
+
+                            serials.forEach((serial: string, index: number) => {
+                                // Create a copy of the asset for each serial
+                                const expandedAsset = {
+                                    ...asset,
+                                    // Deep copy ICS to avoid reference issues
+                                    inventoryCustodianSlip: {
+                                        ...asset.inventoryCustodianSlip,
+                                        serialNumber: serial,
+                                        quantity: 1
+                                    },
+                                    // Add unique identifier for table (append serial index)
+                                    _displayId: `${asset.assetId}_${index}`
+                                };
+                                expandedAssets.push(expandedAsset);
+                            });
+                        } else {
+                            // Single serial number, add as-is
+                            expandedAssets.push(asset);
+                        }
+                    });
                 }
-                this.assets = data || [];
+
+                this.assets = expandedAssets;
                 this.filteredAssets = [...this.assets];
 
-                console.log('Assets array:', this.assets);
-                console.log('Filtered assets:', this.filteredAssets);
+                console.log('Expanded assets for display:', this.assets.length);
                 console.log('=========================');
 
                 this.loading = false;
@@ -945,6 +1037,50 @@ export class AssetsComponent implements OnInit {
         this.assetDialog = true;
         this.currentStep = 0;
         this.newAsset = this.getEmptyAsset();
+        this.serialNumbers = [];
+        this.tempSerialNumber = '';
+    }
+
+    addSerialNumber() {
+        if (this.tempSerialNumber && this.tempSerialNumber.trim()) {
+            const serial = this.tempSerialNumber.trim();
+            // Check for duplicates
+            if (!this.serialNumbers.includes(serial)) {
+                this.serialNumbers.push(serial);
+                this.tempSerialNumber = '';
+
+                // Auto-update quantity to match serial numbers count
+                this.newAsset.inventoryCustodianSlip.quantity = this.serialNumbers.length;
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Added',
+                    detail: 'Serial number added successfully',
+                    life: 2000
+                });
+            } else {
+                this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Duplicate',
+                    detail: 'This serial number is already added',
+                    life: 3000
+                });
+            }
+        }
+    }
+
+    removeSerialNumber(index: number) {
+        this.serialNumbers.splice(index, 1);
+
+        // Auto-update quantity to match serial numbers count
+        this.newAsset.inventoryCustodianSlip.quantity = this.serialNumbers.length;
+
+        this.messageService.add({
+            severity: 'info',
+            summary: 'Removed',
+            detail: 'Serial number removed',
+            life: 2000
+        });
     }
 
     isSoftwareCategory(): boolean {
@@ -1109,8 +1245,14 @@ export class AssetsComponent implements OnInit {
             return;
         }
 
-        if (!this.newAsset.inventoryCustodianSlip.quantity || !this.newAsset.inventoryCustodianSlip.uoM) {
-            this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'Quantity and Unit of Measure are required in ICS details' });
+        // Validate serial numbers
+        if (this.serialNumbers.length === 0) {
+            this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'At least one serial number is required' });
+            return;
+        }
+
+        if (!this.newAsset.inventoryCustodianSlip.uoM) {
+            this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'Unit of Measure is required in ICS details' });
             return;
         }
 
@@ -1119,10 +1261,14 @@ export class AssetsComponent implements OnInit {
             return;
         }
 
+        // Combine all serial numbers into comma-separated string
+        this.newAsset.inventoryCustodianSlip.serialNumber = this.serialNumbers.join(', ');
+        this.newAsset.inventoryCustodianSlip.quantity = this.serialNumbers.length;
+
         // Create a copy and remove qrCodeImage and qrCode before sending to API
         const assetToSend = { ...this.newAsset };
-        delete assetToSend.qrCodeImage; // Remove the file object
-        delete assetToSend.qrCode; // Remove the scanned QR code text - NOT needed in asset creation
+        delete assetToSend.qrCodeImage;
+        delete assetToSend.qrCode;
 
         // laboratories field must be a string (laboratory ID)
         if (!assetToSend.laboratories || typeof assetToSend.laboratories !== 'string') {
@@ -1131,56 +1277,54 @@ export class AssetsComponent implements OnInit {
 
         // issuedTo field must be a string (full name)
         if (assetToSend.issuedTo && typeof assetToSend.issuedTo === 'object') {
-            // Convert user object to full name string
             assetToSend.issuedTo = this.getFullName(assetToSend.issuedTo);
         }
 
-        // Step 1: Create the asset first
-        this.assetService.createAsset(assetToSend).subscribe({
-            next: (response: Asset) => {
-                // Extract assetId from response
-                const assetId = String(response.assetId || response.id);
-                if (!assetId || assetId === 'undefined') {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to get asset ID from response' });
-                    return;
-                }
+        console.log('🔍 Creating 1 asset with combined serials:', {
+            serialNumber: assetToSend.inventoryCustodianSlip.serialNumber,
+            quantity: assetToSend.inventoryCustodianSlip.quantity
+        });
 
-                // Step 2: Upload QR code to the new asset
+        // Create single asset with combined serial numbers
+        this.assetService.createAsset(assetToSend).subscribe({
+            next: (response: any) => {
+                const assetId = String(response.assetId || response.id);
+                console.log('✅ Asset created:', assetId);
+
+                // Upload QR code
                 this.assetService.uploadQrCode(assetId, this.newAsset.qrCodeImage).subscribe({
-                    next: (qrResponse: any) => {
+                    next: () => {
                         Swal.fire({
                             title: 'Good job!',
-                            text: 'Asset created and QR code uploaded successfully!',
+                            text: `Asset created with ${this.serialNumbers.length} serial number(s)!`,
                             icon: 'success'
                         });
 
                         // Close dialog and refresh
                         this.assetDialog = false;
                         this.newAsset = this.getEmptyAsset();
-                        this.currentStep = 0; // Reset stepper
+                        this.serialNumbers = [];
+                        this.tempSerialNumber = '';
+                        this.currentStep = 0;
                         this.loadAssets();
                     },
                     error: (qrError: any) => {
                         this.messageService.add({
                             severity: 'warn',
                             summary: 'Partial Success',
-                            detail: 'Asset created but failed to upload QR code: ' + (qrError?.error?.message || qrError?.message)
+                            detail: 'Asset created but QR upload failed'
                         });
-
-                        // Still close dialog but show warning
                         this.assetDialog = false;
-                        this.newAsset = this.getEmptyAsset();
-                        this.currentStep = 0;
                         this.loadAssets();
                     }
                 });
             },
             error: (error: any) => {
-                console.error('❌ Step 1 Failed: Error creating asset:', error);
+                console.error('❌ Error creating asset:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Failed !'
+                    text: 'Failed to create asset: ' + (error?.error?.message || error?.message)
                 });
             }
         });

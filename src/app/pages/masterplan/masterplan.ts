@@ -94,6 +94,7 @@ import { ToastModule } from 'primeng/toast';
                         <tr>
                             <th>ID Number</th>
                             <th>Asset Name</th>
+                            <th>Serial Number</th>
                             <th>Quantity</th>
                             <th>Date Acquired</th>
                             <th>Location</th>
@@ -115,6 +116,10 @@ import { ToastModule } from 'primeng/toast';
 
                                 <td style="text-align:left">
                                     {{ item.equipment?.equipmentName || 'N/A' }}
+                                </td>
+
+                                <td style="text-align:left">
+                                    {{ item.equipment?.serialNumber || 'N/A' }}
                                 </td>
 
                                 <td>{{ item.quantity || 1 }}</td>
@@ -552,9 +557,11 @@ export class MasterPlanComponent implements OnInit {
     getScheduleText(item: any, type: string) {
         if (!item?.monthlyData) return '-';
 
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
         // For inventory, check both inventoryCreated and inventoryUpdated
         if (type === 'inventory') {
-            const inventoryDays = item.monthlyData
+            const inventoryDates = item.monthlyData
                 .filter((m: any) => {
                     const created = m.maintenance?.inventoryCreated;
                     const updated = m.maintenance?.inventoryUpdated;
@@ -563,13 +570,13 @@ export class MasterPlanComponent implements OnInit {
                 .map((m: any) => {
                     const dateStr = m.maintenance?.inventoryCreated || m.maintenance?.inventoryUpdated;
                     const date = new Date(dateStr);
-                    return date.getDate();
+                    return `${months[date.getMonth()]} ${date.getDate()}`;
                 });
-            return inventoryDays.join(', ') || '-';
+            return inventoryDates.join(', ') || '-';
         }
 
         // For preventive, corrective, calibration
-        const days = item.monthlyData
+        const dates = item.monthlyData
             .filter((m: any) => {
                 const value = m.maintenance?.[type];
                 return value && value !== '';
@@ -577,9 +584,9 @@ export class MasterPlanComponent implements OnInit {
             .map((m: any) => {
                 const dateStr = m.maintenance?.[type];
                 const date = new Date(dateStr);
-                return date.getDate();
+                return `${months[date.getMonth()]} ${date.getDate()}`;
             });
-        return days.join(', ') || '-';
+        return dates.join(', ') || '-';
     }
 
     saveExcelFile(buffer: any): void {
@@ -646,14 +653,6 @@ export class MasterPlanComponent implements OnInit {
         this.editMaintenanceType = maintenanceType;
         this.selectedDates = [];
 
-        // Console log the selected equipment/asset
-        console.log('=== EDIT MAINTENANCE SCHEDULE ===');
-        console.log('Maintenance Type:', maintenanceType);
-        console.log('Equipment:', item.equipment);
-        console.log('Full Item Data:', item);
-        console.log('Monthly Data:', item.monthlyData);
-
-        // Prepare monthly data and collect existing dates
         this.editMonthlyData = (item.monthlyData || []).map((month: any) => {
             let dateStr = null;
 
