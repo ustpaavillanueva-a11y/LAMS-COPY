@@ -1,25 +1,25 @@
 import {
   Badge,
   BadgeModule
-} from "./chunk-3VGMHEZZ.js";
+} from "./chunk-2DG5XJ4L.js";
 import {
   Bind
-} from "./chunk-246XFSKK.js";
+} from "./chunk-PXYWQ7E3.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
-} from "./chunk-VM5VBBK4.js";
+} from "./chunk-M2NELYC7.js";
 import {
   BaseStyle
-} from "./chunk-DCGH7JIK.js";
+} from "./chunk-WBKIMRVV.js";
 import {
   SharedModule
-} from "./chunk-JCDWLVR7.js";
+} from "./chunk-6D2SAAIV.js";
 import "./chunk-OTTARZB5.js";
 import "./chunk-U4LT4ZJN.js";
 import {
   CommonModule
-} from "./chunk-R2OVIKVM.js";
+} from "./chunk-RH3RUHL2.js";
 import "./chunk-APPCZKFW.js";
 import {
   ChangeDetectionStrategy,
@@ -49,11 +49,11 @@ import {
   ɵɵprojectionDef,
   ɵɵproperty,
   ɵɵstyleMap
-} from "./chunk-QWPRYKF3.js";
-import "./chunk-JRFR6BLO.js";
+} from "./chunk-FKRSZNWR.js";
 import "./chunk-HWYXSU2G.js";
+import "./chunk-JRFR6BLO.js";
 import "./chunk-MARUHEWW.js";
-import "./chunk-3OV72XIM.js";
+import "./chunk-V4F5PRXT.js";
 
 // node_modules/primeng/fesm2022/primeng-overlaybadge.mjs
 var _c0 = ["*"];

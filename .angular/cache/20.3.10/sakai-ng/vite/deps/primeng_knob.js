@@ -1,31 +1,31 @@
 import {
   BaseEditableHolder
-} from "./chunk-3GM4W2GJ.js";
-import "./chunk-TG5GUYVN.js";
+} from "./chunk-4ZJYHXVI.js";
+import "./chunk-2NXK4IZZ.js";
 import {
   Bind,
   BindModule
-} from "./chunk-246XFSKK.js";
+} from "./chunk-PXYWQ7E3.js";
 import {
   PARENT_INSTANCE
-} from "./chunk-VM5VBBK4.js";
+} from "./chunk-M2NELYC7.js";
 import {
   BaseStyle
-} from "./chunk-DCGH7JIK.js";
+} from "./chunk-WBKIMRVV.js";
 import {
   SharedModule
-} from "./chunk-JCDWLVR7.js";
+} from "./chunk-6D2SAAIV.js";
 import {
   rr
 } from "./chunk-OTTARZB5.js";
 import "./chunk-U4LT4ZJN.js";
 import {
   NG_VALUE_ACCESSOR
-} from "./chunk-C225D66Z.js";
+} from "./chunk-SJUOZCFA.js";
 import {
   CommonModule,
   NgIf
-} from "./chunk-R2OVIKVM.js";
+} from "./chunk-RH3RUHL2.js";
 import "./chunk-APPCZKFW.js";
 import {
   ChangeDetectionStrategy,
@@ -64,11 +64,11 @@ import {
   ɵɵtemplate,
   ɵɵtext,
   ɵɵtextInterpolate1
-} from "./chunk-QWPRYKF3.js";
-import "./chunk-JRFR6BLO.js";
+} from "./chunk-FKRSZNWR.js";
 import "./chunk-HWYXSU2G.js";
+import "./chunk-JRFR6BLO.js";
 import "./chunk-MARUHEWW.js";
-import "./chunk-3OV72XIM.js";
+import "./chunk-V4F5PRXT.js";
 
 // node_modules/@primeuix/styles/dist/knob/index.mjs
 var style = "\n    .p-knob-range {\n        fill: none;\n        transition: stroke 0.1s ease-in;\n    }\n\n    .p-knob-value {\n        animation-name: p-knob-dash-frame;\n        animation-fill-mode: forwards;\n        fill: none;\n    }\n\n    .p-knob-text {\n        font-size: 1.3rem;\n        text-align: center;\n    }\n\n    .p-knob svg {\n        border-radius: 50%;\n        outline-color: transparent;\n        transition:\n            background dt('knob.transition.duration'),\n            color dt('knob.transition.duration'),\n            outline-color dt('knob.transition.duration'),\n            box-shadow dt('knob.transition.duration');\n    }\n\n    .p-knob svg:focus-visible {\n        box-shadow: dt('knob.focus.ring.shadow');\n        outline: dt('knob.focus.ring.width') dt('knob.focus.ring.style') dt('knob.focus.ring.color');\n        outline-offset: dt('knob.focus.ring.offset');\n    }\n\n    @keyframes p-knob-dash-frame {\n        100% {\n            stroke-dashoffset: 0;\n        }\n    }\n";

@@ -7,7 +7,7 @@ import {
   Qr,
   StyleClass,
   StyleClassModule
-} from "./chunk-GHKYN5VB.js";
+} from "./chunk-3OANQFY5.js";
 import {
   Avatar,
   AvatarModule,
@@ -15,43 +15,47 @@ import {
   DividerModule,
   MenuModule,
   UIChart
-} from "./chunk-PADPXPYN.js";
+} from "./chunk-DN45YJME.js";
 import {
   LayoutService
-} from "./chunk-5GKV6ARD.js";
+} from "./chunk-DL5WQ6HJ.js";
 import {
+  ActivitiesService,
   AssetService,
   AssetsComponent,
   Documentation,
+  ProgressSpinner,
+  ProgressSpinnerModule,
   RequestmaintenanceComponent,
   UserService
-} from "./chunk-SMWHX4OO.js";
+} from "./chunk-R33RNJ7L.js";
 import {
   AuthService,
   UserContextService,
   environment,
   require_sweetalert2_all
-} from "./chunk-S5RQFQJR.js";
+} from "./chunk-P6LO7BGD.js";
 import {
   CardModule,
   Dialog,
   DialogModule,
   FileUpload,
   FileUploadModule,
+  Select,
+  SelectModule,
   Table,
   TableModule,
   Toast,
   ToastModule,
   Tooltip,
   TooltipModule
-} from "./chunk-KPIKRDPT.js";
+} from "./chunk-DARG77AW.js";
 import {
   Button,
   ButtonDirective,
   ButtonModule,
   CheckboxControlValueAccessor,
   CommonModule,
-  DatePipe,
   DefaultValueAccessor,
   DomRendererFactory2,
   FormBuilder,
@@ -90,7 +94,7 @@ import {
   withInMemoryScrolling,
   withInterceptors,
   ɵNgNoValidate
-} from "./chunk-L5Q7NDTD.js";
+} from "./chunk-DSDI4E2B.js";
 import {
   ANIMATION_MODULE_TYPE,
   ApplicationRef,
@@ -116,17 +120,16 @@ import {
   Subject,
   ViewChild,
   ViewEncapsulation,
-  __async,
-  __spreadProps,
-  __spreadValues,
-  __toESM,
   animate,
+  catchError,
   filter,
+  forkJoin,
   formatRuntimeError,
   inject,
   isDevMode,
   makeEnvironmentProviders,
   map,
+  of,
   performanceMarkFeature,
   provideAppInitializer,
   setClassMetadata,
@@ -171,7 +174,6 @@ import {
   ɵɵnextContext,
   ɵɵpipe,
   ɵɵpipeBind1,
-  ɵɵpipeBind2,
   ɵɵprojection,
   ɵɵprojectionDef,
   ɵɵproperty,
@@ -196,7 +198,13 @@ import {
   ɵɵtwoWayListener,
   ɵɵtwoWayProperty,
   ɵɵviewQuery
-} from "./chunk-JLR2E2AY.js";
+} from "./chunk-RYLLS6GA.js";
+import {
+  __async,
+  __spreadProps,
+  __spreadValues,
+  __toESM
+} from "./chunk-V4F5PRXT.js";
 
 // node_modules/@angular/platform-browser/fesm2022/animations/async.mjs
 var ANIMATION_PREFIX = "@";
@@ -232,7 +240,7 @@ var AsyncAnimationRendererFactory = class _AsyncAnimationRendererFactory {
    * @internal
    */
   loadImpl() {
-    const loadFn = () => this.moduleImpl ?? import("./chunk-WGDRJO4X.js").then((m3) => m3);
+    const loadFn = () => this.moduleImpl ?? import("./chunk-RK5OVIA6.js").then((m3) => m3);
     let moduleImplPromise;
     if (this.loadingSchedulerFn) {
       moduleImplPromise = this.loadingSchedulerFn(loadFn);
@@ -31638,42 +31646,42 @@ var _c3 = () => ({ width: "50vw" });
 function AppTopbar_button_10_Template(rf, ctx) {
   if (rf & 1) {
     const _r1 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "button", 38);
+    \u0275\u0275elementStart(0, "button", 39);
     \u0275\u0275listener("click", function AppTopbar_button_10_Template_button_click_0_listener() {
       \u0275\u0275restoreView(_r1);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.installPWA());
     });
-    \u0275\u0275element(1, "i", 39);
+    \u0275\u0275element(1, "i", 40);
     \u0275\u0275elementEnd();
   }
 }
 function AppTopbar_div_24_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 40);
+    \u0275\u0275elementStart(0, "div", 41);
     \u0275\u0275element(1, "i", 29);
     \u0275\u0275elementEnd();
   }
 }
 function AppTopbar_img_25_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275element(0, "img", 41);
+    \u0275\u0275element(0, "img", 42);
   }
   if (rf & 2) {
     const ctx_r1 = \u0275\u0275nextContext();
     \u0275\u0275property("src", ctx_r1.currentUser.profilePicture, \u0275\u0275sanitizeUrl);
   }
 }
-function AppTopbar_div_47_Template(rf, ctx) {
+function AppTopbar_div_51_Template(rf, ctx) {
   if (rf & 1) {
     const _r3 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 42);
-    \u0275\u0275element(1, "i", 43);
-    \u0275\u0275elementStart(2, "p", 44);
+    \u0275\u0275elementStart(0, "div", 43);
+    \u0275\u0275element(1, "i", 44);
+    \u0275\u0275elementStart(2, "p", 45);
     \u0275\u0275text(3, "Camera access is required for QR scanning");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "p-button", 45);
-    \u0275\u0275listener("onClick", function AppTopbar_div_47_Template_p_button_onClick_4_listener() {
+    \u0275\u0275elementStart(4, "p-button", 46);
+    \u0275\u0275listener("onClick", function AppTopbar_div_51_Template_p_button_onClick_4_listener() {
       \u0275\u0275restoreView(_r3);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.requestCameraPermission());
@@ -31681,16 +31689,16 @@ function AppTopbar_div_47_Template(rf, ctx) {
     \u0275\u0275elementEnd()();
   }
 }
-function AppTopbar_div_48_Template(rf, ctx) {
+function AppTopbar_div_52_Template(rf, ctx) {
   if (rf & 1) {
     const _r4 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 46);
-    \u0275\u0275element(1, "video", 47, 0);
-    \u0275\u0275elementStart(3, "p", 48);
+    \u0275\u0275elementStart(0, "div", 47);
+    \u0275\u0275element(1, "video", 48, 0);
+    \u0275\u0275elementStart(3, "p", 49);
     \u0275\u0275text(4, "Position the QR code within the camera frame");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "p-button", 49);
-    \u0275\u0275listener("onClick", function AppTopbar_div_48_Template_p_button_onClick_5_listener() {
+    \u0275\u0275elementStart(5, "p-button", 50);
+    \u0275\u0275listener("onClick", function AppTopbar_div_52_Template_p_button_onClick_5_listener() {
       \u0275\u0275restoreView(_r4);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.stopScanning());
@@ -31698,26 +31706,26 @@ function AppTopbar_div_48_Template(rf, ctx) {
     \u0275\u0275elementEnd()();
   }
 }
-function AppTopbar_div_49_Template(rf, ctx) {
+function AppTopbar_div_53_Template(rf, ctx) {
   if (rf & 1) {
     const _r5 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 42);
-    \u0275\u0275element(1, "i", 50);
-    \u0275\u0275elementStart(2, "p", 51);
+    \u0275\u0275elementStart(0, "div", 43);
+    \u0275\u0275element(1, "i", 51);
+    \u0275\u0275elementStart(2, "p", 52);
     \u0275\u0275text(3, "QR Code Detected!");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "p", 48);
+    \u0275\u0275elementStart(4, "p", 49);
     \u0275\u0275text(5);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "div", 52)(7, "p-button", 53);
-    \u0275\u0275listener("onClick", function AppTopbar_div_49_Template_p_button_onClick_7_listener() {
+    \u0275\u0275elementStart(6, "div", 53)(7, "p-button", 54);
+    \u0275\u0275listener("onClick", function AppTopbar_div_53_Template_p_button_onClick_7_listener() {
       \u0275\u0275restoreView(_r5);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.searchAsset());
     });
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "p-button", 54);
-    \u0275\u0275listener("onClick", function AppTopbar_div_49_Template_p_button_onClick_8_listener() {
+    \u0275\u0275elementStart(8, "p-button", 55);
+    \u0275\u0275listener("onClick", function AppTopbar_div_53_Template_p_button_onClick_8_listener() {
       \u0275\u0275restoreView(_r5);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.scanAgain());
@@ -31730,19 +31738,19 @@ function AppTopbar_div_49_Template(rf, ctx) {
     \u0275\u0275textInterpolate1("Result: ", ctx_r1.scanResult);
   }
 }
-function AppTopbar_div_50_Template(rf, ctx) {
+function AppTopbar_div_54_Template(rf, ctx) {
   if (rf & 1) {
     const _r6 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 42);
-    \u0275\u0275element(1, "i", 55);
-    \u0275\u0275elementStart(2, "p", 51);
+    \u0275\u0275elementStart(0, "div", 43);
+    \u0275\u0275element(1, "i", 56);
+    \u0275\u0275elementStart(2, "p", 52);
     \u0275\u0275text(3, "Error");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "p", 48);
+    \u0275\u0275elementStart(4, "p", 49);
     \u0275\u0275text(5);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "p-button", 56);
-    \u0275\u0275listener("onClick", function AppTopbar_div_50_Template_p_button_onClick_6_listener() {
+    \u0275\u0275elementStart(6, "p-button", 57);
+    \u0275\u0275listener("onClick", function AppTopbar_div_54_Template_p_button_onClick_6_listener() {
       \u0275\u0275restoreView(_r6);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.tryAgain());
@@ -32018,6 +32026,9 @@ var AppTopbar = class _AppTopbar {
   navigateToAccount() {
     this.router.navigate(["/app/account"]);
   }
+  navigateToActivities() {
+    this.router.navigate(["/app/pages/activities"]);
+  }
   logout() {
     import_sweetalert23.default.fire({
       title: "Logout Confirmation",
@@ -32066,7 +32077,7 @@ var AppTopbar = class _AppTopbar {
       \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.videoElement = _t.first);
       \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.profileMenu = _t.first);
     }
-  }, decls: 51, vars: 25, consts: [["videoElement", ""], [1, "layout-topbar"], [1, "layout-topbar-logo-container"], [1, "layout-menu-button", "layout-topbar-action", 3, "click"], [1, "pi", "pi-bars"], ["routerLink", "/app/dashboard", 1, "layout-topbar-logo", 2, "cursor", "pointer"], ["src", "assets/icons/icon-48x48.png", "alt", "logo", 1, "w-8", "h-8"], [1, "layout-topbar-actions"], [1, "layout-config-menu"], ["type", "button", "class", "layout-topbar-action", "title", "Install App", 3, "click", 4, "ngIf"], ["type", "button", "title", "QR Code Scanner", 1, "layout-topbar-action", 3, "click"], [1, "pi", "pi-camera"], ["type", "button", 1, "layout-topbar-action", 3, "click"], [3, "ngClass"], [1, "relative"], ["pStyleClass", "@next", "enterFromClass", "hidden", "enterActiveClass", "animate-scalein", "leaveToClass", "hidden", "leaveActiveClass", "animate-fadeout", 1, "layout-topbar-action", "layout-topbar-action-highlight", 3, "hideOnOutsideClick"], [1, "pi", "pi-palette"], ["pStyleClass", "@next", "enterFromClass", "hidden", "enterActiveClass", "animate-scalein", "leaveToClass", "hidden", "leaveActiveClass", "animate-fadeout", 1, "layout-topbar-menu-button", "layout-topbar-action", 3, "hideOnOutsideClick"], [1, "pi", "pi-ellipsis-v"], [1, "layout-topbar-menu", "lg:block"], [1, "layout-topbar-menu-content", "relative"], ["type", "button", "pStyleClass", "@next", "enterFromClass", "hidden", "enterActiveClass", "animate-scalein", "leaveToClass", "hidden", "leaveActiveClass", "animate-fadeout", 1, "layout-topbar-action", "profile-button", 3, "hideOnOutsideClick"], ["class", "topbar-avatar-custom", 4, "ngIf"], ["alt", "Profile", "class", "topbar-profile-img", 3, "src", 4, "ngIf"], [1, "profile-info-topbar"], [1, "profile-name-topbar"], [1, "profile-role-topbar"], [1, "profile-dropdown", "hidden"], [1, "profile-dropdown-item", 3, "click"], [1, "pi", "pi-user"], [1, "pi", "pi-cog"], [1, "profile-dropdown-divider"], [1, "profile-dropdown-item", "sign-out", 3, "click"], [1, "pi", "pi-sign-out"], ["header", "QR Code Scanner", 3, "visibleChange", "onHide", "visible", "modal", "draggable", "resizable", "closable"], [1, "flex", "flex-column", "align-items-center"], ["class", "text-center p-4", 4, "ngIf"], ["class", "w-full text-center", 4, "ngIf"], ["type", "button", "title", "Install App", 1, "layout-topbar-action", 3, "click"], [1, "pi", "pi-download"], [1, "topbar-avatar-custom"], ["alt", "Profile", 1, "topbar-profile-img", 3, "src"], [1, "text-center", "p-4"], [1, "pi", "pi-exclamation-triangle", "text-4xl", "text-orange-500", "mb-3"], [1, "text-lg", "mb-3"], ["label", "Grant Camera Access", 3, "onClick"], [1, "w-full", "text-center"], ["autoplay", "", "muted", "", 1, "w-full", "border-round", "mb-3", 2, "max-width", "400px", "height", "300px"], [1, "text-sm", "text-500", "mb-3"], ["label", "Stop Scanning", "severity", "secondary", 3, "onClick"], [1, "pi", "pi-check-circle", "text-4xl", "text-green-500", "mb-3"], [1, "text-lg", "mb-2"], [1, "flex", "gap-2", "justify-content-center"], ["label", "Search Asset", 3, "onClick"], ["label", "Scan Again", "severity", "secondary", 3, "onClick"], [1, "pi", "pi-times-circle", "text-4xl", "text-red-500", "mb-3"], ["label", "Try Again", 3, "onClick"]], template: function AppTopbar_Template(rf, ctx) {
+  }, decls: 55, vars: 25, consts: [["videoElement", ""], [1, "layout-topbar"], [1, "layout-topbar-logo-container"], [1, "layout-menu-button", "layout-topbar-action", 3, "click"], [1, "pi", "pi-bars"], ["routerLink", "/app/dashboard", 1, "layout-topbar-logo", 2, "cursor", "pointer"], ["src", "assets/icons/icon-48x48.png", "alt", "logo", 1, "w-8", "h-8"], [1, "layout-topbar-actions"], [1, "layout-config-menu"], ["type", "button", "class", "layout-topbar-action", "title", "Install App", 3, "click", 4, "ngIf"], ["type", "button", "title", "QR Code Scanner", 1, "layout-topbar-action", 3, "click"], [1, "pi", "pi-camera"], ["type", "button", 1, "layout-topbar-action", 3, "click"], [3, "ngClass"], [1, "relative"], ["pStyleClass", "@next", "enterFromClass", "hidden", "enterActiveClass", "animate-scalein", "leaveToClass", "hidden", "leaveActiveClass", "animate-fadeout", 1, "layout-topbar-action", "layout-topbar-action-highlight", 3, "hideOnOutsideClick"], [1, "pi", "pi-palette"], ["pStyleClass", "@next", "enterFromClass", "hidden", "enterActiveClass", "animate-scalein", "leaveToClass", "hidden", "leaveActiveClass", "animate-fadeout", 1, "layout-topbar-menu-button", "layout-topbar-action", 3, "hideOnOutsideClick"], [1, "pi", "pi-ellipsis-v"], [1, "layout-topbar-menu", "lg:block"], [1, "layout-topbar-menu-content", "relative"], ["type", "button", "pStyleClass", "@next", "enterFromClass", "hidden", "enterActiveClass", "animate-scalein", "leaveToClass", "hidden", "leaveActiveClass", "animate-fadeout", 1, "layout-topbar-action", "profile-button", 3, "hideOnOutsideClick"], ["class", "topbar-avatar-custom", 4, "ngIf"], ["alt", "Profile", "class", "topbar-profile-img", 3, "src", 4, "ngIf"], [1, "profile-info-topbar"], [1, "profile-name-topbar"], [1, "profile-role-topbar"], [1, "profile-dropdown", "hidden"], [1, "profile-dropdown-item", 3, "click"], [1, "pi", "pi-user"], [1, "pi", "pi-cog"], [1, "pi", "pi-history"], [1, "profile-dropdown-divider"], [1, "profile-dropdown-item", "sign-out", 3, "click"], [1, "pi", "pi-sign-out"], ["header", "QR Code Scanner", 3, "visibleChange", "onHide", "visible", "modal", "draggable", "resizable", "closable"], [1, "flex", "flex-column", "align-items-center"], ["class", "text-center p-4", 4, "ngIf"], ["class", "w-full text-center", 4, "ngIf"], ["type", "button", "title", "Install App", 1, "layout-topbar-action", 3, "click"], [1, "pi", "pi-download"], [1, "topbar-avatar-custom"], ["alt", "Profile", 1, "topbar-profile-img", 3, "src"], [1, "text-center", "p-4"], [1, "pi", "pi-exclamation-triangle", "text-4xl", "text-orange-500", "mb-3"], [1, "text-lg", "mb-3"], ["label", "Grant Camera Access", 3, "onClick"], [1, "w-full", "text-center"], ["autoplay", "", "muted", "", 1, "w-full", "border-round", "mb-3", 2, "max-width", "400px", "height", "300px"], [1, "text-sm", "text-500", "mb-3"], ["label", "Stop Scanning", "severity", "secondary", 3, "onClick"], [1, "pi", "pi-check-circle", "text-4xl", "text-green-500", "mb-3"], [1, "text-lg", "mb-2"], [1, "flex", "gap-2", "justify-content-center"], ["label", "Search Asset", 3, "onClick"], ["label", "Scan Again", "severity", "secondary", 3, "onClick"], [1, "pi", "pi-times-circle", "text-4xl", "text-red-500", "mb-3"], ["label", "Try Again", 3, "onClick"]], template: function AppTopbar_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 1)(1, "div", 2)(2, "button", 3);
       \u0275\u0275listener("click", function AppTopbar_Template_button_click_2_listener() {
@@ -32125,25 +32136,33 @@ var AppTopbar = class _AppTopbar {
       \u0275\u0275elementStart(38, "span");
       \u0275\u0275text(39, "Account Settings");
       \u0275\u0275elementEnd()();
-      \u0275\u0275element(40, "div", 31);
-      \u0275\u0275elementStart(41, "a", 32);
-      \u0275\u0275listener("click", function AppTopbar_Template_a_click_41_listener() {
+      \u0275\u0275elementStart(40, "a", 28);
+      \u0275\u0275listener("click", function AppTopbar_Template_a_click_40_listener() {
+        return ctx.navigateToActivities();
+      });
+      \u0275\u0275element(41, "i", 31);
+      \u0275\u0275elementStart(42, "span");
+      \u0275\u0275text(43, "Activity Logs");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275element(44, "div", 32);
+      \u0275\u0275elementStart(45, "a", 33);
+      \u0275\u0275listener("click", function AppTopbar_Template_a_click_45_listener() {
         return ctx.logout();
       });
-      \u0275\u0275element(42, "i", 33);
-      \u0275\u0275elementStart(43, "span");
-      \u0275\u0275text(44, "Sign Out");
+      \u0275\u0275element(46, "i", 34);
+      \u0275\u0275elementStart(47, "span");
+      \u0275\u0275text(48, "Sign Out");
       \u0275\u0275elementEnd()()()()()()();
-      \u0275\u0275elementStart(45, "p-dialog", 34);
-      \u0275\u0275twoWayListener("visibleChange", function AppTopbar_Template_p_dialog_visibleChange_45_listener($event) {
+      \u0275\u0275elementStart(49, "p-dialog", 35);
+      \u0275\u0275twoWayListener("visibleChange", function AppTopbar_Template_p_dialog_visibleChange_49_listener($event) {
         \u0275\u0275twoWayBindingSet(ctx.showQRScanner, $event) || (ctx.showQRScanner = $event);
         return $event;
       });
-      \u0275\u0275listener("onHide", function AppTopbar_Template_p_dialog_onHide_45_listener() {
+      \u0275\u0275listener("onHide", function AppTopbar_Template_p_dialog_onHide_49_listener() {
         return ctx.closeQRScanner();
       });
-      \u0275\u0275elementStart(46, "div", 35);
-      \u0275\u0275template(47, AppTopbar_div_47_Template, 5, 0, "div", 36)(48, AppTopbar_div_48_Template, 6, 0, "div", 37)(49, AppTopbar_div_49_Template, 9, 1, "div", 36)(50, AppTopbar_div_50_Template, 7, 1, "div", 36);
+      \u0275\u0275elementStart(50, "div", 36);
+      \u0275\u0275template(51, AppTopbar_div_51_Template, 5, 0, "div", 37)(52, AppTopbar_div_52_Template, 6, 0, "div", 38)(53, AppTopbar_div_53_Template, 9, 1, "div", 37)(54, AppTopbar_div_54_Template, 7, 1, "div", 37);
       \u0275\u0275elementEnd()();
     }
     if (rf & 2) {
@@ -32165,7 +32184,7 @@ var AppTopbar = class _AppTopbar {
       \u0275\u0275textInterpolate2("", (ctx.currentUser == null ? null : ctx.currentUser.firstName) || (ctx.currentUser == null ? null : ctx.currentUser.FirstName), " ", (ctx.currentUser == null ? null : ctx.currentUser.lastName) || (ctx.currentUser == null ? null : ctx.currentUser.LastName));
       \u0275\u0275advance(2);
       \u0275\u0275textInterpolate((ctx.currentUser == null ? null : ctx.currentUser.role) || "User");
-      \u0275\u0275advance(15);
+      \u0275\u0275advance(19);
       \u0275\u0275styleMap(\u0275\u0275pureFunction0(24, _c3));
       \u0275\u0275twoWayProperty("visible", ctx.showQRScanner);
       \u0275\u0275property("modal", true)("draggable", false)("resizable", false)("closable", true);
@@ -32255,6 +32274,10 @@ var AppTopbar = class _AppTopbar {
                                 <i class="pi pi-cog"></i>
                                 <span>Account Settings</span>
                             </a>
+                            <a class="profile-dropdown-item" (click)="navigateToActivities()">
+                                <i class="pi pi-history"></i>
+                                <span>Activity Logs</span>
+                            </a>
                             <div class="profile-dropdown-divider"></div>
                             <a class="profile-dropdown-item sign-out" (click)="logout()">
                                 <i class="pi pi-sign-out"></i>
@@ -32298,7 +32321,7 @@ var AppTopbar = class _AppTopbar {
                     <p-button label="Try Again" (onClick)="tryAgain()" />
                 </div>
             </div>
-        </p-dialog>`, styles: ["/* angular:styles/component:scss;b05aef956ed58968c01f1b1f0e906b3305e76ba81c886604543628f8e393baa6;C:/Users/jeric/Documents/2026 files/LAMS-FINAL/src/app/layout/component/app.topbar.ts */\n.profile-button {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  padding: 0.5rem 1rem;\n  border-radius: 50px;\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  background: transparent;\n}\n.profile-button:hover {\n  background: var(--surface-hover);\n}\n.topbar-avatar-custom {\n  width: 2.5rem;\n  height: 2.5rem;\n  min-width: 2.5rem;\n  min-height: 2.5rem;\n  border-radius: 50%;\n  background-color: var(--primary-color);\n  color: var(--primary-contrast-color);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.topbar-avatar-custom i {\n  font-size: 1.25rem;\n  color: var(--primary-contrast-color);\n}\n.topbar-profile-img {\n  width: 2.5rem;\n  height: 2.5rem;\n  min-width: 2.5rem;\n  min-height: 2.5rem;\n  border-radius: 50%;\n  object-fit: cover;\n  border: 2px solid var(--primary-color);\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  aspect-ratio: 1/1;\n  clip-path: circle(50%);\n}\n.profile-info-topbar {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 0.1rem;\n}\n.profile-name-topbar {\n  font-weight: 600;\n  font-size: 0.9rem;\n  color: var(--text-color);\n  line-height: 1.2;\n}\n.profile-role-topbar {\n  font-size: 0.75rem;\n  color: var(--text-color-secondary);\n  font-weight: 500;\n}\n.profile-dropdown {\n  position: absolute;\n  top: calc(100% + 0.5rem);\n  right: 0;\n  min-width: 220px;\n  background: var(--surface-overlay);\n  border-radius: 12px;\n  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);\n  border: 1px solid var(--surface-border);\n  padding: 0.5rem;\n  z-index: 1000;\n}\n.profile-dropdown-item {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  padding: 0.75rem 1rem;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  color: var(--text-color);\n  text-decoration: none;\n}\n.profile-dropdown-item:hover {\n  background: var(--surface-hover);\n}\n.profile-dropdown-item i {\n  font-size: 1rem;\n  color: var(--text-color-secondary);\n}\n.profile-dropdown-item span {\n  font-size: 0.9rem;\n  font-weight: 500;\n}\n.profile-dropdown-divider {\n  height: 1px;\n  background: var(--surface-border);\n  margin: 0.5rem 0;\n}\n.profile-dropdown-item.sign-out:hover {\n  background: rgba(239, 68, 68, 0.1);\n}\n.profile-dropdown-item.sign-out:hover i,\n.profile-dropdown-item.sign-out:hover span {\n  color: #ef4444;\n}\n/*# sourceMappingURL=app.topbar.css.map */\n"] }]
+        </p-dialog>`, styles: ["/* angular:styles/component:scss;b05aef956ed58968c01f1b1f0e906b3305e76ba81c886604543628f8e393baa6;D:/Capstone Projects/LAMS-COPY/src/app/layout/component/app.topbar.ts */\n.profile-button {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  padding: 0.5rem 1rem;\n  border-radius: 50px;\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  background: transparent;\n}\n.profile-button:hover {\n  background: var(--surface-hover);\n}\n.topbar-avatar-custom {\n  width: 2.5rem;\n  height: 2.5rem;\n  min-width: 2.5rem;\n  min-height: 2.5rem;\n  border-radius: 50%;\n  background-color: var(--primary-color);\n  color: var(--primary-contrast-color);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.topbar-avatar-custom i {\n  font-size: 1.25rem;\n  color: var(--primary-contrast-color);\n}\n.topbar-profile-img {\n  width: 2.5rem;\n  height: 2.5rem;\n  min-width: 2.5rem;\n  min-height: 2.5rem;\n  border-radius: 50%;\n  object-fit: cover;\n  border: 2px solid var(--primary-color);\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  aspect-ratio: 1/1;\n  clip-path: circle(50%);\n}\n.profile-info-topbar {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 0.1rem;\n}\n.profile-name-topbar {\n  font-weight: 600;\n  font-size: 0.9rem;\n  color: var(--text-color);\n  line-height: 1.2;\n}\n.profile-role-topbar {\n  font-size: 0.75rem;\n  color: var(--text-color-secondary);\n  font-weight: 500;\n}\n.profile-dropdown {\n  position: absolute;\n  top: calc(100% + 0.5rem);\n  right: 0;\n  min-width: 220px;\n  background: var(--surface-overlay);\n  border-radius: 12px;\n  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);\n  border: 1px solid var(--surface-border);\n  padding: 0.5rem;\n  z-index: 1000;\n}\n.profile-dropdown-item {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  padding: 0.75rem 1rem;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  color: var(--text-color);\n  text-decoration: none;\n}\n.profile-dropdown-item:hover {\n  background: var(--surface-hover);\n}\n.profile-dropdown-item i {\n  font-size: 1rem;\n  color: var(--text-color-secondary);\n}\n.profile-dropdown-item span {\n  font-size: 0.9rem;\n  font-weight: 500;\n}\n.profile-dropdown-divider {\n  height: 1px;\n  background: var(--surface-border);\n  margin: 0.5rem 0;\n}\n.profile-dropdown-item.sign-out:hover {\n  background: rgba(239, 68, 68, 0.1);\n}\n.profile-dropdown-item.sign-out:hover i,\n.profile-dropdown-item.sign-out:hover span {\n  color: #ef4444;\n}\n/*# sourceMappingURL=app.topbar.css.map */\n"] }]
   }], () => [{ type: LayoutService }, { type: Router }, { type: AssetService }, { type: InstallPromptService }, { type: PwaService }, { type: UserService }], { videoElement: [{
     type: ViewChild,
     args: ["videoElement"]
@@ -32308,7 +32331,7 @@ var AppTopbar = class _AppTopbar {
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppTopbar, { className: "AppTopbar" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppTopbar, { className: "AppTopbar", filePath: "src/app/layout/component/app.topbar.ts", lineNumber: 267 });
 })();
 
 // src/app/layout/component/app.menuitem.ts
@@ -32611,7 +32634,7 @@ var AppMenuitem = class _AppMenuitem {
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppMenuitem, { className: "AppMenuitem" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppMenuitem, { className: "AppMenuitem", filePath: "src/app/layout/component/app.menuitem.ts", lineNumber: 84 });
 })();
 
 // src/app/layout/component/app.menu.ts
@@ -33024,7 +33047,7 @@ var AppMenu = class _AppMenu {
   }], () => [{ type: UserService }, { type: HttpClient }, { type: LayoutService }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppMenu, { className: "AppMenu" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppMenu, { className: "AppMenu", filePath: "src/app/layout/component/app.menu.ts", lineNumber: 38 });
 })();
 
 // src/app/layout/component/app.sidebar.ts
@@ -33058,7 +33081,7 @@ var AppSidebar = class _AppSidebar {
   }], () => [{ type: ElementRef }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppSidebar, { className: "AppSidebar" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppSidebar, { className: "AppSidebar", filePath: "src/app/layout/component/app.sidebar.ts", lineNumber: 12 });
 })();
 
 // src/app/layout/component/app.footer.ts
@@ -33090,7 +33113,7 @@ var AppFooter = class _AppFooter {
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppFooter, { className: "AppFooter" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppFooter, { className: "AppFooter", filePath: "src/app/layout/component/app.footer.ts", lineNumber: 11 });
 })();
 
 // src/app/layout/component/app.layout.ts
@@ -33225,7 +33248,7 @@ var AppLayout = class _AppLayout {
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppLayout, { className: "AppLayout" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppLayout, { className: "AppLayout", filePath: "src/app/layout/component/app.layout.ts", lineNumber: 26 });
 })();
 
 // node_modules/preact/dist/preact.module.js
@@ -47450,9 +47473,187 @@ var index4 = createPlugin({
 });
 
 // src/app/pages/dashboard/dashboard-superadmin.ts
-var _c04 = () => [5, 10, 20, 30];
+var import_sweetalert24 = __toESM(require_sweetalert2_all());
+
+// src/app/pages/service/calendar.service.ts
+var CalendarService = class _CalendarService {
+  http;
+  baseApiUrl = environment.apiUrl;
+  constructor(http) {
+    this.http = http;
+  }
+  /**
+   * Get calendar events from unified endpoint (role-based on backend)
+   */
+  getCalendarEvents() {
+    return forkJoin({
+      calendarEvents: this.http.get(`${this.baseApiUrl}/calendar/events`).pipe(catchError((error) => {
+        console.error("Error loading calendar events:", error);
+        return of({ data: { schedules: [], maintenance: [] } });
+      })),
+      postedEvents: this.http.get(`${this.baseApiUrl}/calendar/events/posts`).pipe(catchError((error) => {
+        console.error("Error loading posted events:", error);
+        return of({ data: [] });
+      }))
+    }).pipe(map(({ calendarEvents, postedEvents }) => {
+      const events = [];
+      if (calendarEvents.data?.schedules && Array.isArray(calendarEvents.data.schedules)) {
+        calendarEvents.data.schedules.forEach((schedule) => {
+          events.push(this.createScheduleEvent(schedule));
+        });
+      }
+      if (calendarEvents.data?.maintenance && Array.isArray(calendarEvents.data.maintenance)) {
+        calendarEvents.data.maintenance.forEach((maintenance) => {
+          events.push(this.createMaintenanceEvent(maintenance));
+        });
+      }
+      if (postedEvents.data && Array.isArray(postedEvents.data)) {
+        postedEvents.data.forEach((event) => {
+          events.push(this.createCustomEvent(event));
+        });
+      }
+      console.log("Calendar events loaded:", events.length, "events");
+      return events;
+    }), catchError((error) => {
+      console.error("Error loading all calendar events:", error);
+      return of([]);
+    }));
+  }
+  /**
+   * Create a calendar event from a schedule object
+   */
+  createScheduleEvent(schedule) {
+    const dayOfWeek = schedule.dayOfWeek;
+    const nextDate = this.getNextDayOfWeek(dayOfWeek);
+    const [startHour, startMinute] = schedule.startTime?.split(":") || ["09", "00"];
+    const [endHour, endMinute] = schedule.endTime?.split(":") || ["10", "00"];
+    const startDateTime = new Date(nextDate);
+    startDateTime.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
+    const endDateTime = new Date(nextDate);
+    endDateTime.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
+    return {
+      id: `schedule-${schedule.scheduleId}`,
+      title: schedule.subject || "N/A",
+      start: startDateTime.toISOString(),
+      end: endDateTime.toISOString(),
+      extendedProps: {
+        type: "schedule",
+        campus: schedule.campus || "N/A",
+        lab: schedule.labName || "N/A",
+        location: schedule.building || "N/A",
+        subject: schedule.subject || "N/A",
+        instructor: schedule.instructorName || "N/A",
+        totalStudents: schedule.totalStudents || 0,
+        color: "#3b82f6"
+        // Blue for schedules
+      }
+    };
+  }
+  /**
+   * Create a calendar event from a maintenance object
+   */
+  createMaintenanceEvent(maintenance) {
+    let eventDate;
+    if (maintenance.scheduledAt) {
+      eventDate = new Date(maintenance.scheduledAt);
+    } else if (maintenance.submittedDate) {
+      eventDate = new Date(maintenance.submittedDate);
+    } else {
+      eventDate = /* @__PURE__ */ new Date();
+    }
+    const eventId = maintenance.maintenanceApprovalId || maintenance.maintenanceRequestId || `maintenance-${Date.now()}`;
+    return {
+      id: `maintenance-${eventId}`,
+      title: `${maintenance.maintenanceType || "Maintenance"} - ${maintenance.equipmentName || "Equipment"}`,
+      start: eventDate.toISOString(),
+      extendedProps: {
+        type: "maintenance",
+        equipment: maintenance.equipmentName || "N/A",
+        maintenanceType: maintenance.maintenanceType || "N/A",
+        requestedBy: maintenance.requestedBy || "N/A",
+        assignedTo: maintenance.assignedTechnician || "Not Assigned",
+        priority: maintenance.priority || "N/A",
+        status: maintenance.status || "Pending",
+        description: maintenance.description || "No description",
+        location: maintenance.building || "N/A",
+        color: this.getMaintenanceColor(maintenance.priority)
+      }
+    };
+  }
+  /**
+   * Get the next occurrence of a specific day of week
+   */
+  getNextDayOfWeek(dayName) {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const targetDay = daysOfWeek.indexOf(dayName);
+    if (targetDay === -1) {
+      return /* @__PURE__ */ new Date();
+    }
+    const today = /* @__PURE__ */ new Date();
+    const currentDay = today.getDay();
+    let daysUntilTarget = targetDay - currentDay;
+    if (daysUntilTarget <= 0) {
+      daysUntilTarget += 7;
+    }
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + daysUntilTarget);
+    return nextDate;
+  }
+  /**
+   * Create a calendar event from a custom event object
+   */
+  createCustomEvent(event) {
+    const eventDate = event.eventDate ? new Date(event.eventDate) : /* @__PURE__ */ new Date();
+    return {
+      id: `custom-${event.calendarEventId || Date.now()}`,
+      title: event.title || "Custom Event",
+      start: eventDate.toISOString(),
+      extendedProps: {
+        type: "custom",
+        description: event.description || "",
+        createdBy: event.createdBy || "Unknown",
+        campusId: event.campusId || "",
+        color: "#9333ea"
+        // Purple for custom events
+      }
+    };
+  }
+  /**
+   * Get color based on maintenance priority
+   */
+  getMaintenanceColor(priority) {
+    switch (priority?.toLowerCase()) {
+      case "high":
+        return "#ef4444";
+      // Red
+      case "medium":
+        return "#f59e0b";
+      // Orange
+      case "low":
+        return "#10b981";
+      // Green
+      default:
+        return "#8b5cf6";
+    }
+  }
+  static \u0275fac = function CalendarService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _CalendarService)(\u0275\u0275inject(HttpClient));
+  };
+  static \u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _CalendarService, factory: _CalendarService.\u0275fac, providedIn: "root" });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(CalendarService, [{
+    type: Injectable,
+    args: [{
+      providedIn: "root"
+    }]
+  }], () => [{ type: HttpClient }], null);
+})();
+
+// src/app/pages/dashboard/dashboard-superadmin.ts
+var _c04 = () => [10, 20, 50];
 var _c18 = () => ({ "min-width": "100%" });
-function DashboardSuperAdmin_ng_template_43_Template(rf, ctx) {
+function DashboardSuperAdmin_ng_template_48_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "b");
     \u0275\u0275text(1);
@@ -47462,64 +47663,118 @@ function DashboardSuperAdmin_ng_template_43_Template(rf, ctx) {
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const arg_r1 = ctx.$implicit;
+    const arg_r2 = ctx.$implicit;
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(arg_r1.timeText);
+    \u0275\u0275textInterpolate(arg_r2.timeText);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(arg_r1.event.title);
+    \u0275\u0275textInterpolate(arg_r2.event.title);
   }
 }
-function DashboardSuperAdmin_ng_template_58_Template(rf, ctx) {
+function DashboardSuperAdmin_div_67_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "tr")(1, "th", 30);
-    \u0275\u0275text(2, "Action Type");
+    \u0275\u0275elementStart(0, "div", 37);
+    \u0275\u0275element(1, "p-progressSpinner");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "th", 31);
-    \u0275\u0275text(4, "Target Name");
+  }
+}
+function DashboardSuperAdmin_p_table_68_ng_template_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "tr")(1, "th", 42);
+    \u0275\u0275text(2, "Trans #");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "th", 32);
-    \u0275\u0275text(6, "Actor");
+    \u0275\u0275elementStart(3, "th", 43);
+    \u0275\u0275text(4, "Date/Time");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "th", 32);
-    \u0275\u0275text(8, "Timestamp");
+    \u0275\u0275elementStart(5, "th", 44);
+    \u0275\u0275text(6, "Activities");
     \u0275\u0275elementEnd()();
   }
 }
-function DashboardSuperAdmin_ng_template_59_Template(rf, ctx) {
+function DashboardSuperAdmin_p_table_68_ng_template_2_span_20_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "tr")(1, "td")(2, "span", 33);
-    \u0275\u0275text(3);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(4, "td", 34);
-    \u0275\u0275text(5);
+    \u0275\u0275elementStart(0, "span", 51);
+    \u0275\u0275text(1);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "td", 34);
-    \u0275\u0275text(7);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "td", 35);
-    \u0275\u0275text(9);
-    \u0275\u0275pipe(10, "date");
-    \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const activity_r2 = ctx.$implicit;
-    const ctx_r2 = \u0275\u0275nextContext();
-    \u0275\u0275advance(2);
-    \u0275\u0275property("ngClass", ctx_r2.getActionTypeClass(activity_r2.actionType));
+    const row_r3 = \u0275\u0275nextContext().$implicit;
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", activity_r2.actionType, " ");
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(activity_r2.targetName);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate2("", activity_r2.actor == null ? null : activity_r2.actor.firstName, " ", activity_r2.actor == null ? null : activity_r2.actor.lastName);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(10, 6, activity_r2.timestamp, "short"));
+    \u0275\u0275textInterpolate1("IP: ", row_r3.ipAddress);
   }
 }
-function DashboardSuperAdmin_ng_template_60_Template(rf, ctx) {
+function DashboardSuperAdmin_p_table_68_ng_template_2_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "tr")(1, "td", 36);
-    \u0275\u0275text(2, "No activities found");
+    \u0275\u0275elementStart(0, "tr")(1, "td")(2, "span", 45);
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(4, "td", 46);
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "td")(7, "div", 47)(8, "div")(9, "span", 48);
+    \u0275\u0275text(10);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(11, "div", 33);
+    \u0275\u0275text(12);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(13, "div", 49)(14, "span", 50);
+    \u0275\u0275text(15);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(16, "span", 51);
+    \u0275\u0275text(17);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(18, "span", 51);
+    \u0275\u0275text(19);
+    \u0275\u0275elementEnd();
+    \u0275\u0275template(20, DashboardSuperAdmin_p_table_68_ng_template_2_span_20_Template, 2, 1, "span", 52);
+    \u0275\u0275elementEnd()()()();
+  }
+  if (rf & 2) {
+    const row_r3 = ctx.$implicit;
+    const ctx_r3 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(row_r3.activityId);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", ctx_r3.formatDateTime(row_r3.timestamp), " ");
+    \u0275\u0275advance(5);
+    \u0275\u0275textInterpolate(ctx_r3.getActivityTitle(row_r3));
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", row_r3.description, " ");
+    \u0275\u0275advance(2);
+    \u0275\u0275property("ngClass", ctx_r3.getStatusClass(row_r3.status));
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(row_r3.status);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(row_r3.userRole);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate2("by ", row_r3.actor == null ? null : row_r3.actor.firstName, " ", row_r3.actor == null ? null : row_r3.actor.lastName);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", row_r3.ipAddress);
+  }
+}
+function DashboardSuperAdmin_p_table_68_ng_template_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "tr")(1, "td", 53);
+    \u0275\u0275text(2, "No system logs found.");
+    \u0275\u0275elementEnd()();
+  }
+}
+function DashboardSuperAdmin_p_table_68_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "p-table", 38);
+    \u0275\u0275template(1, DashboardSuperAdmin_p_table_68_ng_template_1_Template, 7, 0, "ng-template", 39)(2, DashboardSuperAdmin_p_table_68_ng_template_2_Template, 21, 10, "ng-template", 40)(3, DashboardSuperAdmin_p_table_68_ng_template_3_Template, 3, 0, "ng-template", 41);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r3 = \u0275\u0275nextContext();
+    \u0275\u0275property("value", ctx_r3.systemLogs)("rows", 10)("paginator", true)("rowsPerPageOptions", \u0275\u0275pureFunction0(7, _c04))("tableStyle", \u0275\u0275pureFunction0(8, _c18))("loading", ctx_r3.isLoadingSystemLogs)("showCurrentPageReport", true);
+  }
+}
+function DashboardSuperAdmin_div_69_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 54);
+    \u0275\u0275element(1, "i", 55);
+    \u0275\u0275elementStart(2, "p");
+    \u0275\u0275text(3, "No system logs found.");
     \u0275\u0275elementEnd()();
   }
 }
@@ -47531,12 +47786,11 @@ var INITIAL_EVENTS = [
     allDay: true
   }
 ];
-function createEventId() {
-  return String(Math.random());
-}
 var DashboardSuperAdmin = class _DashboardSuperAdmin {
   http;
   changeDetector;
+  calendarService;
+  activitiesService;
   calendarVisible = signal(true, ...ngDevMode ? [{ debugName: "calendarVisible" }] : []);
   currentEvents = signal([], ...ngDevMode ? [{ debugName: "currentEvents" }] : []);
   calendarOptions = signal({
@@ -47554,9 +47808,28 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
+    views: {
+      dayGridMonth: {
+        displayEventTime: false
+      }
+    },
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this)
+    eventsSet: this.handleEvents.bind(this),
+    eventContent: (arg) => {
+      const view = arg.view.type;
+      const props = arg.event.extendedProps;
+      if (view === "dayGridMonth") {
+        if (props["type"] === "schedule") {
+          return { html: `<div class="fc-event-title">${props["subject"] || "N/A"}</div>` };
+        } else if (props["type"] === "maintenance") {
+          return { html: `<div class="fc-event-title">${props["maintenanceType"] || "Maintenance"}</div>` };
+        } else if (props["type"] === "custom") {
+          return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+        }
+      }
+      return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+    }
     /* you can update a remote database when these fire:
     eventAdd:
     eventChange:
@@ -47572,11 +47845,18 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
   maintenanceRequestsChartData;
   chartOptions;
   activities = [];
+  systemLogs = [];
+  isLoadingSystemLogs = false;
+  campuses = [];
+  selectedCampusFilter = null;
+  allCalendarEvents = [];
   // handleDateSelect: any;
   // handleEventClick: any;
-  constructor(http, changeDetector) {
+  constructor(http, changeDetector, calendarService, activitiesService) {
     this.http = http;
     this.changeDetector = changeDetector;
+    this.calendarService = calendarService;
+    this.activitiesService = activitiesService;
   }
   ngOnInit() {
     this.loadCampusCount();
@@ -47585,7 +47865,9 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
     this.loadLaboratoryCount();
     this.loadAssetsByCampus();
     this.loadMaintenanceRequestsByCampus();
-    this.loadActivities();
+    this.loadSystemLogs();
+    this.loadCampuses();
+    this.loadCalendarEvents();
     this.initChartOptions();
   }
   loadCampusCount() {
@@ -47694,6 +47976,19 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
       }
     });
   }
+  loadSystemLogs() {
+    this.isLoadingSystemLogs = true;
+    this.activitiesService.getSystemLogs().subscribe({
+      next: (response) => {
+        this.systemLogs = response.activities;
+        this.isLoadingSystemLogs = false;
+      },
+      error: (error) => {
+        console.error("Error loading system logs:", error);
+        this.isLoadingSystemLogs = false;
+      }
+    });
+  }
   generateColors(count) {
     const colorPalette = [
       { bg: "rgba(59, 130, 246, 0.6)", border: "rgb(59, 130, 246)" },
@@ -47811,6 +48106,80 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
     };
     return classes[actionType] || "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300";
   }
+  getActivityTitle(activity) {
+    const actionType = activity.actionType || "";
+    const entityType = activity.entityType || "";
+    const formatted = actionType.split("_").map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+    return `${formatted} - ${activity.targetName || entityType}`;
+  }
+  formatDateTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true
+    });
+  }
+  getStatusClass(status) {
+    if (status === "Success") {
+      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+    } else if (status === "Failed") {
+      return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+    } else {
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+    }
+  }
+  //// Load Calendar Events
+  loadCalendarEvents() {
+    this.calendarService.getCalendarEvents().subscribe({
+      next: (events) => {
+        this.allCalendarEvents = events;
+        this.filterAndDisplayEvents();
+      },
+      error: (error) => {
+        console.error("Error loading calendar events:", error);
+      }
+    });
+  }
+  filterAndDisplayEvents() {
+    let filteredEvents = this.allCalendarEvents;
+    if (this.selectedCampusFilter) {
+      filteredEvents = this.allCalendarEvents.filter((event) => {
+        const campusId = event.extendedProps?.campusId;
+        return campusId === this.selectedCampusFilter;
+      });
+    }
+    this.calendarOptions.update((options) => __spreadProps(__spreadValues({}, options), {
+      events: filteredEvents.map((event) => ({
+        id: event.id,
+        title: event.title,
+        start: event.start,
+        end: event.end,
+        extendedProps: event.extendedProps,
+        backgroundColor: event.extendedProps.color,
+        borderColor: event.extendedProps.color
+      }))
+    }));
+    this.changeDetector.detectChanges();
+  }
+  onCampusFilterChange() {
+    this.filterAndDisplayEvents();
+  }
+  loadCampuses() {
+    const apiUrl = `${environment.apiUrl}/campuses`;
+    this.http.get(apiUrl).subscribe({
+      next: (data) => {
+        this.campuses = data || [];
+      },
+      error: (error) => {
+        console.error("Error loading campuses:", error);
+      }
+    });
+  }
   //// calendar functions
   handleCalendarToggle() {
     this.calendarVisible.update((bool) => !bool);
@@ -47821,22 +48190,157 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
     }));
   }
   handleDateSelect(selectInfo) {
-    const title = prompt("Please enter a new title for your event");
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
-    if (title) {
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      });
-    }
+    console.log("Selected Date:", selectInfo.start);
+    console.log("Selected Date (ISO):", selectInfo.start.toISOString());
+    console.log("Selected Date (Locale):", selectInfo.start.toLocaleString());
+    import_sweetalert24.default.fire({
+      title: "Add New Event",
+      html: `
+                <input id="event-title" class="swal2-input" placeholder="Event Title" style="width: 85%;">
+                <textarea id="event-description" class="swal2-textarea" placeholder="Description (optional)" style="width: 85%; height: 80px;"></textarea>
+            `,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Add Event",
+      cancelButtonText: "Cancel",
+      preConfirm: () => {
+        const title = document.getElementById("event-title").value;
+        const description = document.getElementById("event-description").value;
+        if (!title) {
+          import_sweetalert24.default.showValidationMessage("Please enter an event title");
+          return false;
+        }
+        return { title, description };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        import_sweetalert24.default.fire({
+          title: "Saving...",
+          text: "Please wait while we save your event.",
+          allowOutsideClick: false,
+          didOpen: () => {
+            import_sweetalert24.default.showLoading();
+          }
+        });
+        const apiUrl = `${environment.apiUrl}/calendar/events`;
+        this.http.post(apiUrl, {
+          title: result.value.title,
+          description: result.value.description || "",
+          eventDate: selectInfo.start.toISOString()
+        }).subscribe({
+          next: (response) => {
+            this.loadCalendarEvents();
+            import_sweetalert24.default.fire({
+              icon: "success",
+              title: "Event Added!",
+              text: "Your event has been saved to the calendar.",
+              timer: 2e3,
+              showConfirmButton: false
+            });
+          },
+          error: (error) => {
+            console.error("Error saving event:", error);
+            import_sweetalert24.default.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to save event. Please try again.",
+              confirmButtonText: "OK"
+            });
+          }
+        });
+      }
+    });
   }
   handleEventClick(clickInfo) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
+    const event = clickInfo.event;
+    const props = event.extendedProps;
+    if (props["type"] === "custom") {
+      import_sweetalert24.default.fire({
+        title: "<strong>Custom Event</strong>",
+        icon: "info",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Title:</strong> ${event.title}</p>
+                        <p><strong>Description:</strong> ${props["description"] || "No description"}</p>
+                        <p><strong>Created By:</strong> ${props["createdBy"] || "Unknown"}</p>
+                        <p><strong>Date:</strong> ${new Date(event.start).toLocaleString()}</p>
+                        ${event.end ? `<p><strong>End:</strong> ${new Date(event.end).toLocaleString()}</p>` : ""}
+                    </div>
+                `,
+        showDenyButton: true,
+        confirmButtonText: "Close",
+        denyButtonText: "Delete Event",
+        customClass: {
+          popup: "swal-wide"
+        }
+      }).then((result) => {
+        if (result.isDenied) {
+          import_sweetalert24.default.fire({
+            title: "Delete Event?",
+            text: "Are you sure you want to delete this event?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it",
+            cancelButtonText: "Cancel"
+          }).then((deleteConfirm) => {
+            if (deleteConfirm.isConfirmed) {
+              clickInfo.event.remove();
+              import_sweetalert24.default.fire({
+                icon: "success",
+                title: "Deleted!",
+                text: "Event has been deleted.",
+                timer: 2e3,
+                showConfirmButton: false
+              });
+            }
+          });
+        }
+      });
+    } else if (props["type"] === "schedule") {
+      import_sweetalert24.default.fire({
+        title: "<strong>Lab Schedule</strong>",
+        icon: "info",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Subject:</strong> ${props["subject"] || "N/A"}</p>
+                        <p><strong>Laboratory:</strong> ${props["lab"] || "N/A"}</p>
+                        <p><strong>Building:</strong> ${props["location"] || "N/A"}</p>
+                        <p><strong>Campus:</strong> ${props["campus"] || "N/A"}</p>
+                        <p><strong>Instructor:</strong> ${props["instructor"] || "N/A"}</p>
+                        <p><strong>Students:</strong> ${props["totalStudents"] || 0}</p>
+                        <p><strong>Time:</strong> ${new Date(event.start).toLocaleTimeString()} - ${event.end ? new Date(event.end).toLocaleTimeString() : "N/A"}</p>
+                    </div>
+                `,
+        confirmButtonText: "Close",
+        customClass: {
+          popup: "swal-wide"
+        }
+      });
+    } else if (props["type"] === "maintenance") {
+      const priorityColor = props["priority"] === "High" ? "red" : props["priority"] === "Medium" ? "orange" : "green";
+      import_sweetalert24.default.fire({
+        title: "<strong>Maintenance Request</strong>",
+        icon: "warning",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Equipment:</strong> ${props["equipment"] || "N/A"}</p>
+                        <p><strong>Type:</strong> ${props["maintenanceType"] || "N/A"}</p>
+                        <p><strong>Priority:</strong> <span style="color: ${priorityColor}; font-weight: bold;">${props["priority"] || "N/A"}</span></p>
+                        <p><strong>Status:</strong> ${props["status"] || "N/A"}</p>
+                        <p><strong>Building:</strong> ${props["location"] || "N/A"}</p>
+                        <p><strong>Requested By:</strong> ${props["requestedBy"] || "N/A"}</p>
+                        <p><strong>Assigned To:</strong> ${props["assignedTo"] || "Not Assigned"}</p>
+                        <p><strong>Description:</strong> ${props["description"] || "No description"}</p>
+                        <p><strong>Date:</strong> ${new Date(event.start).toLocaleString()}</p>
+                    </div>
+                `,
+        confirmButtonText: "Close",
+        customClass: {
+          popup: "swal-wide"
+        }
+      });
     }
   }
   handleEvents(events) {
@@ -47844,10 +48348,11 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
     this.changeDetector.detectChanges();
   }
   static \u0275fac = function DashboardSuperAdmin_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _DashboardSuperAdmin)(\u0275\u0275directiveInject(HttpClient), \u0275\u0275directiveInject(ChangeDetectorRef));
+    return new (__ngFactoryType__ || _DashboardSuperAdmin)(\u0275\u0275directiveInject(HttpClient), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(CalendarService), \u0275\u0275directiveInject(ActivitiesService));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardSuperAdmin, selectors: [["app-dashboard-superadmin"]], decls: 61, vars: 18, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "md:grid-cols-2", "gap-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "flex", "items-center", "justify-between"], [1, "text-gray-600", "dark:text-gray-400", "text-sm", "font-medium"], [1, "text-4xl", "font-bold", "text-primary", "dark:text-primary", "mt-2"], [1, "bg-primary", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-building", "text-2xl", "text-primary"], [1, "text-4xl", "font-bold", "text-green-600", "dark:text-green-500", "mt-2"], [1, "bg-green-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-users", "text-2xl", "text-green-600", "dark:text-green-500"], [1, "text-4xl", "font-bold", "text-blue-600", "dark:text-blue-500", "mt-2"], [1, "bg-blue-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-box", "text-2xl", "text-blue-600", "dark:text-blue-500"], [1, "text-4xl", "font-bold", "text-orange-600", "dark:text-orange-500", "mt-2"], [1, "bg-orange-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-desktop", "text-2xl", "text-orange-600", "dark:text-orange-500"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], [3, "options"], [1, "flex", "gap-6", "mt-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6", "flex-1"], ["type", "bar", 3, "data", "options"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6", "mt-6"], ["currentPageReportTemplate", "Showing {first} to {last} of {totalRecords} activities", 3, "value", "rows", "paginator", "rowsPerPageOptions", "rowHover", "showCurrentPageReport", "tableStyle"], ["pTemplate", "header"], ["pTemplate", "body"], ["pTemplate", "emptymessage"], [2, "min-width", "15rem"], [2, "min-width", "20rem"], [2, "min-width", "18rem"], [1, "px-3", "py-1", "rounded-full", "text-xs", "font-semibold", 3, "ngClass"], [1, "dark:text-white"], [1, "dark:text-gray-400"], ["colspan", "4", 1, "text-center", "py-5", "dark:text-gray-400"]], template: function DashboardSuperAdmin_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardSuperAdmin, selectors: [["app-dashboard-superadmin"]], decls: 70, vars: 15, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "md:grid-cols-2", "gap-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "flex", "items-center", "justify-between"], [1, "text-gray-600", "dark:text-gray-400", "text-sm", "font-medium"], [1, "text-4xl", "font-bold", "text-primary", "dark:text-primary", "mt-2"], [1, "bg-primary", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-building", "text-2xl", "text-primary"], [1, "text-4xl", "font-bold", "text-green-600", "dark:text-green-500", "mt-2"], [1, "bg-green-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-users", "text-2xl", "text-green-600", "dark:text-green-500"], [1, "text-4xl", "font-bold", "text-blue-600", "dark:text-blue-500", "mt-2"], [1, "bg-blue-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-box", "text-2xl", "text-blue-600", "dark:text-blue-500"], [1, "text-4xl", "font-bold", "text-orange-600", "dark:text-orange-500", "mt-2"], [1, "bg-orange-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-desktop", "text-2xl", "text-orange-600", "dark:text-orange-500"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "flex", "items-center", "justify-between", "mb-4"], [1, "text-xl", "font-semibold", "dark:text-white"], [1, "flex", "items-center", "gap-2"], [1, "text-sm", "font-medium", "text-gray-700", "dark:text-gray-300"], ["optionLabel", "campusName", "optionValue", "campusId", "placeholder", "All Campuses", "styleClass", "w-48", "appendTo", "body", 3, "ngModelChange", "onChange", "ngModel", "options", "showClear"], [3, "options"], [1, "flex", "gap-6", "mt-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6", "flex-1"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], ["type", "bar", 3, "data", "options"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6", "mt-6"], [1, "flex", "justify-between", "items-center", "mb-4"], [1, "text-xl", "font-semibold", "mb-1", "dark:text-white"], [1, "text-sm", "text-gray-600", "dark:text-gray-400"], ["class", "flex justify-center items-center py-8", 4, "ngIf"], ["currentPageReportTemplate", "Showing {first} to {last} of {totalRecords} activities", 3, "value", "rows", "paginator", "rowsPerPageOptions", "tableStyle", "loading", "showCurrentPageReport", 4, "ngIf"], ["class", "text-center py-8 text-gray-600 dark:text-gray-400", 4, "ngIf"], [1, "flex", "justify-center", "items-center", "py-8"], ["currentPageReportTemplate", "Showing {first} to {last} of {totalRecords} activities", 3, "value", "rows", "paginator", "rowsPerPageOptions", "tableStyle", "loading", "showCurrentPageReport"], ["pTemplate", "header"], ["pTemplate", "body"], ["pTemplate", "emptymessage"], [2, "width", "20%"], [2, "width", "25%"], [2, "width", "55%"], [1, "font-semibold", "text-blue-600"], [1, "dark:text-white"], [1, "flex", "flex-col", "gap-1"], [1, "font-semibold", "dark:text-white"], [1, "text-xs", "text-gray-500", "dark:text-gray-500", "mt-1"], [1, "px-2", "py-1", "rounded", 3, "ngClass"], [1, "ml-2"], ["class", "ml-2", 4, "ngIf"], ["colspan", "3", 1, "text-center", "py-4", "dark:text-gray-400"], [1, "text-center", "py-8", "text-gray-600", "dark:text-gray-400"], [1, "pi", "pi-inbox", "text-4xl", "mb-3"]], template: function DashboardSuperAdmin_Template(rf, ctx) {
     if (rf & 1) {
+      const _r1 = \u0275\u0275getCurrentView();
       \u0275\u0275elementStart(0, "div", 1)(1, "div", 2)(2, "div", 3)(3, "div", 4)(4, "div", 5)(5, "div")(6, "p", 6);
       \u0275\u0275text(7, "Total Campuses");
       \u0275\u0275elementEnd();
@@ -47884,28 +48389,46 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
       \u0275\u0275elementStart(37, "div", 17);
       \u0275\u0275element(38, "i", 18);
       \u0275\u0275elementEnd()()()();
-      \u0275\u0275elementStart(39, "div", 19)(40, "h3", 20);
-      \u0275\u0275text(41, "Calendar");
+      \u0275\u0275elementStart(39, "div", 19)(40, "div", 20)(41, "h3", 21);
+      \u0275\u0275text(42, "Calendar");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(42, "full-calendar", 21);
-      \u0275\u0275template(43, DashboardSuperAdmin_ng_template_43_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+      \u0275\u0275elementStart(43, "div", 22)(44, "label", 23);
+      \u0275\u0275text(45, "Campus:");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(46, "p-select", 24);
+      \u0275\u0275twoWayListener("ngModelChange", function DashboardSuperAdmin_Template_p_select_ngModelChange_46_listener($event) {
+        \u0275\u0275restoreView(_r1);
+        \u0275\u0275twoWayBindingSet(ctx.selectedCampusFilter, $event) || (ctx.selectedCampusFilter = $event);
+        return \u0275\u0275resetView($event);
+      });
+      \u0275\u0275listener("onChange", function DashboardSuperAdmin_Template_p_select_onChange_46_listener() {
+        \u0275\u0275restoreView(_r1);
+        return \u0275\u0275resetView(ctx.onCampusFilterChange());
+      });
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(45, "div", 22)(46, "div", 23)(47, "h3", 20);
-      \u0275\u0275text(48, "Assets by Campus");
+      \u0275\u0275elementStart(47, "full-calendar", 25);
+      \u0275\u0275template(48, DashboardSuperAdmin_ng_template_48_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(50, "div", 26)(51, "div", 27)(52, "h3", 28);
+      \u0275\u0275text(53, "Assets by Campus");
       \u0275\u0275elementEnd();
-      \u0275\u0275element(49, "p-chart", 24);
+      \u0275\u0275element(54, "p-chart", 29);
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(50, "div", 23)(51, "h3", 20);
-      \u0275\u0275text(52, "Maintenance Requests by Campus");
+      \u0275\u0275elementStart(55, "div", 27)(56, "h3", 28);
+      \u0275\u0275text(57, "Maintenance Requests by Campus");
       \u0275\u0275elementEnd();
-      \u0275\u0275element(53, "p-chart", 24);
+      \u0275\u0275element(58, "p-chart", 29);
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(54, "div", 25)(55, "h3", 20);
-      \u0275\u0275text(56, "Recent Activity");
+      \u0275\u0275elementStart(59, "div", 30)(60, "div", 31)(61, "div")(62, "h3", 32);
+      \u0275\u0275text(63, "Recent Activity");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(57, "p-table", 26);
-      \u0275\u0275template(58, DashboardSuperAdmin_ng_template_58_Template, 9, 0, "ng-template", 27)(59, DashboardSuperAdmin_ng_template_59_Template, 11, 9, "ng-template", 28)(60, DashboardSuperAdmin_ng_template_60_Template, 3, 0, "ng-template", 29);
+      \u0275\u0275elementStart(64, "p", 33);
+      \u0275\u0275text(65, "View system activity history and logs");
       \u0275\u0275elementEnd()()();
+      \u0275\u0275elementContainerStart(66);
+      \u0275\u0275template(67, DashboardSuperAdmin_div_67_Template, 2, 0, "div", 34)(68, DashboardSuperAdmin_p_table_68_Template, 4, 9, "p-table", 35)(69, DashboardSuperAdmin_div_69_Template, 4, 0, "div", 36);
+      \u0275\u0275elementContainerEnd();
+      \u0275\u0275elementEnd()();
     }
     if (rf & 2) {
       \u0275\u0275advance(9);
@@ -47916,21 +48439,28 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
       \u0275\u0275textInterpolate(ctx.assetCount);
       \u0275\u0275advance(9);
       \u0275\u0275textInterpolate(ctx.laboratoryCount);
-      \u0275\u0275advance(6);
+      \u0275\u0275advance(10);
+      \u0275\u0275twoWayProperty("ngModel", ctx.selectedCampusFilter);
+      \u0275\u0275property("options", ctx.campuses)("showClear", true);
+      \u0275\u0275advance();
       \u0275\u0275property("options", ctx.calendarOptions());
       \u0275\u0275advance(7);
       \u0275\u0275property("data", ctx.assetsByCampusChartData)("options", ctx.chartOptions);
       \u0275\u0275advance(4);
       \u0275\u0275property("data", ctx.maintenanceRequestsChartData)("options", ctx.getHorizontalChartOptions());
-      \u0275\u0275advance(4);
-      \u0275\u0275property("value", ctx.activities)("rows", 5)("paginator", true)("rowsPerPageOptions", \u0275\u0275pureFunction0(16, _c04))("rowHover", true)("showCurrentPageReport", true)("tableStyle", \u0275\u0275pureFunction0(17, _c18));
+      \u0275\u0275advance(9);
+      \u0275\u0275property("ngIf", ctx.isLoadingSystemLogs);
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", !ctx.isLoadingSystemLogs && ctx.systemLogs.length > 0);
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", !ctx.isLoadingSystemLogs && ctx.systemLogs.length === 0);
     }
-  }, dependencies: [CommonModule, NgClass, UIChart, TableModule, Table, PrimeTemplate, FullCalendarModule, FullCalendarComponent, DatePipe], styles: ["\n\n[_nghost-%COMP%] {\n  display: block;\n}\n[_nghost-%COMP%]     .fc {\n  max-width: 100%;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n[_nghost-%COMP%]     .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n[_nghost-%COMP%]     .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n[_nghost-%COMP%]     .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button-group {\n  gap: 2px;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-superadmin.css.map */"] });
+  }, dependencies: [CommonModule, NgClass, NgIf, UIChart, TableModule, Table, PrimeTemplate, FullCalendarModule, FullCalendarComponent, SelectModule, Select, FormsModule, NgControlStatus, NgModel, ProgressSpinnerModule, ProgressSpinner], styles: ["\n\n[_nghost-%COMP%] {\n  display: block;\n}\n[_nghost-%COMP%]     .fc {\n  max-width: 100%;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n[_nghost-%COMP%]     .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n[_nghost-%COMP%]     .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n[_nghost-%COMP%]     .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button-group {\n  gap: 2px;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-superadmin.css.map */"] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DashboardSuperAdmin, [{
     type: Component,
-    args: [{ selector: "app-dashboard-superadmin", standalone: true, imports: [CommonModule, UIChart, TableModule, FullCalendarModule], template: `
+    args: [{ selector: "app-dashboard-superadmin", standalone: true, imports: [CommonModule, UIChart, TableModule, FullCalendarModule, SelectModule, FormsModule, ProgressSpinnerModule], template: `
         <div class="p-6">
             <!-- Top Row: Campuses, Users, and Calendar -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -47991,7 +48521,23 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
 
                 <!-- Right Side: Calendar -->
                 <div class="lg:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Calendar</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold dark:text-white">Calendar</h3>
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Campus:</label>
+                            <p-select
+                                [(ngModel)]="selectedCampusFilter"
+                                [options]="campuses"
+                                optionLabel="campusName"
+                                optionValue="campusId"
+                                placeholder="All Campuses"
+                                [showClear]="true"
+                                styleClass="w-48"
+                                appendTo="body"
+                                (onChange)="onCampusFilterChange()"
+                            />
+                        </div>
+                    </div>
                     <full-calendar [options]="calendarOptions()">
                         <ng-template #eventContent let-arg>
                             <b>{{ arg.timeText }}</b>
@@ -48014,56 +48560,90 @@ var DashboardSuperAdmin = class _DashboardSuperAdmin {
             </div>
 
             <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 mt-6">
-                <h3 class="text-xl font-semibold mb-4 dark:text-white">Recent Activity</h3>
-                <p-table
-                    [value]="activities"
-                    [rows]="5"
-                    [paginator]="true"
-                    [rowsPerPageOptions]="[5, 10, 20, 30]"
-                    [rowHover]="true"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} activities"
-                    [showCurrentPageReport]="true"
-                    [tableStyle]="{ 'min-width': '100%' }"
-                >
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="min-width:15rem">Action Type</th>
-                            <th style="min-width:20rem">Target Name</th>
-                            <th style="min-width:18rem">Actor</th>
-                            <th style="min-width:18rem">Timestamp</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-activity>
-                        <tr>
-                            <td>
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getActionTypeClass(activity.actionType)">
-                                    {{ activity.actionType }}
-                                </span>
-                            </td>
-                            <td class="dark:text-white">{{ activity.targetName }}</td>
-                            <td class="dark:text-white">{{ activity.actor?.firstName }} {{ activity.actor?.lastName }}</td>
-                            <td class="dark:text-gray-400">{{ activity.timestamp | date: 'short' }}</td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="4" class="text-center py-5 dark:text-gray-400">No activities found</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-1 dark:text-white">Recent Activity</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">View system activity history and logs</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activity View -->
+                <ng-container>
+                    <!-- Loading Spinner -->
+                    <div *ngIf="isLoadingSystemLogs" class="flex justify-center items-center py-8">
+                        <p-progressSpinner />
+                    </div>
+
+                    <!-- Table -->
+                    <p-table
+                        [value]="systemLogs"
+                        [rows]="10"
+                        [paginator]="true"
+                        [rowsPerPageOptions]="[10, 20, 50]"
+                        [tableStyle]="{ 'min-width': '100%' }"
+                        [loading]="isLoadingSystemLogs"
+                        *ngIf="!isLoadingSystemLogs && systemLogs.length > 0"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} activities"
+                        [showCurrentPageReport]="true"
+                    >
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 20%">Trans #</th>
+                                <th style="width: 25%">Date/Time</th>
+                                <th style="width: 55%">Activities</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-row>
+                            <tr>
+                                <td>
+                                    <span class="font-semibold text-blue-600">{{ row.activityId }}</span>
+                                </td>
+                                <td class="dark:text-white">
+                                    {{ formatDateTime(row.timestamp) }}
+                                </td>
+                                <td>
+                                    <div class="flex flex-col gap-1">
+                                        <div>
+                                            <span class="font-semibold dark:text-white">{{ getActivityTitle(row) }}</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                                            {{ row.description }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                            <span [ngClass]="getStatusClass(row.status)" class="px-2 py-1 rounded">{{ row.status }}</span>
+                                            <span class="ml-2">{{ row.userRole }}</span>
+                                            <span class="ml-2">by {{ row.actor?.firstName }} {{ row.actor?.lastName }}</span>
+                                            <span class="ml-2" *ngIf="row.ipAddress">IP: {{ row.ipAddress }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="3" class="text-center py-4 dark:text-gray-400">No system logs found.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+                    <!-- Empty State -->
+                    <div *ngIf="!isLoadingSystemLogs && systemLogs.length === 0" class="text-center py-8 text-gray-600 dark:text-gray-400">
+                        <i class="pi pi-inbox text-4xl mb-3"></i>
+                        <p>No system logs found.</p>
+                    </div>
+                </ng-container>
             </div>
         </div>
-    `, styles: ["/* angular:styles/component:scss;011f3be2fa16bb96e582afc09918676f03111124a30ffefdbe525a0685985b8d;C:/Users/jeric/Documents/2026 files/LAMS-FINAL/src/app/pages/dashboard/dashboard-superadmin.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-superadmin.css.map */\n"] }]
-  }], () => [{ type: HttpClient }, { type: ChangeDetectorRef }], null);
+    `, styles: ["/* angular:styles/component:scss;011f3be2fa16bb96e582afc09918676f03111124a30ffefdbe525a0685985b8d;D:/Capstone Projects/LAMS-COPY/src/app/pages/dashboard/dashboard-superadmin.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-superadmin.css.map */\n"] }]
+  }], () => [{ type: HttpClient }, { type: ChangeDetectorRef }, { type: CalendarService }, { type: ActivitiesService }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardSuperAdmin, { className: "DashboardSuperAdmin" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardSuperAdmin, { className: "DashboardSuperAdmin", filePath: "src/app/pages/dashboard/dashboard-superadmin.ts", lineNumber: 267 });
 })();
 
 // src/app/pages/dashboard/dashboard-campusadmin.ts
-var _c05 = () => [5, 10, 20, 30];
-var _c19 = () => ({ "min-width": "100%" });
-function DashboardCampusAdmin_ng_template_51_Template(rf, ctx) {
+var import_sweetalert25 = __toESM(require_sweetalert2_all());
+function DashboardCampusAdmin_ng_template_73_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "b");
     \u0275\u0275text(1);
@@ -48080,60 +48660,6 @@ function DashboardCampusAdmin_ng_template_51_Template(rf, ctx) {
     \u0275\u0275textInterpolate(arg_r1.event.title);
   }
 }
-function DashboardCampusAdmin_ng_template_73_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "tr")(1, "th", 37);
-    \u0275\u0275text(2, "Action Type");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "th", 38);
-    \u0275\u0275text(4, "Target Name");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "th", 39);
-    \u0275\u0275text(6, "Actor");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "th", 39);
-    \u0275\u0275text(8, "Timestamp");
-    \u0275\u0275elementEnd()();
-  }
-}
-function DashboardCampusAdmin_ng_template_74_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "tr")(1, "td")(2, "span", 40);
-    \u0275\u0275text(3);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(4, "td", 41);
-    \u0275\u0275text(5);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "td", 41);
-    \u0275\u0275text(7);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "td", 42);
-    \u0275\u0275text(9);
-    \u0275\u0275pipe(10, "date");
-    \u0275\u0275elementEnd()();
-  }
-  if (rf & 2) {
-    const activity_r2 = ctx.$implicit;
-    const ctx_r2 = \u0275\u0275nextContext();
-    \u0275\u0275advance(2);
-    \u0275\u0275property("ngClass", ctx_r2.getActionTypeClass(activity_r2.actionType));
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", activity_r2.actionType, " ");
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(activity_r2.targetName);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate2("", activity_r2.actor == null ? null : activity_r2.actor.firstName, " ", activity_r2.actor == null ? null : activity_r2.actor.lastName);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(10, 6, activity_r2.timestamp, "short"));
-  }
-}
-function DashboardCampusAdmin_ng_template_75_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "tr")(1, "td", 43);
-    \u0275\u0275text(2, "No activities found");
-    \u0275\u0275elementEnd()();
-  }
-}
 var INITIAL_EVENTS2 = [
   {
     id: "demo-event-1",
@@ -48142,21 +48668,21 @@ var INITIAL_EVENTS2 = [
     allDay: true
   }
 ];
-function createEventId2() {
-  return String(Math.random());
-}
 var DashboardCampusAdmin = class _DashboardCampusAdmin {
   http;
+  changeDetector;
+  calendarService;
   departmentCount = 0;
   userCount = 0;
   laboratoryCount = 0;
   assetCount = 0;
+  facultyCount = 0;
+  labTechCount = 0;
   assetsByLaboratoryChartData;
   maintenanceRequestsChartData;
   maintenanceStatusChartData;
   chartOptions;
   donutChartOptions;
-  activities = [];
   // Calendar properties
   calendarOptions = signal({
     plugins: [index4, index2, index, index3],
@@ -48172,23 +48698,45 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
+    views: {
+      dayGridMonth: {
+        displayEventTime: false
+      }
+    },
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this)
+    eventsSet: this.handleEvents.bind(this),
+    eventContent: (arg) => {
+      const view = arg.view.type;
+      const props = arg.event.extendedProps;
+      if (view === "dayGridMonth") {
+        if (props["type"] === "schedule") {
+          return { html: `<div class="fc-event-title">${props["subject"] || "N/A"}</div>` };
+        } else if (props["type"] === "maintenance") {
+          return { html: `<div class="fc-event-title">${props["maintenanceType"] || "Maintenance"}</div>` };
+        } else if (props["type"] === "custom") {
+          return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+        }
+      }
+      return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+    }
   }, ...ngDevMode ? [{ debugName: "calendarOptions" }] : []);
   currentEvents = signal([], ...ngDevMode ? [{ debugName: "currentEvents" }] : []);
-  constructor(http) {
+  constructor(http, changeDetector, calendarService) {
     this.http = http;
+    this.changeDetector = changeDetector;
+    this.calendarService = calendarService;
   }
   ngOnInit() {
     this.loadDepartmentCount();
     this.loadUserCount();
     this.loadLaboratoryCount();
     this.loadAssetCount();
+    this.loadUserRoleCounts();
     this.loadAssetsByLaboratory();
     this.loadMaintenanceRequestsByLaboratory();
     this.loadMaintenanceStatus();
-    this.loadActivities();
+    this.loadCalendarEvents();
     this.initChartOptions();
     this.initDonutChartOptions();
   }
@@ -48236,13 +48784,40 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
       }
     });
   }
-  loadAssetsByLaboratory() {
-    const apiUrl = `${environment.apiUrl}/assets/assets-by-laboratory`;
+  loadUserRoleCounts() {
+    const apiUrl = `${environment.apiUrl}/users`;
     this.http.get(apiUrl).subscribe({
-      next: (data) => {
-        const labels = data.map((item) => item.laboratoryName);
-        const counts = data.map((item) => item.assetCount);
-        const colors = this.generateColors(data.length);
+      next: (users) => {
+        this.facultyCount = users.filter((u3) => u3.role === "Faculty").length;
+        this.labTechCount = users.filter((u3) => u3.role === "LabTech").length;
+      },
+      error: (error) => {
+        console.error("Error loading user role counts:", error);
+      }
+    });
+  }
+  loadAssetsByLaboratory() {
+    console.log("=== LOADING ASSETS BY LABORATORY DATA ===");
+    const apiUrl = `${environment.apiUrl}/assets`;
+    this.http.get(apiUrl).subscribe({
+      next: (assets) => {
+        console.log("Assets fetched:", assets?.length || 0);
+        if (!assets || assets.length === 0) {
+          console.log("No assets found");
+          this.initEmptyAssetsByLabChart();
+          return;
+        }
+        const labCount = /* @__PURE__ */ new Map();
+        assets.forEach((asset) => {
+          const labName = asset.laboratories?.laboratoryName || asset.laboratory?.laboratoryName || asset.laboratory?.labName || "Unknown Lab";
+          const currentCount = labCount.get(labName) || 0;
+          labCount.set(labName, currentCount + 1);
+        });
+        console.log("Asset count by laboratory:", Object.fromEntries(labCount));
+        const labEntries = Array.from(labCount.entries()).sort((a3, b3) => b3[1] - a3[1]).slice(0, 10);
+        const labels = labEntries.map((entry) => entry[0]);
+        const counts = labEntries.map((entry) => entry[1]);
+        const colors = this.generateColors(labels.length);
         this.assetsByLaboratoryChartData = {
           labels,
           datasets: [
@@ -48255,11 +48830,27 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
             }
           ]
         };
+        console.log("=========================================");
       },
       error: (error) => {
         console.error("Error loading assets by laboratory:", error);
+        this.initEmptyAssetsByLabChart();
       }
     });
+  }
+  initEmptyAssetsByLabChart() {
+    this.assetsByLaboratoryChartData = {
+      labels: ["No Data"],
+      datasets: [
+        {
+          label: "Assets Count",
+          data: [0],
+          backgroundColor: ["rgba(209, 213, 219, 0.6)"],
+          borderColor: ["rgb(209, 213, 219)"],
+          borderWidth: 1
+        }
+      ]
+    };
   }
   generateColors(count) {
     const colorPalette = [
@@ -48329,29 +48920,95 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
     };
   }
   loadMaintenanceRequestsByLaboratory() {
-    const apiUrl = `${environment.apiUrl}/assets/maintenance-requests-by-laboratory`;
-    this.http.get(apiUrl).subscribe({
-      next: (data) => {
-        const labels = data.map((item) => item.laboratoryName);
-        const counts = data.map((item) => item.requestCount);
-        const colors = this.generateColors(data.length);
-        this.maintenanceRequestsChartData = {
-          labels,
-          datasets: [
-            {
-              label: "Maintenance Requests",
-              data: counts,
-              backgroundColor: colors.map((c3) => c3.bg),
-              borderColor: colors.map((c3) => c3.border),
-              borderWidth: 1
+    console.log("=== LOADING MAINTENANCE REQUESTS BY LABORATORY DATA ===");
+    const laboratoriesUrl = `${environment.apiUrl}/laboratories`;
+    this.http.get(laboratoriesUrl).subscribe({
+      next: (laboratories) => {
+        console.log("Laboratories fetched:", laboratories?.length || 0);
+        console.log("Sample laboratory:", laboratories?.[0]);
+        const labMap = /* @__PURE__ */ new Map();
+        laboratories.forEach((lab) => {
+          const labId = lab.laboratoryId;
+          const labName = lab.laboratoryName || lab.labName || "Unknown Lab";
+          labMap.set(labId, labName);
+          console.log(`Mapping ${labId} -> ${labName}`);
+        });
+        console.log("Laboratory map:", Object.fromEntries(labMap));
+        const requestsUrl = `${environment.apiUrl}/maintenance-requests`;
+        this.http.get(requestsUrl).subscribe({
+          next: (requests) => {
+            console.log("Maintenance requests fetched:", requests?.length || 0);
+            if (!requests || requests.length === 0) {
+              console.log("No maintenance requests found");
+              this.initEmptyMaintenanceByLabChart();
+              return;
             }
-          ]
-        };
+            const labCount = /* @__PURE__ */ new Map();
+            requests.forEach((request, index5) => {
+              const requestId = request.requestId || "";
+              const parts = requestId.split("-");
+              let labName = "Unknown Laboratory";
+              if (parts.length >= 2) {
+                const labCode = parts[1];
+                const foundName = labMap.get(labCode);
+                labName = foundName || `Lab ${labCode}`;
+                if (index5 < 3) {
+                  console.log(`Request ${index5}:`, {
+                    requestId: request.requestId,
+                    extractedLabCode: labCode,
+                    foundInMap: !!foundName,
+                    labName,
+                    mapHasKey: labMap.has(labCode)
+                  });
+                }
+              }
+              const currentCount = labCount.get(labName) || 0;
+              labCount.set(labName, currentCount + 1);
+            });
+            console.log("Maintenance request count by laboratory:", Object.fromEntries(labCount));
+            const labEntries = Array.from(labCount.entries()).sort((a3, b3) => b3[1] - a3[1]).slice(0, 10);
+            const labels = labEntries.map((entry) => entry[0]);
+            const counts = labEntries.map((entry) => entry[1]);
+            const colors = this.generateColors(labels.length);
+            this.maintenanceRequestsChartData = {
+              labels,
+              datasets: [
+                {
+                  label: "Maintenance Requests",
+                  data: counts,
+                  backgroundColor: colors.map((c3) => c3.bg),
+                  borderColor: colors.map((c3) => c3.border),
+                  borderWidth: 1
+                }
+              ]
+            };
+            console.log("========================================================");
+          },
+          error: (error) => {
+            console.error("Error loading maintenance requests:", error);
+            this.initEmptyMaintenanceByLabChart();
+          }
+        });
       },
       error: (error) => {
-        console.error("Error loading maintenance requests by laboratory:", error);
+        console.error("Error loading laboratories:", error);
+        this.initEmptyMaintenanceByLabChart();
       }
     });
+  }
+  initEmptyMaintenanceByLabChart() {
+    this.maintenanceRequestsChartData = {
+      labels: ["No Data"],
+      datasets: [
+        {
+          label: "Maintenance Requests",
+          data: [0],
+          backgroundColor: ["rgba(209, 213, 219, 0.6)"],
+          borderColor: ["rgb(209, 213, 219)"],
+          borderWidth: 1
+        }
+      ]
+    };
   }
   getHorizontalChartOptions() {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -48393,33 +49050,91 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
     };
   }
   loadMaintenanceStatus() {
-    const apiUrl = `${environment.apiUrl}/assets/maintenance-requests-by-status`;
+    console.log("=== LOADING MAINTENANCE STATUS DATA ===");
+    const apiUrl = `${environment.apiUrl}/maintenance-requests`;
     this.http.get(apiUrl).subscribe({
-      next: (data) => {
-        const labels = data.map((item) => item.status);
-        const counts = data.map((item) => item.count);
-        const colors = [
-          "rgba(239, 68, 68, 0.8)",
-          // Red for Pending
-          "rgba(34, 197, 94, 0.8)"
-          // Green for Approved
-        ];
+      next: (requests) => {
+        console.log("=== MAINTENANCE REQUESTS BY STATUS DEBUG ===");
+        console.log("Maintenance requests fetched:", requests?.length || 0);
+        console.log("Sample request object (first):", requests?.[0]);
+        console.log("Sample request.maintenanceApproval:", requests?.[0]?.maintenanceApproval);
+        console.log("Sample request.status:", requests?.[0]?.status);
+        if (!requests || requests.length === 0) {
+          console.log("No maintenance requests found");
+          this.initEmptyMaintenanceStatusChart();
+          return;
+        }
+        const statusCount = /* @__PURE__ */ new Map();
+        requests.forEach((request, index5) => {
+          const status = request.maintenanceStatus?.requestStatusName || "Pending";
+          if (index5 < 3) {
+            console.log(`Request ${index5}:`, {
+              requestId: request.requestId,
+              status,
+              maintenanceStatus: request.maintenanceStatus
+            });
+          }
+          const currentCount = statusCount.get(status) || 0;
+          statusCount.set(status, currentCount + 1);
+        });
+        console.log("Maintenance request count by status:", Object.fromEntries(statusCount));
+        const labels = Array.from(statusCount.keys());
+        const counts = Array.from(statusCount.values());
+        const colors = labels.map((label) => {
+          const lowerLabel = label.toLowerCase();
+          if (lowerLabel.includes("pending") || lowerLabel.includes("for approval")) {
+            return "rgba(239, 68, 68, 0.8)";
+          } else if (lowerLabel.includes("approved") || lowerLabel.includes("completed")) {
+            return "rgba(34, 197, 94, 0.8)";
+          } else if (lowerLabel.includes("in progress") || lowerLabel.includes("ongoing")) {
+            return "rgba(250, 204, 21, 0.8)";
+          } else {
+            return "rgba(107, 114, 128, 0.8)";
+          }
+        });
+        const borderColors = labels.map((label) => {
+          const lowerLabel = label.toLowerCase();
+          if (lowerLabel.includes("pending") || lowerLabel.includes("for approval")) {
+            return "rgb(239, 68, 68)";
+          } else if (lowerLabel.includes("approved") || lowerLabel.includes("completed")) {
+            return "rgb(34, 197, 94)";
+          } else if (lowerLabel.includes("in progress") || lowerLabel.includes("ongoing")) {
+            return "rgb(250, 204, 21)";
+          } else {
+            return "rgb(107, 114, 128)";
+          }
+        });
         this.maintenanceStatusChartData = {
           labels,
           datasets: [
             {
               data: counts,
               backgroundColor: colors,
-              borderColor: ["rgb(239, 68, 68)", "rgb(34, 197, 94)"],
+              borderColor: borderColors,
               borderWidth: 1
             }
           ]
         };
+        console.log("===========================================");
       },
       error: (error) => {
         console.error("Error loading maintenance status:", error);
+        this.initEmptyMaintenanceStatusChart();
       }
     });
+  }
+  initEmptyMaintenanceStatusChart() {
+    this.maintenanceStatusChartData = {
+      labels: ["No Data"],
+      datasets: [
+        {
+          data: [0],
+          backgroundColor: ["rgba(209, 213, 219, 0.8)"],
+          borderColor: ["rgb(209, 213, 219)"],
+          borderWidth: 1
+        }
+      ]
+    };
   }
   initDonutChartOptions() {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -48449,56 +49164,190 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
       }
     };
   }
-  loadActivities() {
-    const apiUrl = `${environment.apiUrl}/activities`;
-    this.http.get(apiUrl).subscribe({
-      next: (data) => {
-        this.activities = Array.isArray(data) ? data : data?.activities || [];
-        this.activities.sort((a3, b3) => new Date(b3.timestamp).getTime() - new Date(a3.timestamp).getTime());
+  //// Load Calendar Events
+  loadCalendarEvents() {
+    this.calendarService.getCalendarEvents().subscribe({
+      next: (events) => {
+        this.calendarOptions.update((options) => __spreadProps(__spreadValues({}, options), {
+          events: events.map((event) => ({
+            id: event.id,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            extendedProps: event.extendedProps,
+            backgroundColor: event.extendedProps.color,
+            borderColor: event.extendedProps.color
+          }))
+        }));
+        this.changeDetector.detectChanges();
       },
       error: (error) => {
-        console.error("Error loading activities:", error);
+        console.error("Error loading calendar events:", error);
       }
     });
   }
-  getActionTypeClass(actionType) {
-    const classes = {
-      ASSET_CREATED: "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300",
-      ASSET_UPDATED: "bg-cyan-100 dark:bg-cyan-900 text-cyan-700 dark:text-cyan-300",
-      ASSET_DELETED: "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300",
-      USER_REGISTERED: "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300",
-      USER_UPDATED: "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300",
-      USER_DELETED: "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
-    };
-    return classes[actionType] || "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300";
-  }
   // Calendar event handlers
   handleDateSelect(selectInfo) {
-    const title = prompt("Please enter a new title for your event");
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
-    if (title) {
-      calendarApi.addEvent({
-        id: createEventId2(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      });
-    }
+    console.log("Selected Date:", selectInfo.start);
+    console.log("Selected Date (ISO):", selectInfo.start.toISOString());
+    console.log("Selected Date (Locale):", selectInfo.start.toLocaleString());
+    import_sweetalert25.default.fire({
+      title: "Add New Event",
+      html: `
+                <input id="event-title" class="swal2-input" placeholder="Event Title" style="width: 85%;">
+                <textarea id="event-description" class="swal2-textarea" placeholder="Description (optional)" style="width: 85%; height: 80px;"></textarea>
+            `,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Add Event",
+      cancelButtonText: "Cancel",
+      preConfirm: () => {
+        const title = document.getElementById("event-title").value;
+        const description = document.getElementById("event-description").value;
+        if (!title) {
+          import_sweetalert25.default.showValidationMessage("Please enter an event title");
+          return false;
+        }
+        return { title, description };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        import_sweetalert25.default.fire({
+          title: "Saving...",
+          text: "Please wait while we save your event.",
+          allowOutsideClick: false,
+          didOpen: () => {
+            import_sweetalert25.default.showLoading();
+          }
+        });
+        const apiUrl = `${environment.apiUrl}/calendar/events`;
+        this.http.post(apiUrl, {
+          title: result.value.title,
+          description: result.value.description || "",
+          eventDate: selectInfo.start.toISOString()
+        }).subscribe({
+          next: (response) => {
+            this.loadCalendarEvents();
+            import_sweetalert25.default.fire({
+              icon: "success",
+              title: "Event Added!",
+              text: "Your event has been saved to the calendar.",
+              timer: 2e3,
+              showConfirmButton: false
+            });
+          },
+          error: (error) => {
+            console.error("Error saving event:", error);
+            import_sweetalert25.default.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to save event. Please try again.",
+              confirmButtonText: "OK"
+            });
+          }
+        });
+      }
+    });
   }
   handleEventClick(clickInfo) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
+    const event = clickInfo.event;
+    const props = event.extendedProps;
+    if (props["type"] === "custom") {
+      import_sweetalert25.default.fire({
+        title: "<strong>Custom Event</strong>",
+        icon: "info",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Title:</strong> ${event.title}</p>
+                        <p><strong>Description:</strong> ${props["description"] || "No description"}</p>
+                        <p><strong>Created By:</strong> ${props["createdBy"] || "Unknown"}</p>
+                        <p><strong>Date:</strong> ${new Date(event.start).toLocaleString()}</p>
+                        ${event.end ? `<p><strong>End:</strong> ${new Date(event.end).toLocaleString()}</p>` : ""}
+                    </div>
+                `,
+        showDenyButton: true,
+        confirmButtonText: "Close",
+        denyButtonText: "Delete Event",
+        customClass: {
+          popup: "swal-wide"
+        }
+      }).then((result) => {
+        if (result.isDenied) {
+          import_sweetalert25.default.fire({
+            title: "Delete Event?",
+            text: "Are you sure you want to delete this event?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it",
+            cancelButtonText: "Cancel"
+          }).then((deleteConfirm) => {
+            if (deleteConfirm.isConfirmed) {
+              clickInfo.event.remove();
+              import_sweetalert25.default.fire({
+                icon: "success",
+                title: "Deleted!",
+                text: "Event has been deleted.",
+                timer: 2e3,
+                showConfirmButton: false
+              });
+            }
+          });
+        }
+      });
+    } else if (props["type"] === "schedule") {
+      import_sweetalert25.default.fire({
+        title: "<strong>Lab Schedule</strong>",
+        icon: "info",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Subject:</strong> ${props["subject"] || "N/A"}</p>
+                        <p><strong>Laboratory:</strong> ${props["lab"] || "N/A"}</p>
+                        <p><strong>Building:</strong> ${props["location"] || "N/A"}</p>
+                        <p><strong>Campus:</strong> ${props["campus"] || "N/A"}</p>
+                        <p><strong>Instructor:</strong> ${props["instructor"] || "N/A"}</p>
+                        <p><strong>Students:</strong> ${props["totalStudents"] || 0}</p>
+                        <p><strong>Time:</strong> ${new Date(event.start).toLocaleTimeString()} - ${event.end ? new Date(event.end).toLocaleTimeString() : "N/A"}</p>
+                    </div>
+                `,
+        confirmButtonText: "Close",
+        customClass: {
+          popup: "swal-wide"
+        }
+      });
+    } else if (props["type"] === "maintenance") {
+      const priorityColor = props["priority"] === "High" ? "red" : props["priority"] === "Medium" ? "orange" : "green";
+      import_sweetalert25.default.fire({
+        title: "<strong>Maintenance Request</strong>",
+        icon: "warning",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Equipment:</strong> ${props["equipment"] || "N/A"}</p>
+                        <p><strong>Type:</strong> ${props["maintenanceType"] || "N/A"}</p>
+                        <p><strong>Priority:</strong> <span style="color: ${priorityColor}; font-weight: bold;">${props["priority"] || "N/A"}</span></p>
+                        <p><strong>Status:</strong> ${props["status"] || "N/A"}</p>
+                        <p><strong>Building:</strong> ${props["location"] || "N/A"}</p>
+                        <p><strong>Requested By:</strong> ${props["requestedBy"] || "N/A"}</p>
+                        <p><strong>Assigned To:</strong> ${props["assignedTo"] || "Not Assigned"}</p>
+                        <p><strong>Description:</strong> ${props["description"] || "No description"}</p>
+                        <p><strong>Date:</strong> ${new Date(event.start).toLocaleString()}</p>
+                    </div>
+                `,
+        confirmButtonText: "Close",
+        customClass: {
+          popup: "swal-wide"
+        }
+      });
     }
   }
   handleEvents(events) {
     this.currentEvents.set(events);
   }
   static \u0275fac = function DashboardCampusAdmin_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _DashboardCampusAdmin)(\u0275\u0275directiveInject(HttpClient));
+    return new (__ngFactoryType__ || _DashboardCampusAdmin)(\u0275\u0275directiveInject(HttpClient), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(CalendarService));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardCampusAdmin, selectors: [["app-dashboard-campusadmin"]], decls: 76, vars: 20, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "md:grid-cols-2", "gap-6"], [1, "stat-card", "stat-card-purple", "group"], [1, "stat-card-bg"], [1, "stat-card-content"], [1, "stat-icon-wrapper", "stat-icon-purple"], [1, "pi", "pi-sitemap", "text-2xl"], [1, "stat-info"], [1, "stat-label"], [1, "stat-value"], [1, "stat-decoration"], [1, "stat-card", "stat-card-green", "group"], [1, "stat-icon-wrapper", "stat-icon-green"], [1, "pi", "pi-users", "text-2xl"], [1, "stat-card", "stat-card-blue", "group"], [1, "stat-icon-wrapper", "stat-icon-blue"], [1, "pi", "pi-desktop", "text-2xl"], [1, "stat-card", "stat-card-orange", "group"], [1, "stat-icon-wrapper", "stat-icon-orange"], [1, "pi", "pi-box", "text-2xl"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], [3, "options"], [1, "flex", "gap-6", "mt-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6", "flex-1"], ["type", "bar", 3, "data", "options"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white", "text-center"], [1, "flex", "justify-center"], [1, "w-80"], ["type", "doughnut", 3, "data", "options"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6", "mt-6", "w-full"], ["currentPageReportTemplate", "Showing {first} to {last} of {totalRecords} activities", 3, "value", "rows", "paginator", "rowsPerPageOptions", "rowHover", "showCurrentPageReport", "tableStyle"], ["pTemplate", "header"], ["pTemplate", "body"], ["pTemplate", "emptymessage"], [2, "min-width", "15rem"], [2, "min-width", "20rem"], [2, "min-width", "18rem"], [1, "px-3", "py-1", "rounded-full", "text-xs", "font-semibold", 3, "ngClass"], [1, "dark:text-white"], [1, "dark:text-gray-400"], ["colspan", "4", 1, "text-center", "py-5", "dark:text-gray-400"]], template: function DashboardCampusAdmin_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardCampusAdmin, selectors: [["app-dashboard-campusadmin"]], decls: 91, vars: 13, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "md:grid-cols-3", "gap-4"], [1, "stat-card", "stat-card-purple", "group"], [1, "stat-card-bg"], [1, "stat-card-content"], [1, "stat-icon-wrapper", "stat-icon-purple"], [1, "pi", "pi-sitemap", "text-2xl"], [1, "stat-info"], [1, "stat-label"], [1, "stat-value"], [1, "stat-decoration"], [1, "stat-card", "stat-card-green", "group"], [1, "stat-icon-wrapper", "stat-icon-green"], [1, "pi", "pi-users", "text-2xl"], [1, "stat-card", "stat-card-blue", "group"], [1, "stat-icon-wrapper", "stat-icon-blue"], [1, "pi", "pi-desktop", "text-2xl"], [1, "stat-card", "stat-card-orange", "group"], [1, "stat-icon-wrapper", "stat-icon-orange"], [1, "pi", "pi-box", "text-2xl"], [1, "stat-card", "stat-card-indigo", "group"], [1, "stat-icon-wrapper", "stat-icon-indigo"], [1, "pi", "pi-user", "text-2xl"], [1, "stat-card", "stat-card-teal", "group"], [1, "stat-icon-wrapper", "stat-icon-teal"], [1, "pi", "pi-user-edit", "text-2xl"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], [3, "options"], [1, "grid", "grid-cols-1", "md:grid-cols-2", "lg:grid-cols-3", "gap-6", "mt-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-xl", "shadow-sm", "border", "border-gray-100", "dark:border-gray-700", "p-6"], [1, "text-[20px]", "font-normal", "mb-3", "text-gray-400", "dark:text-gray-500"], [1, "relative", 2, "height", "300px"], ["type", "bar", 3, "data", "options"], [1, "text-[20px]", "font-normal", "mb-3", "text-gray-400", "dark:text-gray-500", "text-center"], [1, "relative", "flex", "items-center", "justify-center", 2, "height", "300px"], ["type", "doughnut", 3, "data", "options"]], template: function DashboardCampusAdmin_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 1)(1, "div", 2)(2, "div", 3)(3, "div", 4);
       \u0275\u0275element(4, "div", 5);
@@ -48551,35 +49400,57 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
       \u0275\u0275text(45);
       \u0275\u0275elementEnd()()();
       \u0275\u0275element(46, "div", 12);
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(47, "div", 22)(48, "h3", 23);
-      \u0275\u0275text(49, "Calendar");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(50, "full-calendar", 24);
-      \u0275\u0275template(51, DashboardCampusAdmin_ng_template_51_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+      \u0275\u0275elementStart(47, "div", 22);
+      \u0275\u0275element(48, "div", 5);
+      \u0275\u0275elementStart(49, "div", 6)(50, "div", 23);
+      \u0275\u0275element(51, "i", 24);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(52, "div", 9)(53, "p", 10);
+      \u0275\u0275text(54, "Faculty");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(55, "h3", 11);
+      \u0275\u0275text(56);
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(53, "div", 25)(54, "div", 26)(55, "h3", 23);
-      \u0275\u0275text(56, "Assets by Laboratory");
+      \u0275\u0275element(57, "div", 12);
       \u0275\u0275elementEnd();
-      \u0275\u0275element(57, "p-chart", 27);
+      \u0275\u0275elementStart(58, "div", 25);
+      \u0275\u0275element(59, "div", 5);
+      \u0275\u0275elementStart(60, "div", 6)(61, "div", 26);
+      \u0275\u0275element(62, "i", 27);
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(58, "div", 26)(59, "h3", 23);
-      \u0275\u0275text(60, "Maintenance Requests by Laboratory");
+      \u0275\u0275elementStart(63, "div", 9)(64, "p", 10);
+      \u0275\u0275text(65, "Lab Technicians");
       \u0275\u0275elementEnd();
-      \u0275\u0275element(61, "p-chart", 27);
+      \u0275\u0275elementStart(66, "h3", 11);
+      \u0275\u0275text(67);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275element(68, "div", 12);
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(62, "div", 25)(63, "div", 26)(64, "h3", 28);
-      \u0275\u0275text(65, "Maintenance Requests Status");
+      \u0275\u0275elementStart(69, "div", 28)(70, "h3", 29);
+      \u0275\u0275text(71, "Calendar");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(66, "div", 29)(67, "div", 30);
-      \u0275\u0275element(68, "p-chart", 31);
+      \u0275\u0275elementStart(72, "full-calendar", 30);
+      \u0275\u0275template(73, DashboardCampusAdmin_ng_template_73_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(75, "div", 31)(76, "div", 32)(77, "p", 33);
+      \u0275\u0275text(78, "Assets by Laboratory");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(79, "div", 34);
+      \u0275\u0275element(80, "p-chart", 35);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(81, "div", 32)(82, "p", 33);
+      \u0275\u0275text(83, "Maintenance Requests by Lab");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(84, "div", 34);
+      \u0275\u0275element(85, "p-chart", 35);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(86, "div", 32)(87, "p", 36);
+      \u0275\u0275text(88, "Maintenance Status");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(89, "div", 37);
+      \u0275\u0275element(90, "p-chart", 38);
       \u0275\u0275elementEnd()()()();
-      \u0275\u0275elementStart(69, "div", 32)(70, "h3", 23);
-      \u0275\u0275text(71, "Recent Activity");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(72, "p-table", 33);
-      \u0275\u0275template(73, DashboardCampusAdmin_ng_template_73_Template, 9, 0, "ng-template", 34)(74, DashboardCampusAdmin_ng_template_74_Template, 11, 9, "ng-template", 35)(75, DashboardCampusAdmin_ng_template_75_Template, 3, 0, "ng-template", 36);
-      \u0275\u0275elementEnd()()();
     }
     if (rf & 2) {
       \u0275\u0275advance(12);
@@ -48590,18 +49461,20 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
       \u0275\u0275textInterpolate(ctx.laboratoryCount);
       \u0275\u0275advance(11);
       \u0275\u0275textInterpolate(ctx.assetCount);
+      \u0275\u0275advance(11);
+      \u0275\u0275textInterpolate(ctx.facultyCount);
+      \u0275\u0275advance(11);
+      \u0275\u0275textInterpolate(ctx.labTechCount);
       \u0275\u0275advance(5);
       \u0275\u0275property("options", ctx.calendarOptions());
-      \u0275\u0275advance(7);
+      \u0275\u0275advance(8);
       \u0275\u0275property("data", ctx.assetsByLaboratoryChartData)("options", ctx.chartOptions);
-      \u0275\u0275advance(4);
+      \u0275\u0275advance(5);
       \u0275\u0275property("data", ctx.maintenanceRequestsChartData)("options", ctx.getHorizontalChartOptions());
-      \u0275\u0275advance(7);
+      \u0275\u0275advance(5);
       \u0275\u0275property("data", ctx.maintenanceStatusChartData)("options", ctx.donutChartOptions);
-      \u0275\u0275advance(4);
-      \u0275\u0275property("value", ctx.activities)("rows", 5)("paginator", true)("rowsPerPageOptions", \u0275\u0275pureFunction0(18, _c05))("rowHover", true)("showCurrentPageReport", true)("tableStyle", \u0275\u0275pureFunction0(19, _c19));
     }
-  }, dependencies: [CommonModule, NgClass, UIChart, TableModule, Table, PrimeTemplate, FullCalendarModule, FullCalendarComponent, DatePipe], styles: ['\n\n[_nghost-%COMP%] {\n  display: block;\n}\n[_nghost-%COMP%]     .fc {\n  max-width: 100%;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n[_nghost-%COMP%]     .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n[_nghost-%COMP%]     .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n[_nghost-%COMP%]     .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button-group {\n  gap: 2px;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n.stat-card[_ngcontent-%COMP%] {\n  position: relative;\n  overflow: hidden;\n  border-radius: 1rem;\n  padding: 1.5rem;\n  min-height: 140px;\n  transition: all 0.3s ease;\n  cursor: pointer;\n}\n.stat-card[_ngcontent-%COMP%]:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);\n}\n.stat-card-bg[_ngcontent-%COMP%] {\n  position: absolute;\n  inset: 0;\n  opacity: 1;\n}\n.stat-card-purple[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #667eea 0%,\n      #764ba2 100%);\n}\n.stat-card-green[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #11998e 0%,\n      #38ef7d 100%);\n}\n.stat-card-blue[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #2193b0 0%,\n      #6dd5ed 100%);\n}\n.stat-card-orange[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #f093fb 0%,\n      #f5576c 100%);\n}\n.stat-card-content[_ngcontent-%COMP%] {\n  position: relative;\n  z-index: 10;\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n}\n.stat-icon-wrapper[_ngcontent-%COMP%] {\n  width: 60px;\n  height: 60px;\n  border-radius: 1rem;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.2);\n  -webkit-backdrop-filter: blur(10px);\n  backdrop-filter: blur(10px);\n  color: white;\n  transition: all 0.3s ease;\n}\n.stat-card[_ngcontent-%COMP%]:hover   .stat-icon-wrapper[_ngcontent-%COMP%] {\n  transform: scale(1.1) rotate(5deg);\n}\n.stat-info[_ngcontent-%COMP%] {\n  flex: 1;\n}\n.stat-label[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  font-weight: 500;\n  color: rgba(255, 255, 255, 0.85);\n  margin-bottom: 0.25rem;\n}\n.stat-value[_ngcontent-%COMP%] {\n  font-size: 2.5rem;\n  font-weight: 700;\n  color: white;\n  line-height: 1;\n  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n}\n.stat-decoration[_ngcontent-%COMP%] {\n  position: absolute;\n  right: -30px;\n  bottom: -30px;\n  width: 120px;\n  height: 120px;\n  border-radius: 50%;\n  background: rgba(255, 255, 255, 0.1);\n  transition: all 0.3s ease;\n}\n.stat-card[_ngcontent-%COMP%]:hover   .stat-decoration[_ngcontent-%COMP%] {\n  transform: scale(1.2);\n}\n.stat-card[_ngcontent-%COMP%]::before {\n  content: "";\n  position: absolute;\n  top: -50%;\n  right: -50%;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  background: rgba(255, 255, 255, 0.05);\n}\n/*# sourceMappingURL=dashboard-campusadmin.css.map */'] });
+  }, dependencies: [CommonModule, UIChart, TableModule, FullCalendarModule, FullCalendarComponent], styles: ['\n\n[_nghost-%COMP%] {\n  display: block;\n}\n[_nghost-%COMP%]     .fc {\n  max-width: 100%;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n[_nghost-%COMP%]     .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n[_nghost-%COMP%]     .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n[_nghost-%COMP%]     .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button-group {\n  gap: 2px;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n.stat-card[_ngcontent-%COMP%] {\n  position: relative;\n  overflow: hidden;\n  border-radius: 1rem;\n  padding: 1rem;\n  min-height: 100px;\n  transition: all 0.3s ease;\n  cursor: pointer;\n}\n.stat-card[_ngcontent-%COMP%]:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);\n}\n.stat-card-bg[_ngcontent-%COMP%] {\n  position: absolute;\n  inset: 0;\n  opacity: 1;\n}\n.stat-card-purple[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #667eea 0%,\n      #764ba2 100%);\n}\n.stat-card-green[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #11998e 0%,\n      #38ef7d 100%);\n}\n.stat-card-blue[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #2193b0 0%,\n      #6dd5ed 100%);\n}\n.stat-card-orange[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #f093fb 0%,\n      #f5576c 100%);\n}\n.stat-card-indigo[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #8b5cf6 100%);\n}\n.stat-card-teal[_ngcontent-%COMP%]   .stat-card-bg[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #14b8a6 0%,\n      #06b6d4 100%);\n}\n.stat-card-content[_ngcontent-%COMP%] {\n  position: relative;\n  z-index: 10;\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n}\n.stat-icon-wrapper[_ngcontent-%COMP%] {\n  width: 60px;\n  height: 60px;\n  border-radius: 1rem;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.2);\n  -webkit-backdrop-filter: blur(10px);\n  backdrop-filter: blur(10px);\n  color: white;\n  transition: all 0.3s ease;\n}\n.stat-card[_ngcontent-%COMP%]:hover   .stat-icon-wrapper[_ngcontent-%COMP%] {\n  transform: scale(1.1) rotate(5deg);\n}\n.stat-info[_ngcontent-%COMP%] {\n  flex: 1;\n}\n.stat-label[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  font-weight: 500;\n  color: rgba(255, 255, 255, 0.85);\n  margin-bottom: 0.25rem;\n}\n.stat-value[_ngcontent-%COMP%] {\n  font-size: 2.5rem;\n  font-weight: 700;\n  color: white;\n  line-height: 1;\n  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n}\n.stat-decoration[_ngcontent-%COMP%] {\n  position: absolute;\n  right: -30px;\n  bottom: -30px;\n  width: 120px;\n  height: 120px;\n  border-radius: 50%;\n  background: rgba(255, 255, 255, 0.1);\n  transition: all 0.3s ease;\n}\n.stat-card[_ngcontent-%COMP%]:hover   .stat-decoration[_ngcontent-%COMP%] {\n  transform: scale(1.2);\n}\n.stat-card[_ngcontent-%COMP%]::before {\n  content: "";\n  position: absolute;\n  top: -50%;\n  right: -50%;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  background: rgba(255, 255, 255, 0.05);\n}\n/*# sourceMappingURL=dashboard-campusadmin.css.map */'] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DashboardCampusAdmin, [{
@@ -48611,7 +49484,7 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
             <!-- Top Section: Cards and Calendar -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <!-- Left Side: Stats Cards -->
-                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Total Departments Card -->
                     <div class="stat-card stat-card-purple group">
                         <div class="stat-card-bg"></div>
@@ -48671,6 +49544,36 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
                         </div>
                         <div class="stat-decoration"></div>
                     </div>
+
+                    <!-- Faculty Count Card -->
+                    <div class="stat-card stat-card-indigo group">
+                        <div class="stat-card-bg"></div>
+                        <div class="stat-card-content">
+                            <div class="stat-icon-wrapper stat-icon-indigo">
+                                <i class="pi pi-user text-2xl"></i>
+                            </div>
+                            <div class="stat-info">
+                                <p class="stat-label">Faculty</p>
+                                <h3 class="stat-value">{{ facultyCount }}</h3>
+                            </div>
+                        </div>
+                        <div class="stat-decoration"></div>
+                    </div>
+
+                    <!-- LabTech Count Card -->
+                    <div class="stat-card stat-card-teal group">
+                        <div class="stat-card-bg"></div>
+                        <div class="stat-card-content">
+                            <div class="stat-icon-wrapper stat-icon-teal">
+                                <i class="pi pi-user-edit text-2xl"></i>
+                            </div>
+                            <div class="stat-info">
+                                <p class="stat-label">Lab Technicians</p>
+                                <h3 class="stat-value">{{ labTechCount }}</h3>
+                            </div>
+                        </div>
+                        <div class="stat-decoration"></div>
+                    </div>
                 </div>
 
                 <!-- Right Side: Calendar -->
@@ -48685,83 +49588,43 @@ var DashboardCampusAdmin = class _DashboardCampusAdmin {
                 </div>
             </div>
 
-            <!-- Charts Row -->
-            <div class="flex gap-6 mt-6">
+            <!-- Charts Row - 3 Charts Side by Side -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 <!-- Assets by Laboratory Chart -->
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 flex-1">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Assets by Laboratory</h3>
-                    <p-chart type="bar" [data]="assetsByLaboratoryChartData" [options]="chartOptions"></p-chart>
+                <div class="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <p class="text-[20px] font-normal mb-3 text-gray-400 dark:text-gray-500">Assets by Laboratory</p>
+                    <div class="relative" style="height: 300px;">
+                        <p-chart type="bar" [data]="assetsByLaboratoryChartData" [options]="chartOptions"></p-chart>
+                    </div>
                 </div>
 
                 <!-- Maintenance Requests by Laboratory Chart -->
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 flex-1">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Maintenance Requests by Laboratory</h3>
-                    <p-chart type="bar" [data]="maintenanceRequestsChartData" [options]="getHorizontalChartOptions()"></p-chart>
+                <div class="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <p class="text-[20px] font-normal mb-3 text-gray-400 dark:text-gray-500">Maintenance Requests by Lab</p>
+                    <div class="relative" style="height: 300px;">
+                        <p-chart type="bar" [data]="maintenanceRequestsChartData" [options]="getHorizontalChartOptions()"></p-chart>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Donut Chart Row -->
-            <div class="flex gap-6 mt-6">
-                <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 flex-1">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white text-center">Maintenance Requests Status</h3>
-                    <div class="flex justify-center">
-                        <div class="w-80">
-                            <p-chart type="doughnut" [data]="maintenanceStatusChartData" [options]="donutChartOptions"></p-chart>
-                        </div>
+                <!-- Maintenance Requests Status Chart -->
+                <div class="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <p class="text-[20px] font-normal mb-3 text-gray-400 dark:text-gray-500 text-center">Maintenance Status</p>
+                    <div class="relative flex items-center justify-center" style="height: 300px;">
+                        <p-chart type="doughnut" [data]="maintenanceStatusChartData" [options]="donutChartOptions"></p-chart>
                     </div>
                 </div>
             </div>
-
-            <!-- Recent Activity Table -->
-            <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 mt-6 w-full">
-                <h3 class="text-xl font-semibold mb-4 dark:text-white">Recent Activity</h3>
-                <p-table
-                    [value]="activities"
-                    [rows]="5"
-                    [paginator]="true"
-                    [rowsPerPageOptions]="[5, 10, 20, 30]"
-                    [rowHover]="true"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} activities"
-                    [showCurrentPageReport]="true"
-                    [tableStyle]="{ 'min-width': '100%' }"
-                >
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="min-width:15rem">Action Type</th>
-                            <th style="min-width:20rem">Target Name</th>
-                            <th style="min-width:18rem">Actor</th>
-                            <th style="min-width:18rem">Timestamp</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-activity>
-                        <tr>
-                            <td>
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getActionTypeClass(activity.actionType)">
-                                    {{ activity.actionType }}
-                                </span>
-                            </td>
-                            <td class="dark:text-white">{{ activity.targetName }}</td>
-                            <td class="dark:text-white">{{ activity.actor?.firstName }} {{ activity.actor?.lastName }}</td>
-                            <td class="dark:text-gray-400">{{ activity.timestamp | date: 'short' }}</td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="4" class="text-center py-5 dark:text-gray-400">No activities found</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
         </div>
-    `, styles: ['/* angular:styles/component:scss;383813fb3bbc6c7dd232a560a629ed25a6011303adcb9dd6ab91f4f35fd3e0b8;C:/Users/jeric/Documents/2026 files/LAMS-FINAL/src/app/pages/dashboard/dashboard-campusadmin.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n.stat-card {\n  position: relative;\n  overflow: hidden;\n  border-radius: 1rem;\n  padding: 1.5rem;\n  min-height: 140px;\n  transition: all 0.3s ease;\n  cursor: pointer;\n}\n.stat-card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);\n}\n.stat-card-bg {\n  position: absolute;\n  inset: 0;\n  opacity: 1;\n}\n.stat-card-purple .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #667eea 0%,\n      #764ba2 100%);\n}\n.stat-card-green .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #11998e 0%,\n      #38ef7d 100%);\n}\n.stat-card-blue .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #2193b0 0%,\n      #6dd5ed 100%);\n}\n.stat-card-orange .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #f093fb 0%,\n      #f5576c 100%);\n}\n.stat-card-content {\n  position: relative;\n  z-index: 10;\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n}\n.stat-icon-wrapper {\n  width: 60px;\n  height: 60px;\n  border-radius: 1rem;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.2);\n  -webkit-backdrop-filter: blur(10px);\n  backdrop-filter: blur(10px);\n  color: white;\n  transition: all 0.3s ease;\n}\n.stat-card:hover .stat-icon-wrapper {\n  transform: scale(1.1) rotate(5deg);\n}\n.stat-info {\n  flex: 1;\n}\n.stat-label {\n  font-size: 0.875rem;\n  font-weight: 500;\n  color: rgba(255, 255, 255, 0.85);\n  margin-bottom: 0.25rem;\n}\n.stat-value {\n  font-size: 2.5rem;\n  font-weight: 700;\n  color: white;\n  line-height: 1;\n  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n}\n.stat-decoration {\n  position: absolute;\n  right: -30px;\n  bottom: -30px;\n  width: 120px;\n  height: 120px;\n  border-radius: 50%;\n  background: rgba(255, 255, 255, 0.1);\n  transition: all 0.3s ease;\n}\n.stat-card:hover .stat-decoration {\n  transform: scale(1.2);\n}\n.stat-card::before {\n  content: "";\n  position: absolute;\n  top: -50%;\n  right: -50%;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  background: rgba(255, 255, 255, 0.05);\n}\n/*# sourceMappingURL=dashboard-campusadmin.css.map */\n'] }]
-  }], () => [{ type: HttpClient }], null);
+    `, styles: ['/* angular:styles/component:scss;cb79c7770fd300798029a6a0ce69c64360fd7088b1fd2a9c15ec120d8476fc04;D:/Capstone Projects/LAMS-COPY/src/app/pages/dashboard/dashboard-campusadmin.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n.stat-card {\n  position: relative;\n  overflow: hidden;\n  border-radius: 1rem;\n  padding: 1rem;\n  min-height: 100px;\n  transition: all 0.3s ease;\n  cursor: pointer;\n}\n.stat-card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);\n}\n.stat-card-bg {\n  position: absolute;\n  inset: 0;\n  opacity: 1;\n}\n.stat-card-purple .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #667eea 0%,\n      #764ba2 100%);\n}\n.stat-card-green .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #11998e 0%,\n      #38ef7d 100%);\n}\n.stat-card-blue .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #2193b0 0%,\n      #6dd5ed 100%);\n}\n.stat-card-orange .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #f093fb 0%,\n      #f5576c 100%);\n}\n.stat-card-indigo .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #8b5cf6 100%);\n}\n.stat-card-teal .stat-card-bg {\n  background:\n    linear-gradient(\n      135deg,\n      #14b8a6 0%,\n      #06b6d4 100%);\n}\n.stat-card-content {\n  position: relative;\n  z-index: 10;\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n}\n.stat-icon-wrapper {\n  width: 60px;\n  height: 60px;\n  border-radius: 1rem;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(255, 255, 255, 0.2);\n  -webkit-backdrop-filter: blur(10px);\n  backdrop-filter: blur(10px);\n  color: white;\n  transition: all 0.3s ease;\n}\n.stat-card:hover .stat-icon-wrapper {\n  transform: scale(1.1) rotate(5deg);\n}\n.stat-info {\n  flex: 1;\n}\n.stat-label {\n  font-size: 0.875rem;\n  font-weight: 500;\n  color: rgba(255, 255, 255, 0.85);\n  margin-bottom: 0.25rem;\n}\n.stat-value {\n  font-size: 2.5rem;\n  font-weight: 700;\n  color: white;\n  line-height: 1;\n  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n}\n.stat-decoration {\n  position: absolute;\n  right: -30px;\n  bottom: -30px;\n  width: 120px;\n  height: 120px;\n  border-radius: 50%;\n  background: rgba(255, 255, 255, 0.1);\n  transition: all 0.3s ease;\n}\n.stat-card:hover .stat-decoration {\n  transform: scale(1.2);\n}\n.stat-card::before {\n  content: "";\n  position: absolute;\n  top: -50%;\n  right: -50%;\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  background: rgba(255, 255, 255, 0.05);\n}\n/*# sourceMappingURL=dashboard-campusadmin.css.map */\n'] }]
+  }], () => [{ type: HttpClient }, { type: ChangeDetectorRef }, { type: CalendarService }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardCampusAdmin, { className: "DashboardCampusAdmin" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardCampusAdmin, { className: "DashboardCampusAdmin", filePath: "src/app/pages/dashboard/dashboard-campusadmin.ts", lineNumber: 341 });
 })();
 
 // src/app/pages/dashboard/dashboard-faculty.ts
-function DashboardFaculty_ng_template_31_Template(rf, ctx) {
+var import_sweetalert26 = __toESM(require_sweetalert2_all());
+function DashboardFaculty_ng_template_30_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "b");
     \u0275\u0275text(1);
@@ -48778,7 +49641,7 @@ function DashboardFaculty_ng_template_31_Template(rf, ctx) {
     \u0275\u0275textInterpolate(arg_r1.event.title);
   }
 }
-function DashboardFaculty_div_38_Template(rf, ctx) {
+function DashboardFaculty_div_37_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 27)(1, "div", 28);
     \u0275\u0275text(2);
@@ -48800,9 +49663,18 @@ function DashboardFaculty_div_38_Template(rf, ctx) {
     \u0275\u0275textInterpolate2("", schedule_r2.laboratory, " \u2022 ", schedule_r2.students, " students");
   }
 }
+function DashboardFaculty_div_38_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 30);
+    \u0275\u0275element(1, "i", 31);
+    \u0275\u0275elementStart(2, "p");
+    \u0275\u0275text(3, "No classes scheduled for today");
+    \u0275\u0275elementEnd()();
+  }
+}
 function DashboardFaculty_div_43_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 30)(1, "div", 28);
+    \u0275\u0275elementStart(0, "div", 32)(1, "div", 28);
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "div", 29);
@@ -48822,21 +49694,31 @@ function DashboardFaculty_div_43_Template(rf, ctx) {
     \u0275\u0275textInterpolate(schedule_r3.laboratory);
   }
 }
+function DashboardFaculty_div_44_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 30);
+    \u0275\u0275element(1, "i", 31);
+    \u0275\u0275elementStart(2, "p");
+    \u0275\u0275text(3, "No upcoming classes in the next week");
+    \u0275\u0275elementEnd()();
+  }
+}
 var eventGuid = 0;
 var TODAY_STR = (/* @__PURE__ */ new Date()).toISOString().replace(/T.*$/, "");
 var INITIAL_EVENTS3 = [
   { id: String(eventGuid++), title: "All-day event", start: TODAY_STR },
   { id: String(eventGuid++), title: "Timed event", start: TODAY_STR + "T12:00:00" }
 ];
-function createEventId3() {
-  return String(eventGuid++);
-}
 var DashboardFaculty = class _DashboardFaculty {
   http;
+  changeDetector;
+  calendarService;
+  authService;
   totalSubmitted = 0;
   pendingCount = 0;
   statusChartData;
   donutOptions;
+  lineChartOptions;
   todaySchedules = [];
   upcomingSchedules = [];
   // Calendar properties
@@ -48854,20 +49736,43 @@ var DashboardFaculty = class _DashboardFaculty {
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
+    views: {
+      dayGridMonth: {
+        displayEventTime: false
+      }
+    },
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this)
+    eventsSet: this.handleEvents.bind(this),
+    eventContent: (arg) => {
+      const view = arg.view.type;
+      const props = arg.event.extendedProps;
+      if (view === "dayGridMonth") {
+        if (props["type"] === "schedule") {
+          return { html: `<div class="fc-event-title">${props["subject"] || "N/A"}</div>` };
+        } else if (props["type"] === "maintenance") {
+          return { html: `<div class="fc-event-title">${props["maintenanceType"] || "Maintenance"}</div>` };
+        } else if (props["type"] === "custom") {
+          return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+        }
+      }
+      return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+    }
   }, ...ngDevMode ? [{ debugName: "calendarOptions" }] : []);
   currentEvents = signal([], ...ngDevMode ? [{ debugName: "currentEvents" }] : []);
-  constructor(http) {
+  constructor(http, changeDetector, calendarService, authService) {
     this.http = http;
+    this.changeDetector = changeDetector;
+    this.calendarService = calendarService;
+    this.authService = authService;
   }
   ngOnInit() {
     this.loadTotalSubmitted();
     this.loadPending();
     this.loadByStatus();
+    this.loadCalendarEvents();
     this.initDonutOptions();
-    this.initMockScheduleData();
+    this.loadScheduleData();
   }
   loadTotalSubmitted() {
     const apiUrl = "http://localhost:3000/api/maintenance-requests/count-total-submitted";
@@ -48884,25 +49789,61 @@ var DashboardFaculty = class _DashboardFaculty {
     });
   }
   loadByStatus() {
-    const apiUrl = "http://localhost:3000/api/maintenance-requests/count-by-status";
+    const apiUrl = `${environment.apiUrl}/maintenance-approvals`;
     this.http.get(apiUrl).subscribe({
-      next: (data) => {
-        const labels = data.map((item) => item.status || "Unknown");
-        const counts = data.map((item) => item.count || 0);
-        const colors = this.generateColors(labels.length);
-        this.statusChartData = {
-          labels,
-          datasets: [
-            {
-              data: counts,
-              backgroundColor: colors.map((c3) => c3.bg),
-              borderColor: colors.map((c3) => c3.border),
-              borderWidth: 1
+      next: (approvals) => {
+        console.log("=== MAINTENANCE APPROVALS FOR STATUS ===");
+        console.log("Total approvals:", approvals.length);
+        const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const statusMap = /* @__PURE__ */ new Map();
+        approvals.forEach((approval) => {
+          const status = approval.maintenanceRequest?.maintenanceStatus?.requestStatusName || "Unknown";
+          const createdDate = new Date(approval.maintenanceRequest?.requestDate || approval.approvedAt);
+          if (createdDate.getFullYear() === currentYear) {
+            const monthIndex = createdDate.getMonth();
+            if (!statusMap.has(status)) {
+              statusMap.set(status, new Array(12).fill(0));
             }
-          ]
+            const monthlyCounts = statusMap.get(status);
+            monthlyCounts[monthIndex]++;
+          }
+        });
+        console.log("Status map:", Array.from(statusMap.entries()));
+        const colorPalette = [
+          { bg: "rgba(239, 68, 68, 0.8)", border: "rgb(239, 68, 68)" },
+          // Red - Pending
+          { bg: "rgba(59, 130, 246, 0.8)", border: "rgb(59, 130, 246)" },
+          // Blue - Approved
+          { bg: "rgba(251, 146, 60, 0.8)", border: "rgb(251, 146, 60)" },
+          // Orange - In Progress
+          { bg: "rgba(16, 185, 129, 0.8)", border: "rgb(16, 185, 129)" },
+          // Green - Completed
+          { bg: "rgba(107, 114, 128, 0.8)", border: "rgb(107, 114, 128)" }
+          // Gray - Unknown
+        ];
+        const datasets = Array.from(statusMap.entries()).map(([status, data], index5) => ({
+          label: status,
+          data,
+          borderColor: colorPalette[index5 % colorPalette.length].border,
+          backgroundColor: colorPalette[index5 % colorPalette.length].bg,
+          tension: 0.4,
+          fill: false,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }));
+        this.statusChartData = {
+          labels: months,
+          datasets
         };
       },
-      error: (error) => console.error("Error loading status counts:", error)
+      error: (error) => {
+        console.error("Error loading status monthly data:", error);
+        this.statusChartData = {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+          datasets: []
+        };
+      }
     });
   }
   initDonutOptions() {
@@ -48929,6 +49870,52 @@ var DashboardFaculty = class _DashboardFaculty {
         }
       }
     };
+    this.lineChartOptions = {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "top",
+          labels: {
+            color: textColor,
+            usePointStyle: true,
+            padding: 15,
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${context.dataset.label}: ${context.parsed.y} requests`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: textColor,
+            font: { weight: 500 }
+          },
+          grid: {
+            display: false,
+            drawBorder: false
+          }
+        },
+        y: {
+          ticks: {
+            color: textColor,
+            stepSize: 1
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0.05)",
+            drawBorder: false
+          },
+          beginAtZero: true
+        }
+      }
+    };
   }
   generateColors(count) {
     const palette = [
@@ -48948,6 +49935,59 @@ var DashboardFaculty = class _DashboardFaculty {
       colors.push(palette[i3 % palette.length]);
     }
     return colors;
+  }
+  loadScheduleData() {
+    console.log("=== LOADING FACULTY SCHEDULE DATA ===");
+    const scheduleUrl = `${environment.apiUrl}/faculty-schedules`;
+    this.http.get(scheduleUrl).subscribe({
+      next: (data) => {
+        console.log("Faculty schedules fetched:", data);
+        console.log("Total schedules:", data?.length || 0);
+        if (data && data.length > 0) {
+          const today = /* @__PURE__ */ new Date();
+          const todayDayName = this.getDayName(today.getDay());
+          this.todaySchedules = data.filter((schedule) => schedule.dayOfWeek === todayDayName).map((schedule) => ({
+            time: `${schedule.startTime} - ${schedule.endTime}`,
+            subject: schedule.subject?.subjectCode || schedule.subject?.subjectName || "N/A",
+            laboratory: schedule.laboratory?.laboratoryName || "N/A",
+            students: schedule.subject?.numberOfStudents || 0
+          }));
+          console.log("Today's schedules:", this.todaySchedules);
+          this.upcomingSchedules = this.getUpcomingSchedules(data, today);
+          console.log("Upcoming schedules:", this.upcomingSchedules);
+        } else {
+          this.todaySchedules = [];
+          this.upcomingSchedules = [];
+        }
+        console.log("====================================");
+      },
+      error: (error) => {
+        console.error("Error loading faculty schedules:", error);
+        this.todaySchedules = [];
+        this.upcomingSchedules = [];
+      }
+    });
+  }
+  getDayName(dayIndex) {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return days[dayIndex];
+  }
+  getUpcomingSchedules(schedules, fromDate) {
+    const upcoming = [];
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    for (let i3 = 1; i3 <= 7; i3++) {
+      const futureDate = new Date(fromDate);
+      futureDate.setDate(fromDate.getDate() + i3);
+      const futureDayName = this.getDayName(futureDate.getDay());
+      const daySchedules = schedules.filter((schedule) => schedule.dayOfWeek === futureDayName).map((schedule) => ({
+        date: futureDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        time: `${schedule.startTime} - ${schedule.endTime}`,
+        subject: schedule.subject?.subjectCode || schedule.subject?.subjectName || "N/A",
+        laboratory: schedule.laboratory?.laboratoryName || "N/A"
+      }));
+      upcoming.push(...daySchedules);
+    }
+    return upcoming.slice(0, 10);
   }
   initMockScheduleData() {
     this.todaySchedules = [
@@ -49003,33 +50043,190 @@ var DashboardFaculty = class _DashboardFaculty {
       }
     ];
   }
+  //// Load Calendar Events
+  loadCalendarEvents() {
+    this.calendarService.getCalendarEvents().subscribe({
+      next: (events) => {
+        this.calendarOptions.update((options) => __spreadProps(__spreadValues({}, options), {
+          events: events.map((event) => ({
+            id: event.id,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            extendedProps: event.extendedProps,
+            backgroundColor: event.extendedProps.color,
+            borderColor: event.extendedProps.color
+          }))
+        }));
+        this.changeDetector.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error loading calendar events:", error);
+      }
+    });
+  }
   // Calendar event handlers
   handleDateSelect(selectInfo) {
-    const title = prompt("Please enter a new title for your event");
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
-    if (title) {
-      calendarApi.addEvent({
-        id: createEventId3(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      });
-    }
+    console.log("Selected Date:", selectInfo.start);
+    console.log("Selected Date (ISO):", selectInfo.start.toISOString());
+    console.log("Selected Date (Locale):", selectInfo.start.toLocaleString());
+    import_sweetalert26.default.fire({
+      title: "Add New Event",
+      html: `
+                <input id="event-title" class="swal2-input" placeholder="Event Title" style="width: 85%;">
+                <textarea id="event-description" class="swal2-textarea" placeholder="Description (optional)" style="width: 85%; height: 80px;"></textarea>
+            `,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Add Event",
+      cancelButtonText: "Cancel",
+      preConfirm: () => {
+        const title = document.getElementById("event-title").value;
+        const description = document.getElementById("event-description").value;
+        if (!title) {
+          import_sweetalert26.default.showValidationMessage("Please enter an event title");
+          return false;
+        }
+        return { title, description };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        import_sweetalert26.default.fire({
+          title: "Saving...",
+          text: "Please wait while we save your event.",
+          allowOutsideClick: false,
+          didOpen: () => {
+            import_sweetalert26.default.showLoading();
+          }
+        });
+        const apiUrl = "http://localhost:3000/api/calendar/events";
+        this.http.post(apiUrl, {
+          title: result.value.title,
+          description: result.value.description || "",
+          eventDate: selectInfo.start.toISOString()
+        }).subscribe({
+          next: (response) => {
+            this.loadCalendarEvents();
+            import_sweetalert26.default.fire({
+              icon: "success",
+              title: "Event Added!",
+              text: "Your event has been saved to the calendar.",
+              timer: 2e3,
+              showConfirmButton: false
+            });
+          },
+          error: (error) => {
+            console.error("Error saving event:", error);
+            import_sweetalert26.default.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to save event. Please try again.",
+              confirmButtonText: "OK"
+            });
+          }
+        });
+      }
+    });
   }
   handleEventClick(clickInfo) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
+    const event = clickInfo.event;
+    const props = event.extendedProps;
+    if (props["type"] === "custom") {
+      import_sweetalert26.default.fire({
+        title: "<strong>Custom Event</strong>",
+        icon: "info",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Title:</strong> ${event.title}</p>
+                        <p><strong>Description:</strong> ${props["description"] || "No description"}</p>
+                        <p><strong>Created By:</strong> ${props["createdBy"] || "Unknown"}</p>
+                        <p><strong>Date:</strong> ${new Date(event.start).toLocaleString()}</p>
+                        ${event.end ? `<p><strong>End:</strong> ${new Date(event.end).toLocaleString()}</p>` : ""}
+                    </div>
+                `,
+        showDenyButton: true,
+        confirmButtonText: "Close",
+        denyButtonText: "Delete Event",
+        customClass: {
+          popup: "swal-wide"
+        }
+      }).then((result) => {
+        if (result.isDenied) {
+          import_sweetalert26.default.fire({
+            title: "Delete Event?",
+            text: "Are you sure you want to delete this event?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it",
+            cancelButtonText: "Cancel"
+          }).then((deleteConfirm) => {
+            if (deleteConfirm.isConfirmed) {
+              clickInfo.event.remove();
+              import_sweetalert26.default.fire({
+                icon: "success",
+                title: "Deleted!",
+                text: "Event has been deleted.",
+                timer: 2e3,
+                showConfirmButton: false
+              });
+            }
+          });
+        }
+      });
+    } else if (props["type"] === "schedule") {
+      import_sweetalert26.default.fire({
+        title: "<strong>Lab Schedule</strong>",
+        icon: "info",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Subject:</strong> ${props["subject"] || "N/A"}</p>
+                        <p><strong>Laboratory:</strong> ${props["lab"] || "N/A"}</p>
+                        <p><strong>Building:</strong> ${props["location"] || "N/A"}</p>
+                        <p><strong>Campus:</strong> ${props["campus"] || "N/A"}</p>
+                        <p><strong>Instructor:</strong> ${props["instructor"] || "N/A"}</p>
+                        <p><strong>Students:</strong> ${props["totalStudents"] || 0}</p>
+                        <p><strong>Time:</strong> ${new Date(event.start).toLocaleTimeString()} - ${event.end ? new Date(event.end).toLocaleTimeString() : "N/A"}</p>
+                    </div>
+                `,
+        confirmButtonText: "Close",
+        customClass: {
+          popup: "swal-wide"
+        }
+      });
+    } else if (props["type"] === "maintenance") {
+      const priorityColor = props["priority"] === "High" ? "red" : props["priority"] === "Medium" ? "orange" : "green";
+      import_sweetalert26.default.fire({
+        title: "<strong>Maintenance Request</strong>",
+        icon: "warning",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Equipment:</strong> ${props["equipment"] || "N/A"}</p>
+                        <p><strong>Type:</strong> ${props["maintenanceType"] || "N/A"}</p>
+                        <p><strong>Priority:</strong> <span style="color: ${priorityColor}; font-weight: bold;">${props["priority"] || "N/A"}</span></p>
+                        <p><strong>Status:</strong> ${props["status"] || "N/A"}</p>
+                        <p><strong>Building:</strong> ${props["location"] || "N/A"}</p>
+                        <p><strong>Requested By:</strong> ${props["requestedBy"] || "N/A"}</p>
+                        <p><strong>Assigned To:</strong> ${props["assignedTo"] || "Not Assigned"}</p>
+                        <p><strong>Description:</strong> ${props["description"] || "No description"}</p>
+                        <p><strong>Date:</strong> ${new Date(event.start).toLocaleString()}</p>
+                    </div>
+                `,
+        confirmButtonText: "Close",
+        customClass: {
+          popup: "swal-wide"
+        }
+      });
     }
   }
   handleEvents(events) {
     this.currentEvents.set(events);
   }
   static \u0275fac = function DashboardFaculty_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _DashboardFaculty)(\u0275\u0275directiveInject(HttpClient));
+    return new (__ngFactoryType__ || _DashboardFaculty)(\u0275\u0275directiveInject(HttpClient), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(CalendarService), \u0275\u0275directiveInject(AuthService));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardFaculty, selectors: [["app-dashboard-faculty"]], decls: 44, vars: 7, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "md:grid-cols-2", "gap-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "flex", "items-center", "justify-between"], [1, "text-gray-600", "dark:text-gray-400", "text-sm", "font-medium"], [1, "text-4xl", "font-bold", "text-blue-600", "dark:text-blue-400", "mt-2"], [1, "bg-blue-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-send", "text-2xl", "text-blue-600", "dark:text-blue-400"], [1, "text-4xl", "font-bold", "text-amber-600", "dark:text-amber-400", "mt-2"], [1, "bg-amber-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-clock", "text-2xl", "text-amber-600", "dark:text-amber-400"], [1, "md:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "dark:text-white", "text-center", "mb-4"], [1, "flex", "justify-center"], [1, "w-64"], ["type", "doughnut", 3, "data", "options"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], [3, "options"], [1, "flex", "flex-col", "md:flex-row", "gap-6", "mt-6"], [1, "w-full", "md:w-1/2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "space-y-3"], ["class", "border-l-4 border-blue-500 pl-4 py-2 dark:border-blue-400", 4, "ngFor", "ngForOf"], [1, "space-y-3", "max-h-80", "overflow-y-auto"], ["class", "border-l-4 border-green-500 pl-4 py-2 dark:border-green-400", 4, "ngFor", "ngForOf"], [1, "border-l-4", "border-blue-500", "pl-4", "py-2", "dark:border-blue-400"], [1, "font-semibold", "dark:text-white"], [1, "text-sm", "text-gray-600", "dark:text-gray-400"], [1, "border-l-4", "border-green-500", "pl-4", "py-2", "dark:border-green-400"]], template: function DashboardFaculty_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardFaculty, selectors: [["app-dashboard-faculty"]], decls: 45, vars: 9, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "md:grid-cols-2", "gap-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "flex", "items-center", "justify-between"], [1, "text-gray-600", "dark:text-gray-400", "text-sm", "font-medium"], [1, "text-4xl", "font-bold", "text-blue-600", "dark:text-blue-400", "mt-2"], [1, "bg-blue-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-send", "text-2xl", "text-blue-600", "dark:text-blue-400"], [1, "text-4xl", "font-bold", "text-amber-600", "dark:text-amber-400", "mt-2"], [1, "bg-amber-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-clock", "text-2xl", "text-amber-600", "dark:text-amber-400"], [1, "md:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "dark:text-white", "text-center", "mb-4"], [2, "height", "300px"], ["type", "line", 3, "data", "options"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], [3, "options"], [1, "flex", "flex-col", "md:flex-row", "gap-6", "mt-6"], [1, "w-full", "md:w-1/2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "space-y-3"], ["class", "border-l-4 border-blue-500 pl-4 py-2 dark:border-blue-400", 4, "ngFor", "ngForOf"], ["class", "text-center text-gray-500 dark:text-gray-400 py-8", 4, "ngIf"], [1, "space-y-3", "max-h-80", "overflow-y-auto"], ["class", "border-l-4 border-green-500 pl-4 py-2 dark:border-green-400", 4, "ngFor", "ngForOf"], [1, "border-l-4", "border-blue-500", "pl-4", "py-2", "dark:border-blue-400"], [1, "font-semibold", "dark:text-white"], [1, "text-sm", "text-gray-600", "dark:text-gray-400"], [1, "text-center", "text-gray-500", "dark:text-gray-400", "py-8"], [1, "pi", "pi-calendar", "text-4xl", "mb-2"], [1, "border-l-4", "border-green-500", "pl-4", "py-2", "dark:border-green-400"]], template: function DashboardFaculty_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 1)(1, "div", 2)(2, "div", 3)(3, "div", 4)(4, "div", 5)(5, "div")(6, "p", 6);
       \u0275\u0275text(7, "Total Submitted Requests");
@@ -49050,28 +50247,28 @@ var DashboardFaculty = class _DashboardFaculty {
       \u0275\u0275element(20, "i", 12);
       \u0275\u0275elementEnd()()();
       \u0275\u0275elementStart(21, "div", 13)(22, "h3", 14);
-      \u0275\u0275text(23, "Requests by Status");
+      \u0275\u0275text(23, "Requests by Status (Monthly)");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(24, "div", 15)(25, "div", 16);
-      \u0275\u0275element(26, "p-chart", 17);
-      \u0275\u0275elementEnd()()()();
-      \u0275\u0275elementStart(27, "div", 18)(28, "h3", 19);
-      \u0275\u0275text(29, "Calendar");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(30, "full-calendar", 20);
-      \u0275\u0275template(31, DashboardFaculty_ng_template_31_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+      \u0275\u0275elementStart(24, "div", 15);
+      \u0275\u0275element(25, "p-chart", 16);
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(33, "div", 21)(34, "div", 22)(35, "h3", 19);
-      \u0275\u0275text(36, "Today's Schedule");
+      \u0275\u0275elementStart(26, "div", 17)(27, "h3", 18);
+      \u0275\u0275text(28, "Calendar");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(37, "div", 23);
-      \u0275\u0275template(38, DashboardFaculty_div_38_Template, 7, 4, "div", 24);
+      \u0275\u0275elementStart(29, "full-calendar", 19);
+      \u0275\u0275template(30, DashboardFaculty_ng_template_30_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(32, "div", 20)(33, "div", 21)(34, "h3", 18);
+      \u0275\u0275text(35, "Today's Schedule");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(36, "div", 22);
+      \u0275\u0275template(37, DashboardFaculty_div_37_Template, 7, 4, "div", 23)(38, DashboardFaculty_div_38_Template, 4, 0, "div", 24);
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(39, "div", 22)(40, "h3", 19);
+      \u0275\u0275elementStart(39, "div", 21)(40, "h3", 18);
       \u0275\u0275text(41, "Upcoming Schedules");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(42, "div", 25);
-      \u0275\u0275template(43, DashboardFaculty_div_43_Template, 7, 4, "div", 26);
+      \u0275\u0275template(43, DashboardFaculty_div_43_Template, 7, 4, "div", 26)(44, DashboardFaculty_div_44_Template, 4, 0, "div", 24);
       \u0275\u0275elementEnd()()()();
     }
     if (rf & 2) {
@@ -49079,16 +50276,20 @@ var DashboardFaculty = class _DashboardFaculty {
       \u0275\u0275textInterpolate(ctx.totalSubmitted);
       \u0275\u0275advance(9);
       \u0275\u0275textInterpolate(ctx.pendingCount);
-      \u0275\u0275advance(8);
-      \u0275\u0275property("data", ctx.statusChartData)("options", ctx.donutOptions);
+      \u0275\u0275advance(7);
+      \u0275\u0275property("data", ctx.statusChartData)("options", ctx.lineChartOptions);
       \u0275\u0275advance(4);
       \u0275\u0275property("options", ctx.calendarOptions());
       \u0275\u0275advance(8);
       \u0275\u0275property("ngForOf", ctx.todaySchedules);
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", ctx.todaySchedules.length === 0);
       \u0275\u0275advance(5);
       \u0275\u0275property("ngForOf", ctx.upcomingSchedules);
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", ctx.upcomingSchedules.length === 0);
     }
-  }, dependencies: [CommonModule, NgForOf, UIChart, FullCalendarModule, FullCalendarComponent], styles: ["\n\n[_nghost-%COMP%] {\n  display: block;\n}\n[_nghost-%COMP%]     .fc {\n  max-width: 100%;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n[_nghost-%COMP%]     .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n[_nghost-%COMP%]     .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n[_nghost-%COMP%]     .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button-group {\n  gap: 2px;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-faculty.css.map */"] });
+  }, dependencies: [CommonModule, NgForOf, NgIf, UIChart, FullCalendarModule, FullCalendarComponent], styles: ["\n\n[_nghost-%COMP%] {\n  display: block;\n}\n[_nghost-%COMP%]     .fc {\n  max-width: 100%;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n[_nghost-%COMP%]     .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n[_nghost-%COMP%]     .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n[_nghost-%COMP%]     .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button-group {\n  gap: 2px;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-faculty.css.map */"] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DashboardFaculty, [{
@@ -49125,13 +50326,11 @@ var DashboardFaculty = class _DashboardFaculty {
                         </div>
                     </div>
 
-                    <!-- Donut Chart for Requests by Status -->
+                    <!-- Line Chart for Requests by Status -->
                     <div class="md:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                        <h3 class="text-xl font-semibold dark:text-white text-center mb-4">Requests by Status</h3>
-                        <div class="flex justify-center">
-                            <div class="w-64">
-                                <p-chart type="doughnut" [data]="statusChartData" [options]="donutOptions"></p-chart>
-                            </div>
+                        <h3 class="text-xl font-semibold dark:text-white text-center mb-4">Requests by Status (Monthly)</h3>
+                        <div style="height: 300px;">
+                            <p-chart type="line" [data]="statusChartData" [options]="lineChartOptions"></p-chart>
                         </div>
                     </div>
                 </div>
@@ -49159,6 +50358,10 @@ var DashboardFaculty = class _DashboardFaculty {
                             <div class="text-sm text-gray-600 dark:text-gray-400">{{ schedule.time }}</div>
                             <div class="text-sm text-gray-600 dark:text-gray-400">{{ schedule.laboratory }} \u2022 {{ schedule.students }} students</div>
                         </div>
+                        <div *ngIf="todaySchedules.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
+                            <i class="pi pi-calendar text-4xl mb-2"></i>
+                            <p>No classes scheduled for today</p>
+                        </div>
                     </div>
                 </div>
 
@@ -49171,19 +50374,24 @@ var DashboardFaculty = class _DashboardFaculty {
                             <div class="text-sm text-gray-600 dark:text-gray-400">{{ schedule.date }} @ {{ schedule.time }}</div>
                             <div class="text-sm text-gray-600 dark:text-gray-400">{{ schedule.laboratory }}</div>
                         </div>
+                        <div *ngIf="upcomingSchedules.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
+                            <i class="pi pi-calendar text-4xl mb-2"></i>
+                            <p>No upcoming classes in the next week</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    `, styles: ["/* angular:styles/component:scss;011f3be2fa16bb96e582afc09918676f03111124a30ffefdbe525a0685985b8d;C:/Users/jeric/Documents/2026 files/LAMS-FINAL/src/app/pages/dashboard/dashboard-faculty.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-faculty.css.map */\n"] }]
-  }], () => [{ type: HttpClient }], null);
+    `, styles: ["/* angular:styles/component:scss;011f3be2fa16bb96e582afc09918676f03111124a30ffefdbe525a0685985b8d;D:/Capstone Projects/LAMS-COPY/src/app/pages/dashboard/dashboard-faculty.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-faculty.css.map */\n"] }]
+  }], () => [{ type: HttpClient }, { type: ChangeDetectorRef }, { type: CalendarService }, { type: AuthService }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardFaculty, { className: "DashboardFaculty" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardFaculty, { className: "DashboardFaculty", filePath: "src/app/pages/dashboard/dashboard-faculty.ts", lineNumber: 176 });
 })();
 
-// src/app/pages/dashboard/dashboard-student.ts
-function DashboardStudent_ng_template_31_Template(rf, ctx) {
+// src/app/pages/dashboard/dashboard-labtech.ts
+var import_sweetalert27 = __toESM(require_sweetalert2_all());
+function DashboardLabTech_ng_template_30_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "b");
     \u0275\u0275text(1);
@@ -49206,10 +50414,23 @@ var INITIAL_EVENTS4 = [
   { id: String(eventGuid2++), title: "All-day event", start: TODAY_STR2 },
   { id: String(eventGuid2++), title: "Timed event", start: TODAY_STR2 + "T12:00:00" }
 ];
-function createEventId4() {
-  return String(eventGuid2++);
-}
-var DashboardStudent = class _DashboardStudent {
+var DashboardLabTech = class _DashboardLabTech {
+  http;
+  changeDetector;
+  calendarService;
+  overdueApprovalsCount = 0;
+  requestsForApprovalCount = 0;
+  serviceTypeChartData;
+  donutChartOptions;
+  lineChartOptions;
+  assetsBySupplierChartData;
+  assetsByBrandChartData;
+  barChartOptions;
+  horizontalChartOptions;
+  scheduleByDayChartData;
+  scheduleByLabChartData;
+  assetsByLabChartData;
+  maintenanceByLabChartData;
   // Calendar properties
   calendarOptions = signal({
     plugins: [index4, index2, index, index3],
@@ -49225,210 +50446,48 @@ var DashboardStudent = class _DashboardStudent {
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
-    select: this.handleDateSelect.bind(this),
-    eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this)
-  }, ...ngDevMode ? [{ debugName: "calendarOptions" }] : []);
-  currentEvents = signal([], ...ngDevMode ? [{ debugName: "currentEvents" }] : []);
-  // Calendar event handlers
-  handleDateSelect(selectInfo) {
-    const title = prompt("Please enter a new title for your event");
-    const calendarApi = selectInfo.view.calendar;
-    calendarApi.unselect();
-    if (title) {
-      calendarApi.addEvent({
-        id: createEventId4(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      });
-    }
-  }
-  handleEventClick(clickInfo) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
-    }
-  }
-  handleEvents(events) {
-    this.currentEvents.set(events);
-  }
-  static \u0275fac = function DashboardStudent_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _DashboardStudent)();
-  };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardStudent, selectors: [["app-dashboard-student"]], decls: 33, vars: 1, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "gap-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-3xl", "font-bold", "dark:text-white"], [1, "text-gray-600", "dark:text-gray-400", "mt-2"], [1, "grid", "grid-cols-2", "gap-6"], [1, "flex", "items-center", "justify-between"], [1, "text-gray-600", "dark:text-gray-400", "text-sm", "font-medium"], [1, "text-4xl", "font-bold", "text-blue-600", "dark:text-blue-400", "mt-2"], [1, "bg-blue-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-calendar", "text-2xl", "text-blue-600", "dark:text-blue-400"], [1, "text-4xl", "font-bold", "text-green-600", "dark:text-green-400", "mt-2"], [1, "bg-green-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-clock", "text-2xl", "text-green-600", "dark:text-green-400"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], [3, "options"]], template: function DashboardStudent_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275elementStart(0, "div", 1)(1, "div", 2)(2, "div", 3)(3, "div", 4)(4, "h1", 5);
-      \u0275\u0275text(5, "Welcome, Student!");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(6, "p", 6);
-      \u0275\u0275text(7, "Here's your dashboard overview.");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(8, "div", 7)(9, "div", 4)(10, "div", 8)(11, "div")(12, "p", 9);
-      \u0275\u0275text(13, "Lab Sessions Today");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(14, "h3", 10);
-      \u0275\u0275text(15, "0");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(16, "div", 11);
-      \u0275\u0275element(17, "i", 12);
-      \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(18, "div", 4)(19, "div", 8)(20, "div")(21, "p", 9);
-      \u0275\u0275text(22, "Upcoming Labs");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(23, "h3", 13);
-      \u0275\u0275text(24, "0");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(25, "div", 14);
-      \u0275\u0275element(26, "i", 15);
-      \u0275\u0275elementEnd()()()()();
-      \u0275\u0275elementStart(27, "div", 16)(28, "h3", 17);
-      \u0275\u0275text(29, "Calendar");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(30, "full-calendar", 18);
-      \u0275\u0275template(31, DashboardStudent_ng_template_31_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
-      \u0275\u0275elementEnd()()()();
-    }
-    if (rf & 2) {
-      \u0275\u0275advance(30);
-      \u0275\u0275property("options", ctx.calendarOptions());
-    }
-  }, dependencies: [CommonModule, FullCalendarModule, FullCalendarComponent], styles: ["\n\n[_nghost-%COMP%] {\n  display: block;\n}\n[_nghost-%COMP%]     .fc {\n  max-width: 100%;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n[_nghost-%COMP%]     .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n[_nghost-%COMP%]     .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n[_nghost-%COMP%]     .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button-group {\n  gap: 2px;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-student.css.map */"] });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DashboardStudent, [{
-    type: Component,
-    args: [{ selector: "app-dashboard-student", standalone: true, imports: [CommonModule, FullCalendarModule], template: `
-        <div class="p-6">
-            <!-- Top Section: Welcome and Calendar -->
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Left Side: Welcome Card and Info -->
-                <div class="lg:col-span-2 grid grid-cols-1 gap-6">
-                    <!-- Welcome Card -->
-                    <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                        <h1 class="text-3xl font-bold dark:text-white">Welcome, Student!</h1>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Here's your dashboard overview.</p>
-                    </div>
-
-                    <!-- Quick Stats Placeholder -->
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Lab Sessions Today</p>
-                                    <h3 class="text-4xl font-bold text-blue-600 dark:text-blue-400 mt-2">0</h3>
-                                </div>
-                                <div class="bg-blue-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                    <i class="pi pi-calendar text-2xl text-blue-600 dark:text-blue-400"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Upcoming Labs</p>
-                                    <h3 class="text-4xl font-bold text-green-600 dark:text-green-400 mt-2">0</h3>
-                                </div>
-                                <div class="bg-green-500 bg-opacity-10 dark:bg-opacity-20 p-4 rounded-full">
-                                    <i class="pi pi-clock text-2xl text-green-600 dark:text-green-400"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Side: Calendar -->
-                <div class="lg:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Calendar</h3>
-                    <full-calendar [options]="calendarOptions()">
-                        <ng-template #eventContent let-arg>
-                            <b>{{ arg.timeText }}</b>
-                            <i>{{ arg.event.title }}</i>
-                        </ng-template>
-                    </full-calendar>
-                </div>
-            </div>
-        </div>
-    `, styles: ["/* angular:styles/component:scss;011f3be2fa16bb96e582afc09918676f03111124a30ffefdbe525a0685985b8d;C:/Users/jeric/Documents/2026 files/LAMS-FINAL/src/app/pages/dashboard/dashboard-student.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-student.css.map */\n"] }]
-  }], null, null);
-})();
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardStudent, { className: "DashboardStudent" });
-})();
-
-// src/app/pages/dashboard/dashboard-labtech.ts
-function DashboardLabTech_ng_template_31_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "b");
-    \u0275\u0275text(1);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(2, "i");
-    \u0275\u0275text(3);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const arg_r1 = ctx.$implicit;
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate(arg_r1.timeText);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(arg_r1.event.title);
-  }
-}
-var eventGuid3 = 0;
-var TODAY_STR3 = (/* @__PURE__ */ new Date()).toISOString().replace(/T.*$/, "");
-var INITIAL_EVENTS5 = [
-  { id: String(eventGuid3++), title: "All-day event", start: TODAY_STR3 },
-  { id: String(eventGuid3++), title: "Timed event", start: TODAY_STR3 + "T12:00:00" }
-];
-function createEventId5() {
-  return String(eventGuid3++);
-}
-var DashboardLabTech = class _DashboardLabTech {
-  http;
-  overdueApprovalsCount = 0;
-  requestsForApprovalCount = 0;
-  serviceTypeChartData;
-  donutChartOptions;
-  assetsBySupplierChartData;
-  assetsByBrandChartData;
-  barChartOptions;
-  horizontalChartOptions;
-  scheduleByDayChartData;
-  scheduleByLabChartData;
-  // Calendar properties
-  calendarOptions = signal({
-    plugins: [index4, index2, index, index3],
-    headerToolbar: {
-      left: "prev,next today",
-      center: "title",
-      right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+    views: {
+      dayGridMonth: {
+        displayEventTime: false
+      }
     },
-    initialView: "dayGridMonth",
-    initialEvents: INITIAL_EVENTS5,
-    weekends: true,
-    editable: true,
-    selectable: true,
-    selectMirror: true,
-    dayMaxEvents: true,
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this)
+    eventsSet: this.handleEvents.bind(this),
+    eventContent: (arg) => {
+      const view = arg.view.type;
+      const props = arg.event.extendedProps;
+      if (view === "dayGridMonth") {
+        if (props["type"] === "schedule") {
+          return { html: `<div class="fc-event-title">${props["subject"] || "N/A"}</div>` };
+        } else if (props["type"] === "maintenance") {
+          return { html: `<div class="fc-event-title">${props["maintenanceType"] || "Maintenance"}</div>` };
+        } else if (props["type"] === "custom") {
+          return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+        }
+      }
+      return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+    }
   }, ...ngDevMode ? [{ debugName: "calendarOptions" }] : []);
   currentEvents = signal([], ...ngDevMode ? [{ debugName: "currentEvents" }] : []);
-  constructor(http) {
+  constructor(http, changeDetector, calendarService) {
     this.http = http;
+    this.changeDetector = changeDetector;
+    this.calendarService = calendarService;
   }
   ngOnInit() {
     this.loadOverdueApprovalsCount();
     this.loadRequestsForApprovalCount();
     this.loadServiceTypeData();
+    this.loadCalendarEvents();
     this.initDonutOptions();
     this.loadAssetsBySupplier();
     this.loadAssetsByBrand();
     this.initBarOptions();
     this.initHorizontalBarOptions();
-    this.initMockScheduleCharts();
+    this.loadScheduleCharts();
+    this.loadAssetsByLaboratory();
+    this.loadMaintenanceByLaboratory();
   }
   loadOverdueApprovalsCount() {
     const apiUrl = `${environment.apiUrl}/maintenance-approvals/count-overdue`;
@@ -49453,26 +50512,69 @@ var DashboardLabTech = class _DashboardLabTech {
     });
   }
   loadServiceTypeData() {
-    const apiUrl = `${environment.apiUrl}/maintenance-requests/by-service-type`;
+    const apiUrl = `${environment.apiUrl}/maintenance-approvals`;
     this.http.get(apiUrl).subscribe({
-      next: (data) => {
-        const labels = data.map((item) => item.serviceName || item.serviceType || "Unknown");
-        const counts = data.map((item) => item.count || 0);
-        const colors = this.generateColors(labels.length);
-        this.serviceTypeChartData = {
-          labels,
-          datasets: [
-            {
-              data: counts,
-              backgroundColor: colors.map((c3) => c3.bg),
-              borderColor: colors.map((c3) => c3.border),
-              borderWidth: 1
+      next: (approvals) => {
+        console.log("=== MAINTENANCE APPROVALS DATA ===");
+        console.log("Total approvals:", approvals.length);
+        console.log("Sample approval:", approvals[0]);
+        const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const serviceTypeMap = /* @__PURE__ */ new Map();
+        approvals.forEach((approval, index5) => {
+          const serviceType = approval.maintenanceRequest?.maintenanceType?.maintenanceTypeName || "Unknown";
+          if (index5 < 3) {
+            console.log(`Approval ${index5}:`, {
+              maintenanceType: approval.maintenanceRequest?.maintenanceType,
+              resolvedType: serviceType
+            });
+          }
+          const createdDate = new Date(approval.maintenanceRequest?.requestDate || approval.approvedAt);
+          if (createdDate.getFullYear() === currentYear) {
+            const monthIndex = createdDate.getMonth();
+            if (!serviceTypeMap.has(serviceType)) {
+              serviceTypeMap.set(serviceType, new Array(12).fill(0));
             }
-          ]
+            const monthlyCounts = serviceTypeMap.get(serviceType);
+            monthlyCounts[monthIndex]++;
+          }
+        });
+        console.log("Service type map:", Array.from(serviceTypeMap.entries()));
+        const colorPalette = [
+          { bg: "rgba(59, 130, 246, 0.8)", border: "rgb(59, 130, 246)" },
+          // Blue
+          { bg: "rgba(16, 185, 129, 0.8)", border: "rgb(16, 185, 129)" },
+          // Green
+          { bg: "rgba(251, 146, 60, 0.8)", border: "rgb(251, 146, 60)" },
+          // Orange
+          { bg: "rgba(168, 85, 247, 0.8)", border: "rgb(168, 85, 247)" },
+          // Purple
+          { bg: "rgba(236, 72, 153, 0.8)", border: "rgb(236, 72, 153)" },
+          // Pink
+          { bg: "rgba(245, 158, 11, 0.8)", border: "rgb(245, 158, 11)" }
+          // Amber
+        ];
+        const datasets = Array.from(serviceTypeMap.entries()).map(([serviceType, data], index5) => ({
+          label: serviceType,
+          data,
+          borderColor: colorPalette[index5 % colorPalette.length].border,
+          backgroundColor: colorPalette[index5 % colorPalette.length].bg,
+          tension: 0.4,
+          fill: false,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }));
+        this.serviceTypeChartData = {
+          labels: months,
+          datasets
         };
       },
       error: (error) => {
-        console.error("Error loading service type data:", error);
+        console.error("Error loading service type monthly data:", error);
+        this.serviceTypeChartData = {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+          datasets: []
+        };
       }
     });
   }
@@ -49552,6 +50654,52 @@ var DashboardLabTech = class _DashboardLabTech {
         }
       }
     };
+    this.lineChartOptions = {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "top",
+          labels: {
+            color: textColor,
+            usePointStyle: true,
+            padding: 15,
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${context.dataset.label}: ${context.parsed.y} requests`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: textColor,
+            font: { weight: 500 }
+          },
+          grid: {
+            display: false,
+            drawBorder: false
+          }
+        },
+        y: {
+          ticks: {
+            color: textColor,
+            stepSize: 1
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0.05)",
+            drawBorder: false
+          },
+          beginAtZero: true
+        }
+      }
+    };
   }
   initBarOptions() {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -49603,6 +50751,154 @@ var DashboardLabTech = class _DashboardLabTech {
       }
     };
   }
+  loadScheduleCharts() {
+    console.log("=== LOADING SCHEDULE CHARTS DATA ===");
+    const laboratoriesUrl = `${environment.apiUrl}/laboratories`;
+    this.http.get(laboratoriesUrl).subscribe({
+      next: (labs) => {
+        console.log("Laboratories fetched:", labs?.length || 0);
+        if (!labs || labs.length === 0) {
+          console.log("No laboratories found");
+          this.initEmptyScheduleCharts();
+          return;
+        }
+        const scheduleRequests = labs.map((lab) => this.http.get(`${environment.apiUrl}/laboratories/${lab.laboratoryId}/schedules`));
+        const allSchedules = [];
+        let completedRequests = 0;
+        scheduleRequests.forEach((request, index5) => {
+          request.subscribe({
+            next: (schedules) => {
+              if (schedules && schedules.length > 0) {
+                allSchedules.push(...schedules);
+              }
+              completedRequests++;
+              if (completedRequests === scheduleRequests.length) {
+                console.log("Total schedules fetched:", allSchedules.length);
+                console.log("Sample schedule:", allSchedules[0]);
+                if (allSchedules.length > 0) {
+                  const dayCount = this.countSchedulesByDay(allSchedules);
+                  this.populateScheduleByDayChart(dayCount);
+                  const labCount = this.countSchedulesByLaboratory(allSchedules);
+                  this.populateScheduleByLabChart(labCount);
+                } else {
+                  this.initEmptyScheduleCharts();
+                }
+                console.log("===================================");
+              }
+            },
+            error: (error) => {
+              console.error(`Error loading schedules for lab ${index5}:`, error);
+              completedRequests++;
+              if (completedRequests === scheduleRequests.length) {
+                console.log("Total schedules fetched:", allSchedules.length);
+                if (allSchedules.length > 0) {
+                  const dayCount = this.countSchedulesByDay(allSchedules);
+                  this.populateScheduleByDayChart(dayCount);
+                  const labCount = this.countSchedulesByLaboratory(allSchedules);
+                  this.populateScheduleByLabChart(labCount);
+                } else {
+                  this.initEmptyScheduleCharts();
+                }
+                console.log("===================================");
+              }
+            }
+          });
+        });
+      },
+      error: (error) => {
+        console.error("Error loading laboratories for schedule charts:", error);
+        this.initEmptyScheduleCharts();
+      }
+    });
+  }
+  countSchedulesByDay(schedules) {
+    const dayCount = /* @__PURE__ */ new Map();
+    const daysOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    daysOrder.forEach((day) => dayCount.set(day, 0));
+    schedules.forEach((schedule) => {
+      const day = schedule.dayOfWeek || schedule.day;
+      if (day) {
+        const currentCount = dayCount.get(day) || 0;
+        dayCount.set(day, currentCount + 1);
+      }
+    });
+    console.log("Schedule count by day:", Object.fromEntries(dayCount));
+    return dayCount;
+  }
+  countSchedulesByLaboratory(schedules) {
+    const labCount = /* @__PURE__ */ new Map();
+    schedules.forEach((schedule) => {
+      const labName = schedule.laboratory?.laboratoryName || schedule.laboratory?.labName || schedule.laboratoryName || "Unknown Lab";
+      const currentCount = labCount.get(labName) || 0;
+      labCount.set(labName, currentCount + 1);
+    });
+    console.log("Schedule count by laboratory:", Object.fromEntries(labCount));
+    return labCount;
+  }
+  populateScheduleByDayChart(dayCount) {
+    const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const fullDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const dayCounts = fullDays.map((day) => dayCount.get(day) || 0);
+    const dayColors = this.generateColors(dayLabels.length);
+    this.scheduleByDayChartData = {
+      labels: dayLabels,
+      datasets: [
+        {
+          label: "Schedules",
+          data: dayCounts,
+          backgroundColor: dayColors.map((c3) => c3.bg),
+          borderColor: dayColors.map((c3) => c3.border),
+          borderWidth: 1
+        }
+      ]
+    };
+  }
+  populateScheduleByLabChart(labCount) {
+    const labEntries = Array.from(labCount.entries()).sort((a3, b3) => b3[1] - a3[1]).slice(0, 10);
+    const labLabels = labEntries.map((entry) => entry[0]);
+    const labCounts = labEntries.map((entry) => entry[1]);
+    const labColors = this.generateColors(labLabels.length);
+    this.scheduleByLabChartData = {
+      labels: labLabels,
+      datasets: [
+        {
+          label: "Schedules",
+          data: labCounts,
+          backgroundColor: labColors.map((c3) => c3.bg),
+          borderColor: labColors.map((c3) => c3.border),
+          borderWidth: 1
+        }
+      ]
+    };
+  }
+  initEmptyScheduleCharts() {
+    const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const dayColors = this.generateColors(dayLabels.length);
+    this.scheduleByDayChartData = {
+      labels: dayLabels,
+      datasets: [
+        {
+          label: "Schedules",
+          data: [0, 0, 0, 0, 0, 0, 0],
+          backgroundColor: dayColors.map((c3) => c3.bg),
+          borderColor: dayColors.map((c3) => c3.border),
+          borderWidth: 1
+        }
+      ]
+    };
+    this.scheduleByLabChartData = {
+      labels: ["No Data"],
+      datasets: [
+        {
+          label: "Schedules",
+          data: [0],
+          backgroundColor: ["rgba(209, 213, 219, 0.7)"],
+          borderColor: ["rgb(209, 213, 219)"],
+          borderWidth: 1
+        }
+      ]
+    };
+  }
   initMockScheduleCharts() {
     const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const dayCounts = [6, 8, 7, 5, 9, 3];
@@ -49630,6 +50926,118 @@ var DashboardLabTech = class _DashboardLabTech {
           data: labCounts,
           backgroundColor: labColors.map((c3) => c3.bg),
           borderColor: labColors.map((c3) => c3.border),
+          borderWidth: 1
+        }
+      ]
+    };
+  }
+  loadAssetsByLaboratory() {
+    console.log("=== LOADING ASSETS BY LABORATORY DATA ===");
+    const apiUrl = `${environment.apiUrl}/assets`;
+    this.http.get(apiUrl).subscribe({
+      next: (assets) => {
+        console.log("Assets fetched:", assets?.length || 0);
+        if (!assets || assets.length === 0) {
+          console.log("No assets found");
+          this.initEmptyAssetsByLabChart();
+          return;
+        }
+        const labCount = /* @__PURE__ */ new Map();
+        assets.forEach((asset) => {
+          const labName = asset.laboratories?.laboratoryName || asset.laboratory?.laboratoryName || asset.laboratory?.labName || "Unknown Lab";
+          const currentCount = labCount.get(labName) || 0;
+          labCount.set(labName, currentCount + 1);
+        });
+        console.log("Asset count by laboratory:", Object.fromEntries(labCount));
+        const labEntries = Array.from(labCount.entries()).sort((a3, b3) => b3[1] - a3[1]).slice(0, 10);
+        const labLabels = labEntries.map((entry) => entry[0]);
+        const labCounts = labEntries.map((entry) => entry[1]);
+        const labColors = this.generateColors(labLabels.length);
+        this.assetsByLabChartData = {
+          labels: labLabels,
+          datasets: [
+            {
+              label: "Assets",
+              data: labCounts,
+              backgroundColor: labColors.map((c3) => c3.bg),
+              borderColor: labColors.map((c3) => c3.border),
+              borderWidth: 1
+            }
+          ]
+        };
+        console.log("=========================================");
+      },
+      error: (error) => {
+        console.error("Error loading assets by laboratory:", error);
+        this.initEmptyAssetsByLabChart();
+      }
+    });
+  }
+  loadMaintenanceByLaboratory() {
+    console.log("=== LOADING MAINTENANCE REQUESTS BY LABORATORY DATA ===");
+    const apiUrl = `${environment.apiUrl}/maintenance-requests`;
+    this.http.get(apiUrl).subscribe({
+      next: (requests) => {
+        console.log("Maintenance requests fetched:", requests?.length || 0);
+        if (!requests || requests.length === 0) {
+          console.log("No maintenance requests found");
+          this.initEmptyMaintenanceByLabChart();
+          return;
+        }
+        const labCount = /* @__PURE__ */ new Map();
+        requests.forEach((request) => {
+          const labName = request.asset?.laboratories?.laboratoryName || request.asset?.laboratory?.laboratoryName || request.asset?.laboratory?.labName || request.laboratories?.laboratoryName || request.laboratory?.laboratoryName || "Unknown Lab";
+          const currentCount = labCount.get(labName) || 0;
+          labCount.set(labName, currentCount + 1);
+        });
+        console.log("Maintenance request count by laboratory:", Object.fromEntries(labCount));
+        const labEntries = Array.from(labCount.entries()).sort((a3, b3) => b3[1] - a3[1]).slice(0, 10);
+        const labLabels = labEntries.map((entry) => entry[0]);
+        const labCounts = labEntries.map((entry) => entry[1]);
+        const labColors = this.generateColors(labLabels.length);
+        this.maintenanceByLabChartData = {
+          labels: labLabels,
+          datasets: [
+            {
+              label: "Maintenance Requests",
+              data: labCounts,
+              backgroundColor: labColors.map((c3) => c3.bg),
+              borderColor: labColors.map((c3) => c3.border),
+              borderWidth: 1
+            }
+          ]
+        };
+        console.log("========================================================");
+      },
+      error: (error) => {
+        console.error("Error loading maintenance requests by laboratory:", error);
+        this.initEmptyMaintenanceByLabChart();
+      }
+    });
+  }
+  initEmptyAssetsByLabChart() {
+    this.assetsByLabChartData = {
+      labels: ["No Data"],
+      datasets: [
+        {
+          label: "Assets",
+          data: [0],
+          backgroundColor: ["rgba(209, 213, 219, 0.7)"],
+          borderColor: ["rgb(209, 213, 219)"],
+          borderWidth: 1
+        }
+      ]
+    };
+  }
+  initEmptyMaintenanceByLabChart() {
+    this.maintenanceByLabChartData = {
+      labels: ["No Data"],
+      datasets: [
+        {
+          label: "Maintenance Requests",
+          data: [0],
+          backgroundColor: ["rgba(209, 213, 219, 0.7)"],
+          borderColor: ["rgb(209, 213, 219)"],
           borderWidth: 1
         }
       ]
@@ -49664,33 +51072,170 @@ var DashboardLabTech = class _DashboardLabTech {
     }
     return colors;
   }
+  //// Load Calendar Events
+  loadCalendarEvents() {
+    this.calendarService.getCalendarEvents().subscribe({
+      next: (events) => {
+        this.calendarOptions.update((options) => __spreadProps(__spreadValues({}, options), {
+          events: events.map((event) => ({
+            id: event.id,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            extendedProps: event.extendedProps,
+            backgroundColor: event.extendedProps.color,
+            borderColor: event.extendedProps.color
+          }))
+        }));
+        this.changeDetector.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error loading calendar events:", error);
+      }
+    });
+  }
   // Calendar event handlers
   handleDateSelect(selectInfo) {
-    const title = prompt("Please enter a new title for your event");
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
-    if (title) {
-      calendarApi.addEvent({
-        id: createEventId5(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      });
-    }
+    console.log("Selected Date:", selectInfo.start);
+    console.log("Selected Date (ISO):", selectInfo.start.toISOString());
+    console.log("Selected Date (Locale):", selectInfo.start.toLocaleString());
+    import_sweetalert27.default.fire({
+      title: "Add New Event",
+      html: `
+                <input id="event-title" class="swal2-input" placeholder="Event Title" style="width: 85%;">
+                <textarea id="event-description" class="swal2-textarea" placeholder="Description (optional)" style="width: 85%; height: 80px;"></textarea>
+            `,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Add Event",
+      cancelButtonText: "Cancel",
+      preConfirm: () => {
+        const title = document.getElementById("event-title").value;
+        const description = document.getElementById("event-description").value;
+        if (!title) {
+          import_sweetalert27.default.showValidationMessage("Please enter an event title");
+          return false;
+        }
+        return { title, description };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        import_sweetalert27.default.fire({
+          title: "Saving...",
+          text: "Please wait while we save your event.",
+          allowOutsideClick: false,
+          didOpen: () => {
+            import_sweetalert27.default.showLoading();
+          }
+        });
+        const apiUrl = `${environment.apiUrl}/calendar/events`;
+        this.http.post(apiUrl, {
+          title: result.value.title,
+          description: result.value.description || "",
+          eventDate: selectInfo.start.toISOString()
+        }).subscribe({
+          next: (response) => {
+            this.loadCalendarEvents();
+            import_sweetalert27.default.fire({
+              icon: "success",
+              title: "Event Added!",
+              text: "Your event has been saved to the calendar.",
+              timer: 2e3,
+              showConfirmButton: false
+            });
+          },
+          error: (error) => {
+            console.error("Error saving event:", error);
+            import_sweetalert27.default.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to save event. Please try again.",
+              confirmButtonText: "OK"
+            });
+          }
+        });
+      }
+    });
   }
   handleEventClick(clickInfo) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
+    const event = clickInfo.event;
+    const props = event.extendedProps;
+    if (props["type"] === "custom") {
+      import_sweetalert27.default.fire({
+        title: "<strong>Custom Event</strong>",
+        icon: "info",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Title:</strong> ${event.title}</p>
+                        <p><strong>Description:</strong> ${props["description"] || "No description"}</p>
+                        <p><strong>Created By:</strong> ${props["createdBy"] || "Unknown"}</p>
+                        <p><strong>Date:</strong> ${new Date(event.start).toLocaleString()}</p>
+                        ${event.end ? `<p><strong>End:</strong> ${new Date(event.end).toLocaleString()}</p>` : ""}
+                    </div>
+                `,
+        showDenyButton: true,
+        confirmButtonText: "Close",
+        denyButtonText: "Delete Event",
+        customClass: {
+          popup: "swal-wide"
+        }
+      }).then((result) => {
+        if (result.isDenied) {
+          import_sweetalert27.default.fire({
+            title: "Delete Event?",
+            text: "Are you sure you want to delete this event?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it",
+            cancelButtonText: "Cancel"
+          }).then((deleteConfirm) => {
+            if (deleteConfirm.isConfirmed) {
+              clickInfo.event.remove();
+              import_sweetalert27.default.fire({
+                icon: "success",
+                title: "Deleted!",
+                text: "Event has been deleted.",
+                timer: 2e3,
+                showConfirmButton: false
+              });
+            }
+          });
+        }
+      });
+    } else if (props["type"] === "maintenance") {
+      const priorityColor = props["priority"] === "High" ? "red" : props["priority"] === "Medium" ? "orange" : "green";
+      import_sweetalert27.default.fire({
+        title: "<strong>Maintenance Assignment</strong>",
+        icon: "warning",
+        html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Equipment:</strong> ${props["equipment"] || "N/A"}</p>
+                        <p><strong>Type:</strong> ${props["maintenanceType"] || "N/A"}</p>
+                        <p><strong>Priority:</strong> <span style="color: ${priorityColor}; font-weight: bold;">${props["priority"] || "N/A"}</span></p>
+                        <p><strong>Status:</strong> ${props["status"] || "N/A"}</p>
+                        <p><strong>Building:</strong> ${props["location"] || "N/A"}</p>
+                        <p><strong>Requested By:</strong> ${props["requestedBy"] || "N/A"}</p>
+                        <p><strong>Assigned To:</strong> ${props["assignedTo"] || "Not Assigned"}</p>
+                        <p><strong>Description:</strong> ${props["description"] || "No description"}</p>
+                        <p><strong>Scheduled Date:</strong> ${new Date(event.start).toLocaleString()}</p>
+                    </div>
+                `,
+        confirmButtonText: "Close",
+        customClass: {
+          popup: "swal-wide"
+        }
+      });
     }
   }
   handleEvents(events) {
     this.currentEvents.set(events);
   }
   static \u0275fac = function DashboardLabTech_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _DashboardLabTech)(\u0275\u0275directiveInject(HttpClient));
+    return new (__ngFactoryType__ || _DashboardLabTech)(\u0275\u0275directiveInject(HttpClient), \u0275\u0275directiveInject(ChangeDetectorRef), \u0275\u0275directiveInject(CalendarService));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardLabTech, selectors: [["app-dashboard-labtech"]], decls: 42, vars: 9, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "md:grid-cols-2", "gap-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "flex", "items-center", "justify-between"], [1, "text-gray-600", "dark:text-gray-400", "text-sm", "font-medium"], [1, "text-4xl", "font-bold", "text-red-600", "dark:text-red-400", "mt-2"], [1, "bg-red-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-clock", "text-2xl", "text-red-600", "dark:text-red-400"], [1, "text-4xl", "font-bold", "text-blue-600", "dark:text-blue-400", "mt-2"], [1, "bg-blue-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-check-square", "text-2xl", "text-blue-600", "dark:text-blue-400"], [1, "md:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-lg", "font-semibold", "dark:text-white", "text-center", "mb-4"], [1, "flex", "justify-center"], [1, "w-64"], ["type", "doughnut", 3, "data", "options"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], [3, "options"], [1, "flex", "flex-col", "md:flex-row", "gap-6", "mt-6"], [1, "w-full", "md:w-1/2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6", "h-96"], ["type", "bar", 3, "data", "options"]], template: function DashboardLabTech_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardLabTech, selectors: [["app-dashboard-labtech"]], decls: 50, vars: 13, consts: [["eventContent", ""], [1, "p-6"], [1, "grid", "grid-cols-1", "lg:grid-cols-4", "gap-6"], [1, "lg:col-span-2", "grid", "grid-cols-1", "md:grid-cols-2", "gap-6"], [1, "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "flex", "items-center", "justify-between"], [1, "text-gray-600", "dark:text-gray-400", "text-sm", "font-medium"], [1, "text-4xl", "font-bold", "text-red-600", "dark:text-red-400", "mt-2"], [1, "bg-red-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-clock", "text-2xl", "text-red-600", "dark:text-red-400"], [1, "text-4xl", "font-bold", "text-blue-600", "dark:text-blue-400", "mt-2"], [1, "bg-blue-500", "bg-opacity-10", "dark:bg-opacity-20", "p-4", "rounded-full"], [1, "pi", "pi-check-square", "text-2xl", "text-blue-600", "dark:text-blue-400"], [1, "md:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-lg", "font-semibold", "dark:text-white", "text-center", "mb-4"], [2, "height", "300px"], ["type", "line", 3, "data", "options"], [1, "lg:col-span-2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6"], [1, "text-xl", "font-semibold", "mb-4", "dark:text-white"], [3, "options"], [1, "flex", "flex-col", "md:flex-row", "gap-6", "mt-6"], [1, "w-full", "md:w-1/2", "bg-white", "dark:bg-surface-800", "rounded-lg", "shadow-md", "p-6", "h-96"], ["type", "bar", 3, "data", "options"]], template: function DashboardLabTech_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 1)(1, "div", 2)(2, "div", 3)(3, "div", 4)(4, "div", 5)(5, "div")(6, "p", 6);
       \u0275\u0275text(7, "Overdue Approvals");
@@ -49711,26 +51256,36 @@ var DashboardLabTech = class _DashboardLabTech {
       \u0275\u0275element(20, "i", 12);
       \u0275\u0275elementEnd()()();
       \u0275\u0275elementStart(21, "div", 13)(22, "h4", 14);
-      \u0275\u0275text(23, "Requests by Service Type");
+      \u0275\u0275text(23, "Requests by Service Type (Monthly)");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(24, "div", 15)(25, "div", 16);
-      \u0275\u0275element(26, "p-chart", 17);
-      \u0275\u0275elementEnd()()()();
-      \u0275\u0275elementStart(27, "div", 18)(28, "h3", 19);
-      \u0275\u0275text(29, "Calendar");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(30, "full-calendar", 20);
-      \u0275\u0275template(31, DashboardLabTech_ng_template_31_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+      \u0275\u0275elementStart(24, "div", 15);
+      \u0275\u0275element(25, "p-chart", 16);
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(33, "div", 21)(34, "div", 22)(35, "h3", 19);
-      \u0275\u0275text(36, "Schedules by Day (Mock)");
+      \u0275\u0275elementStart(26, "div", 17)(27, "h3", 18);
+      \u0275\u0275text(28, "Calendar");
       \u0275\u0275elementEnd();
-      \u0275\u0275element(37, "p-chart", 23);
+      \u0275\u0275elementStart(29, "full-calendar", 19);
+      \u0275\u0275template(30, DashboardLabTech_ng_template_30_Template, 4, 2, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(32, "div", 20)(33, "div", 21)(34, "h3", 18);
+      \u0275\u0275text(35, "Schedules by Day");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(38, "div", 22)(39, "h3", 19);
-      \u0275\u0275text(40, "Schedules by Laboratory (Mock)");
+      \u0275\u0275element(36, "p-chart", 22);
       \u0275\u0275elementEnd();
-      \u0275\u0275element(41, "p-chart", 23);
+      \u0275\u0275elementStart(37, "div", 21)(38, "h3", 18);
+      \u0275\u0275text(39, "Schedules by Laboratory");
+      \u0275\u0275elementEnd();
+      \u0275\u0275element(40, "p-chart", 22);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(41, "div", 20)(42, "div", 21)(43, "h3", 18);
+      \u0275\u0275text(44, "Assets by Laboratory");
+      \u0275\u0275elementEnd();
+      \u0275\u0275element(45, "p-chart", 22);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(46, "div", 21)(47, "h3", 18);
+      \u0275\u0275text(48, "Maintenance Requests by Laboratory");
+      \u0275\u0275elementEnd();
+      \u0275\u0275element(49, "p-chart", 22);
       \u0275\u0275elementEnd()()();
     }
     if (rf & 2) {
@@ -49738,14 +51293,18 @@ var DashboardLabTech = class _DashboardLabTech {
       \u0275\u0275textInterpolate(ctx.overdueApprovalsCount);
       \u0275\u0275advance(9);
       \u0275\u0275textInterpolate(ctx.requestsForApprovalCount);
-      \u0275\u0275advance(8);
-      \u0275\u0275property("data", ctx.serviceTypeChartData)("options", ctx.donutChartOptions);
+      \u0275\u0275advance(7);
+      \u0275\u0275property("data", ctx.serviceTypeChartData)("options", ctx.lineChartOptions);
       \u0275\u0275advance(4);
       \u0275\u0275property("options", ctx.calendarOptions());
       \u0275\u0275advance(7);
       \u0275\u0275property("data", ctx.scheduleByDayChartData)("options", ctx.barChartOptions);
       \u0275\u0275advance(4);
       \u0275\u0275property("data", ctx.scheduleByLabChartData)("options", ctx.horizontalChartOptions);
+      \u0275\u0275advance(5);
+      \u0275\u0275property("data", ctx.assetsByLabChartData)("options", ctx.horizontalChartOptions);
+      \u0275\u0275advance(4);
+      \u0275\u0275property("data", ctx.maintenanceByLabChartData)("options", ctx.horizontalChartOptions);
     }
   }, dependencies: [CommonModule, UIChart, FullCalendarModule, FullCalendarComponent], styles: ["\n\n[_nghost-%COMP%] {\n  display: block;\n}\n[_nghost-%COMP%]     .fc {\n  max-width: 100%;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n[_nghost-%COMP%]     .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n[_nghost-%COMP%]     .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n[_nghost-%COMP%]     .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n[_nghost-%COMP%]     .fc .fc-button-group {\n  gap: 2px;\n}\n[_nghost-%COMP%]     .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-labtech.css.map */"] });
 };
@@ -49784,13 +51343,11 @@ var DashboardLabTech = class _DashboardLabTech {
                         </div>
                     </div>
 
-                    <!-- Donut Chart for Requests by Service Type -->
+                    <!-- Line Chart for Requests by Service Type -->
                     <div class="md:col-span-2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6">
-                        <h4 class="text-lg font-semibold dark:text-white text-center mb-4">Requests by Service Type</h4>
-                        <div class="flex justify-center">
-                            <div class="w-64">
-                                <p-chart type="doughnut" [data]="serviceTypeChartData" [options]="donutChartOptions"></p-chart>
-                            </div>
+                        <h4 class="text-lg font-semibold dark:text-white text-center mb-4">Requests by Service Type (Monthly)</h4>
+                        <div style="height: 300px;">
+                            <p-chart type="line" [data]="serviceTypeChartData" [options]="lineChartOptions"></p-chart>
                         </div>
                     </div>
                 </div>
@@ -49820,24 +51377,37 @@ var DashboardLabTech = class _DashboardLabTech {
                 </div>
             </div> -->
 
-            <!-- Lab schedule mock charts row -->
+            <!-- Lab schedule charts row -->
             <div class="flex flex-col md:flex-row gap-6 mt-6">
                 <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-96">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Schedules by Day (Mock)</h3>
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Schedules by Day</h3>
                     <p-chart type="bar" [data]="scheduleByDayChartData" [options]="barChartOptions"></p-chart>
                 </div>
 
                 <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-96">
-                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Schedules by Laboratory (Mock)</h3>
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Schedules by Laboratory</h3>
                     <p-chart type="bar" [data]="scheduleByLabChartData" [options]="horizontalChartOptions"></p-chart>
                 </div>
             </div>
+
+            <!-- Assets and Maintenance by Laboratory charts row -->
+            <div class="flex flex-col md:flex-row gap-6 mt-6">
+                <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-96">
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Assets by Laboratory</h3>
+                    <p-chart type="bar" [data]="assetsByLabChartData" [options]="horizontalChartOptions"></p-chart>
+                </div>
+
+                <div class="w-full md:w-1/2 bg-white dark:bg-surface-800 rounded-lg shadow-md p-6 h-96">
+                    <h3 class="text-xl font-semibold mb-4 dark:text-white">Maintenance Requests by Laboratory</h3>
+                    <p-chart type="bar" [data]="maintenanceByLabChartData" [options]="horizontalChartOptions"></p-chart>
+                </div>
+            </div>
         </div>
-    `, styles: ["/* angular:styles/component:scss;011f3be2fa16bb96e582afc09918676f03111124a30ffefdbe525a0685985b8d;C:/Users/jeric/Documents/2026 files/LAMS-FINAL/src/app/pages/dashboard/dashboard-labtech.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-labtech.css.map */\n"] }]
-  }], () => [{ type: HttpClient }], null);
+    `, styles: ["/* angular:styles/component:scss;011f3be2fa16bb96e582afc09918676f03111124a30ffefdbe525a0685985b8d;D:/Capstone Projects/LAMS-COPY/src/app/pages/dashboard/dashboard-labtech.ts */\n:host {\n  display: block;\n}\n:host ::ng-deep .fc {\n  max-width: 100%;\n}\n:host ::ng-deep .fc .fc-toolbar-title {\n  font-size: 1em;\n  font-weight: 300;\n}\n:host ::ng-deep .fc .fc-button {\n  padding: 0.4rem 0.75rem;\n  font-size: 0.8rem;\n  background-color: var(--primary-color) !important;\n  border-color: var(--primary-color) !important;\n  color: var(--primary-contrast-color) !important;\n  border-radius: 6px;\n  transition: all 0.2s ease;\n}\n:host ::ng-deep .fc .fc-button:hover {\n  background-color: var(--primary-600) !important;\n  border-color: var(--primary-600) !important;\n  transform: translateY(-1px);\n  filter: brightness(0.75);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n:host ::ng-deep .fc .fc-button-active {\n  background-color: var(--primary-800) !important;\n  border-color: var(--primary-800) !important;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);\n  color: #000000 !important;\n}\n:host ::ng-deep .fc .fc-button-group {\n  gap: 2px;\n}\n:host ::ng-deep .fc .fc-toolbar {\n  gap: 0.5rem;\n}\n/*# sourceMappingURL=dashboard-labtech.css.map */\n"] }]
+  }], () => [{ type: HttpClient }, { type: ChangeDetectorRef }, { type: CalendarService }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardLabTech, { className: "DashboardLabTech" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardLabTech, { className: "DashboardLabTech", filePath: "src/app/pages/dashboard/dashboard-labtech.ts", lineNumber: 178 });
 })();
 
 // src/app/pages/dashboard/dashboard.ts
@@ -49863,11 +51433,6 @@ function Dashboard_Conditional_3_Template(rf, ctx) {
 }
 function Dashboard_Conditional_4_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275element(0, "app-dashboard-student");
-  }
-}
-function Dashboard_Conditional_5_Template(rf, ctx) {
-  if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 0)(1, "h1", 1);
     \u0275\u0275text(2, "Dashboard");
     \u0275\u0275elementEnd();
@@ -49885,14 +51450,14 @@ var Dashboard = class _Dashboard {
   static \u0275fac = function Dashboard_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _Dashboard)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _Dashboard, selectors: [["app-dashboard"]], decls: 6, vars: 1, consts: [[1, "p-6"], [1, "text-3xl", "font-bold"], [1, "text-gray-600", "mt-4"]], template: function Dashboard_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _Dashboard, selectors: [["app-dashboard"]], decls: 5, vars: 1, consts: [[1, "p-6"], [1, "text-3xl", "font-bold"], [1, "text-gray-600", "mt-4"]], template: function Dashboard_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275conditionalCreate(0, Dashboard_Conditional_0_Template, 1, 0, "app-dashboard-superadmin")(1, Dashboard_Conditional_1_Template, 1, 0, "app-dashboard-campusadmin")(2, Dashboard_Conditional_2_Template, 1, 0, "app-dashboard-labtech")(3, Dashboard_Conditional_3_Template, 1, 0, "app-dashboard-faculty")(4, Dashboard_Conditional_4_Template, 1, 0, "app-dashboard-student")(5, Dashboard_Conditional_5_Template, 5, 0, "div", 0);
+      \u0275\u0275conditionalCreate(0, Dashboard_Conditional_0_Template, 1, 0, "app-dashboard-superadmin")(1, Dashboard_Conditional_1_Template, 1, 0, "app-dashboard-campusadmin")(2, Dashboard_Conditional_2_Template, 1, 0, "app-dashboard-labtech")(3, Dashboard_Conditional_3_Template, 1, 0, "app-dashboard-faculty")(4, Dashboard_Conditional_4_Template, 5, 0, "div", 0);
     }
     if (rf & 2) {
-      \u0275\u0275conditional(ctx.userRole === "SuperAdmin" ? 0 : ctx.userRole === "CampusAdmin" ? 1 : ctx.userRole === "LabTech" ? 2 : ctx.userRole === "Faculty" ? 3 : ctx.userRole === "Student" ? 4 : 5);
+      \u0275\u0275conditional(ctx.userRole === "SuperAdmin" ? 0 : ctx.userRole === "CampusAdmin" ? 1 : ctx.userRole === "LabTech" ? 2 : ctx.userRole === "Faculty" ? 3 : 4);
     }
-  }, dependencies: [CommonModule, DashboardSuperAdmin, DashboardCampusAdmin, DashboardFaculty, DashboardStudent, DashboardLabTech], encapsulation: 2 });
+  }, dependencies: [CommonModule, DashboardSuperAdmin, DashboardCampusAdmin, DashboardFaculty, DashboardLabTech], encapsulation: 2 });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Dashboard, [{
@@ -49900,7 +51465,7 @@ var Dashboard = class _Dashboard {
     args: [{
       selector: "app-dashboard",
       standalone: true,
-      imports: [CommonModule, DashboardSuperAdmin, DashboardCampusAdmin, DashboardFaculty, DashboardStudent, DashboardLabTech],
+      imports: [CommonModule, DashboardSuperAdmin, DashboardCampusAdmin, DashboardFaculty, DashboardLabTech],
       template: `
         @if (userRole === 'SuperAdmin') {
             <app-dashboard-superadmin />
@@ -49910,8 +51475,6 @@ var Dashboard = class _Dashboard {
             <app-dashboard-labtech />
         } @else if (userRole === 'Faculty') {
             <app-dashboard-faculty />
-        } @else if (userRole === 'Student') {
-            <app-dashboard-student />
         } @else {
             <div class="p-6">
                 <h1 class="text-3xl font-bold">Dashboard</h1>
@@ -49923,7 +51486,7 @@ var Dashboard = class _Dashboard {
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(Dashboard, { className: "Dashboard" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(Dashboard, { className: "Dashboard", filePath: "src/app/pages/dashboard/dashboard.ts", lineNumber: 29 });
 })();
 
 // src/app/pages/notfound/notfound.ts
@@ -50054,7 +51617,7 @@ var Notfound = class _Notfound {
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(Notfound, { className: "Notfound" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(Notfound, { className: "Notfound", filePath: "src/app/pages/notfound/notfound.ts", lineNumber: 68 });
 })();
 
 // src/app/pages/auth/auth.guard.ts
@@ -50088,7 +51651,7 @@ var AuthGuard = class _AuthGuard {
 })();
 
 // src/app/pages/profile/profile.ts
-var import_sweetalert24 = __toESM(require_sweetalert2_all());
+var import_sweetalert28 = __toESM(require_sweetalert2_all());
 
 // src/app/pages/service/storage.service.ts
 var StorageService = class _StorageService {
@@ -50157,7 +51720,7 @@ var StorageService = class _StorageService {
 })();
 
 // src/app/pages/profile/profile.ts
-var _c06 = () => ({ display: "none" });
+var _c05 = () => ({ display: "none" });
 function ProfileComponent_img_5_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275element(0, "img", 23);
@@ -50482,7 +52045,7 @@ var ProfileComponent = class _ProfileComponent {
     const file = event.files[0];
     if (file) {
       if (file.size > 5242880) {
-        import_sweetalert24.default.fire({
+        import_sweetalert28.default.fire({
           title: "File Too Large",
           text: "Please select an image smaller than 5MB.",
           icon: "error"
@@ -50490,18 +52053,18 @@ var ProfileComponent = class _ProfileComponent {
         return;
       }
       if (!file.type.startsWith("image/")) {
-        import_sweetalert24.default.fire({
+        import_sweetalert28.default.fire({
           title: "Invalid File Type",
           text: "Please select a valid image file.",
           icon: "error"
         });
         return;
       }
-      import_sweetalert24.default.fire({
+      import_sweetalert28.default.fire({
         title: "Uploading...",
         text: "Please wait while your profile picture is being uploaded.",
         didOpen: () => {
-          import_sweetalert24.default.showLoading();
+          import_sweetalert28.default.showLoading();
         },
         allowOutsideClick: false,
         allowEscapeKey: false
@@ -50514,7 +52077,7 @@ var ProfileComponent = class _ProfileComponent {
             this.currentUser.profileImage = imageUrl;
             localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
           }
-          import_sweetalert24.default.fire({
+          import_sweetalert28.default.fire({
             title: "Success!",
             text: "Profile picture updated successfully.",
             icon: "success",
@@ -50524,7 +52087,7 @@ var ProfileComponent = class _ProfileComponent {
         },
         error: (error) => {
           console.error("Error uploading profile picture:", error);
-          import_sweetalert24.default.fire({
+          import_sweetalert28.default.fire({
             title: "Upload Failed",
             text: "Failed to upload profile picture: " + (error.error?.message || error.message),
             icon: "error"
@@ -50562,7 +52125,7 @@ var ProfileComponent = class _ProfileComponent {
     }
   }
   editCover() {
-    import_sweetalert24.default.fire({
+    import_sweetalert28.default.fire({
       title: "Upload Cover Photo",
       html: `
                 <input type="file" id="coverFileInput" accept="image/*" style="display: none;" />
@@ -50583,7 +52146,7 @@ var ProfileComponent = class _ProfileComponent {
             const file = e3.target.files[0];
             if (file) {
               if (file.size > 5242880) {
-                import_sweetalert24.default.fire({
+                import_sweetalert28.default.fire({
                   title: "File Too Large",
                   text: "Please select an image smaller than 5MB.",
                   icon: "error"
@@ -50591,7 +52154,7 @@ var ProfileComponent = class _ProfileComponent {
                 return;
               }
               if (!file.type.startsWith("image/")) {
-                import_sweetalert24.default.fire({
+                import_sweetalert28.default.fire({
                   title: "Invalid File Type",
                   text: "Please select a valid image file.",
                   icon: "error"
@@ -50599,7 +52162,7 @@ var ProfileComponent = class _ProfileComponent {
                 return;
               }
               this.selectedCoverFile = file;
-              import_sweetalert24.default.update({
+              import_sweetalert28.default.update({
                 confirmButtonText: "Upload: " + file.name
               });
             }
@@ -50608,11 +52171,11 @@ var ProfileComponent = class _ProfileComponent {
       }
     }).then((result) => {
       if (result.isConfirmed && this.selectedCoverFile) {
-        import_sweetalert24.default.fire({
+        import_sweetalert28.default.fire({
           title: "Uploading...",
           text: "Please wait while your cover photo is being uploaded.",
           didOpen: () => {
-            import_sweetalert24.default.showLoading();
+            import_sweetalert28.default.showLoading();
           },
           allowOutsideClick: false,
           allowEscapeKey: false
@@ -50624,7 +52187,7 @@ var ProfileComponent = class _ProfileComponent {
               this.backgroundImage = `url('${imageUrl}')`;
               localStorage.setItem("backgroundImage", this.backgroundImage);
             }
-            import_sweetalert24.default.fire({
+            import_sweetalert28.default.fire({
               title: "Success!",
               text: "Cover photo updated successfully.",
               icon: "success",
@@ -50634,7 +52197,7 @@ var ProfileComponent = class _ProfileComponent {
           },
           error: (error) => {
             console.error("Error uploading cover photo:", error);
-            import_sweetalert24.default.fire({
+            import_sweetalert28.default.fire({
               title: "Upload Failed",
               text: "Failed to upload cover photo: " + (error.error?.message || error.message),
               icon: "error"
@@ -50713,7 +52276,7 @@ var ProfileComponent = class _ProfileComponent {
    * Save changes from edit mode
    */
   saveChanges() {
-    import_sweetalert24.default.fire({
+    import_sweetalert28.default.fire({
       title: "Save Changes",
       html: "Are you sure you want to save these changes?",
       icon: "question",
@@ -50724,7 +52287,7 @@ var ProfileComponent = class _ProfileComponent {
       if (result.isConfirmed) {
         const userId = this.userContextService.getUserId();
         if (!userId) {
-          import_sweetalert24.default.fire({
+          import_sweetalert28.default.fire({
             title: "Error",
             text: "UserId not found. Cannot save changes.",
             icon: "error"
@@ -50759,7 +52322,7 @@ var ProfileComponent = class _ProfileComponent {
           isActive: this.editFormData.isActive !== void 0 ? this.editFormData.isActive : this.originalFormData.isActive
         };
         if (!updatePayload.firstName?.trim()) {
-          import_sweetalert24.default.fire({
+          import_sweetalert28.default.fire({
             title: "Validation Error",
             text: "First Name is required",
             icon: "error"
@@ -50767,7 +52330,7 @@ var ProfileComponent = class _ProfileComponent {
           return;
         }
         if (!updatePayload.lastName?.trim()) {
-          import_sweetalert24.default.fire({
+          import_sweetalert28.default.fire({
             title: "Validation Error",
             text: "Last Name is required",
             icon: "error"
@@ -50788,7 +52351,7 @@ var ProfileComponent = class _ProfileComponent {
             }
             this.buildProfileInfoItems();
             this.isEditMode = false;
-            import_sweetalert24.default.fire({
+            import_sweetalert28.default.fire({
               title: "Success!",
               text: "Your changes have been saved successfully.",
               icon: "success",
@@ -50798,7 +52361,7 @@ var ProfileComponent = class _ProfileComponent {
           },
           error: (error) => {
             console.error("Error updating user:", error);
-            import_sweetalert24.default.fire({
+            import_sweetalert28.default.fire({
               title: "Error",
               text: "Failed to save changes: " + (error.error?.message || error.message),
               icon: "error"
@@ -50821,7 +52384,7 @@ var ProfileComponent = class _ProfileComponent {
    */
   logUserIdFromService() {
     const userId = this.userContextService.getUserId();
-    import_sweetalert24.default.fire({
+    import_sweetalert28.default.fire({
       title: "User Context",
       html: `<strong>UserId:</strong> ${userId}<br><strong>Name:</strong> ${this.currentUser?.FirstName} ${this.currentUser?.LastName}`,
       icon: "info"
@@ -50844,7 +52407,7 @@ var ProfileComponent = class _ProfileComponent {
       next: (userData) => {
         this.fetchedUserData = userData;
         this.buildProfileInfoItems();
-        import_sweetalert24.default.fire({
+        import_sweetalert28.default.fire({
           title: "Success",
           text: "User profile loaded successfully!",
           icon: "success",
@@ -50854,7 +52417,7 @@ var ProfileComponent = class _ProfileComponent {
       },
       error: (error) => {
         console.error("Error fetching user profile:", error);
-        import_sweetalert24.default.fire({
+        import_sweetalert28.default.fire({
           title: "Error",
           text: "Failed to fetch user profile: " + (error.error?.message || error.message),
           icon: "error"
@@ -50937,7 +52500,7 @@ var ProfileComponent = class _ProfileComponent {
       \u0275\u0275advance(4);
       \u0275\u0275property("ngIf", ctx.currentUser == null ? null : ctx.currentUser.profilePicture)("ngIfElse", defaultAvatar_r7);
       \u0275\u0275advance(5);
-      \u0275\u0275property("maxFileSize", 5242880)("auto", false)("ngStyle", \u0275\u0275pureFunction0(17, _c06));
+      \u0275\u0275property("maxFileSize", 5242880)("auto", false)("ngStyle", \u0275\u0275pureFunction0(17, _c05));
       \u0275\u0275advance(4);
       \u0275\u0275textInterpolate3(" ", ctx.fetchedUserData == null ? null : ctx.fetchedUserData.firstName, " ", ctx.fetchedUserData == null ? null : ctx.fetchedUserData.middleName, " ", ctx.fetchedUserData == null ? null : ctx.fetchedUserData.lastName, " ");
       \u0275\u0275advance();
@@ -51064,11 +52627,11 @@ var ProfileComponent = class _ProfileComponent {
   }], () => [{ type: Router }, { type: AssetService }, { type: UserService }, { type: UserContextService }, { type: StorageService }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ProfileComponent, { className: "ProfileComponent" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ProfileComponent, { className: "ProfileComponent", filePath: "src/app/pages/profile/profile.ts", lineNumber: 128 });
 })();
 
 // src/app/pages/account/account.ts
-var _c07 = () => ({ margin: "0 auto", padding: "20px" });
+var _c06 = () => ({ margin: "0 auto", padding: "20px" });
 function AccountComponent_p_25_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "p", 35);
@@ -51328,7 +52891,7 @@ var AccountComponent = class _AccountComponent {
       let tmp_12_0;
       let tmp_13_0;
       \u0275\u0275advance();
-      \u0275\u0275property("ngStyle", \u0275\u0275pureFunction0(18, _c07));
+      \u0275\u0275property("ngStyle", \u0275\u0275pureFunction0(18, _c06));
       \u0275\u0275advance(10);
       \u0275\u0275textInterpolate(ctx.currentUser == null ? null : ctx.currentUser.email);
       \u0275\u0275advance(9);
@@ -51463,14 +53026,14 @@ var AccountComponent = class _AccountComponent {
   }], () => [{ type: Router }, { type: FormBuilder }, { type: MessageService }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AccountComponent, { className: "AccountComponent" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AccountComponent, { className: "AccountComponent", filePath: "src/app/pages/account/account.ts", lineNumber: 111 });
 })();
 
 // src/app.routes.ts
 var appRoutes = [
   { path: "", redirectTo: "/login", pathMatch: "full" },
   { path: "login", component: Login },
-  { path: "auth", loadChildren: () => import("./chunk-LL47JMEF.js") },
+  { path: "auth", loadChildren: () => import("./chunk-27UTOI4I.js") },
   {
     path: "app",
     component: AppLayout,
@@ -51482,9 +53045,9 @@ var appRoutes = [
       { path: "requestmaintenance", component: RequestmaintenanceComponent },
       { path: "profile", component: ProfileComponent },
       { path: "account", component: AccountComponent },
-      { path: "uikit", loadChildren: () => import("./chunk-5SFW6TH4.js") },
+      { path: "uikit", loadChildren: () => import("./chunk-V5T2AUIF.js") },
       { path: "documentation", component: Documentation },
-      { path: "pages", loadChildren: () => import("./chunk-OSUFCDQX.js") }
+      { path: "pages", loadChildren: () => import("./chunk-X2WICKXQ.js") }
     ]
   },
   { path: "notfound", component: Notfound },
@@ -51540,7 +53103,7 @@ var AppComponent = class _AppComponent {
   }], null, null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent" });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src/app.component.ts", lineNumber: 11 });
 })();
 
 // src/main.ts

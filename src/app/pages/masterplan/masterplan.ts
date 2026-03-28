@@ -13,11 +13,13 @@ import * as XLSX from 'xlsx';
 import { DialogModule } from 'primeng/dialog';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { MasterPlanService, MasterPlanData, MaintenanceSchedule, EquipmentParticulars } from '../service/masterplan.service';
+import { MasterPlanPdfService } from '../service/masterplan-pdf.service';
 @Component({
     selector: 'app-masterplan',
     standalone: true,
     imports: [CommonModule, ToolbarModule, ButtonModule, RippleModule, TableModule, InputTextModule, FormsModule, DialogModule, ToastModule],
-    providers: [MessageService],
+    providers: [MessageService, MasterPlanService, MasterPlanPdfService],
     template: `
         <p-toolbar styleClass="mb-4 master-toolbar">
             <!-- LEFT TITLE -->
@@ -73,9 +75,9 @@ import { ToastModule } from 'primeng/toast';
                     <div class="filter-actions">
                         <p-button [label]="showSchedule ? 'Hide Schedule' : 'Show Schedule'" icon="pi pi-calendar" severity="info" [outlined]="true" (onClick)="toggleSchedule()"> </p-button>
 
-                        <p-button label="Print" icon="pi pi-print" severity="secondary" [outlined]="true" />
+                        <p-button label="Export Excel" icon="pi pi-file-excel" severity="success" [outlined]="true" (onClick)="showExportMenu()" />
 
-                        <p-button label="Export" icon="pi pi-upload" severity="success" [outlined]="true" (onClick)="exportToExcel()" />
+                        <p-button label="Export PDF" icon="pi pi-file-pdf" severity="danger" [outlined]="true" (onClick)="exportToPdf()" />
                     </div>
                 </div>
             </ng-template>
@@ -172,6 +174,59 @@ import { ToastModule } from 'primeng/toast';
                 </table>
             </div>
         </div>
+
+        <!-- EXPORT OPTIONS DIALOG -->
+        <p-dialog [(visible)]="showExportDialog" [modal]="true" [style]="{ width: '500px' }" [draggable]="false" [resizable]="false">
+            <ng-template pTemplate="header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); display: flex; align-items: center; justify-content: center;">
+                        <i class="pi pi-file-excel text-white" style="font-size: 24px;"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1e293b;">Export to Excel</h3>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">Choose export format</p>
+                    </div>
+                </div>
+            </ng-template>
+
+            <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                <div
+                    (click)="exportCurrentView()"
+                    style="padding: 20px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;"
+                    onmouseover="this.style.borderColor='#3b82f6'; this.style.background='#f0f9ff'"
+                    onmouseout="this.style.borderColor='#e2e8f0'; this.style.background='white'"
+                >
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="pi pi-table" style="font-size: 24px; color: #3b82f6;"></i>
+                        <div>
+                            <p style="margin: 0; font-weight: 600; font-size: 15px; color: #1e293b;">Current View</p>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748b;">Export the currently displayed equipment list</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    (click)="exportWithSheets()"
+                    style="padding: 20px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;"
+                    onmouseover="this.style.borderColor='#10b981'; this.style.background='#f0fdf4'"
+                    onmouseout="this.style.borderColor='#e2e8f0'; this.style.background='white'"
+                >
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="pi pi-clone" style="font-size: 24px; color: #10b981;"></i>
+                        <div>
+                            <p style="margin: 0; font-weight: 600; font-size: 15px; color: #1e293b;">Multiple Sheets</p>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748b;">Export with separate sheets per laboratory</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ng-template pTemplate="footer">
+                <div style="display: flex; justify-content: flex-end; padding: 16px 24px; border-top: 2px solid #f1f5f9;">
+                    <p-button label="Cancel" icon="pi pi-times" severity="secondary" [outlined]="true" (onClick)="showExportDialog = false"></p-button>
+                </div>
+            </ng-template>
+        </p-dialog>
 
         <!-- EDIT DIALOG -->
         <p-dialog [(visible)]="showEditDialog" [modal]="true" [style]="{ width: '650px' }" [draggable]="false" [resizable]="false" styleClass="maintenance-dialog">
@@ -489,11 +544,16 @@ export class MasterPlanComponent implements OnInit {
     editMonthlyData: any[] = [];
     selectedDates: string[] = [];
 
+    /** EXPORT DIALOG */
+    showExportDialog = false;
+
     private currentYear = new Date().getFullYear();
 
     constructor(
         private http: HttpClient,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private masterPlanService: MasterPlanService,
+        private masterPlanPdfService: MasterPlanPdfService
     ) {}
 
     ngOnInit() {
@@ -625,65 +685,6 @@ export class MasterPlanComponent implements OnInit {
         return dates.join(', ') || '-';
     }
 
-    saveExcelFile(buffer: any): void {
-        const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-
-        const fileName = `MasterPlan_${this.selectedLaboratory}_${this.selectedYear}.xlsx`;
-
-        saveAs(data, fileName);
-    }
-
-    exportToExcel() {
-        if (!this.equipmentList.length) {
-            console.warn('No data to export');
-            return;
-        }
-
-        const data: any[] = [];
-
-        this.equipmentList.forEach((item: any) => {
-            const equipment = item.equipment || {};
-
-            data.push({
-                'ID Number': equipment.assetId || 'N/A',
-                'Asset Name': equipment.equipmentName || equipment.assetName || 'N/A',
-                Quantity: item.quantity || 1,
-                'Date Acquired': this.formatDate(equipment.dateAcquired),
-                Location: equipment.location || 'N/A',
-                Price: this.formatPrice(equipment.price),
-                Functional: item.isFunctional !== false ? 'Yes' : 'No',
-                'Under Repair': item.isUnderRepair ? 'Yes' : 'No',
-
-                // ===== MAINTENANCE SCHEDULE =====
-                'Inventory Schedule': this.getScheduleText(item, 'inventory'),
-                'Preventive Maintenance': this.getScheduleText(item, 'preventive'),
-                'Corrective Maintenance': this.getScheduleText(item, 'corrective'),
-                'Calibration Schedule': this.getScheduleText(item, 'calibration')
-            });
-        });
-
-        // Create worksheet
-        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-
-        // Auto column width
-        const wscols = [{ wch: 22 }, { wch: 30 }, { wch: 10 }, { wch: 18 }, { wch: 25 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }];
-        worksheet['!cols'] = wscols;
-
-        // Create workbook
-        const workbook: XLSX.WorkBook = {
-            Sheets: { 'Master Plan': worksheet },
-            SheetNames: ['Master Plan']
-        };
-
-        // Generate Excel file
-        const excelBuffer: any = XLSX.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array'
-        });
-
-        this.saveExcelFile(excelBuffer);
-    }
-
     openEditDialog(item: any, maintenanceType: string) {
         this.selectedEquipment = item;
         this.editMaintenanceType = maintenanceType;
@@ -807,5 +808,177 @@ export class MasterPlanComponent implements OnInit {
 
     getMaintenanceTypeTitle(): string {
         return this.editMaintenanceType.charAt(0).toUpperCase() + this.editMaintenanceType.slice(1);
+    }
+
+    // ===== EXPORT METHODS =====
+
+    showExportMenu(): void {
+        this.showExportDialog = true;
+    }
+
+    async exportCurrentView(): Promise<void> {
+        if (!this.equipmentList.length) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'No Data',
+                detail: 'No equipment data to export'
+            });
+            return;
+        }
+
+        const labName = this.laboratories.find((l) => l.laboratoryId === this.selectedLaboratory)?.laboratoryName || 'Lab';
+        await this.masterPlanService.exportEquipmentListToExcel(this.equipmentList, labName, this.selectedYear);
+
+        this.showExportDialog = false;
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Exported',
+            detail: 'Excel file downloaded successfully'
+        });
+    }
+
+    async exportWithSheets(): Promise<void> {
+        // Create master plan data from current data
+        let masterPlanData: MasterPlanData;
+
+        if (this.equipmentList.length > 0) {
+            // Create master plan data from current equipment list
+            const labName = this.laboratories.find((l) => l.laboratoryId === this.selectedLaboratory)?.laboratoryName || 'Lab';
+
+            masterPlanData = {
+                year: this.selectedYear,
+                laboratoryId: this.selectedLaboratory,
+                laboratoryName: labName,
+                sheets: [
+                    {
+                        sheetName: labName,
+                        equipmentData: this.equipmentList.map((item) => {
+                            const equipment = item.equipment || {};
+                            return {
+                                equipmentName: equipment.equipmentName || equipment.assetName || 'N/A',
+                                particulars: {
+                                    name: equipment.equipmentName || equipment.assetName || 'N/A',
+                                    quantity: item.quantity || 1,
+                                    dateAcquired: equipment.dateAcquired ? new Date(equipment.dateAcquired).toLocaleDateString() : '',
+                                    serialNumber: equipment.serialNumber || equipment.assetId || '',
+                                    location: equipment.location || '',
+                                    price: equipment.price || 0,
+                                    workingUnits: item.isFunctional !== false ? item.quantity || 1 : 0,
+                                    underRepair: item.isUnderRepair ? item.quantity || 1 : 0
+                                },
+                                inventory: this.getMaintenanceScheduleByType(item, 'inventory'),
+                                preventive: this.getMaintenanceScheduleByType(item, 'preventive'),
+                                corrective: this.getMaintenanceScheduleByType(item, 'corrective'),
+                                calibration: this.getMaintenanceScheduleByType(item, 'calibration')
+                            };
+                        })
+                    }
+                ]
+            };
+        } else {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'No Data',
+                detail: 'No master plan data available to export'
+            });
+            return;
+        }
+
+        const fileName = `MasterPlan_${masterPlanData.year}_${masterPlanData.laboratoryName || 'All'}.xlsx`;
+        await this.masterPlanService.exportToExcel(masterPlanData, fileName);
+
+        this.showExportDialog = false;
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Exported',
+            detail: 'Excel file with multiple sheets downloaded successfully'
+        });
+    }
+
+    exportToPdf(): void {
+        if (!this.equipmentList.length) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'No Data',
+                detail: 'No data available to export to PDF'
+            });
+            return;
+        }
+
+        // Export current equipment list
+        const labName = this.laboratories.find((l) => l.laboratoryId === this.selectedLaboratory)?.laboratoryName || 'Lab';
+        this.masterPlanPdfService.exportEquipmentListToPdf(this.equipmentList, labName, this.selectedYear, this.showSchedule);
+
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Exported',
+            detail: 'PDF file downloaded successfully'
+        });
+    }
+
+    // Helper method to get schedule for a specific month
+    private getMaintenanceScheduleByType(item: any, maintenanceType: string): any {
+        const schedule: any = {
+            january: '',
+            february: '',
+            march: '',
+            april: '',
+            may: '',
+            june: '',
+            july: '',
+            august: '',
+            september: '',
+            october: '',
+            november: '',
+            december: ''
+        };
+
+        if (!item?.monthlyData) return schedule;
+
+        const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+
+        // Iterate through each month (0-11)
+        for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
+            const monthData = item.monthlyData.find((m: any) => m.month === monthIndex + 1);
+
+            if (monthData?.maintenance) {
+                const value = monthData.maintenance[maintenanceType] || monthData.maintenance[`${maintenanceType}Created`] || monthData.maintenance[`${maintenanceType}Updated`];
+
+                if (value && value !== '') {
+                    // If it's a date, format it; otherwise just use the value (could be 'x')
+                    const date = new Date(value);
+                    if (!isNaN(date.getTime())) {
+                        // Valid date - format as MM/DD/YYYY
+                        schedule[monthNames[monthIndex]] = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+                    } else {
+                        // Not a date, use as-is (e.g., 'x')
+                        schedule[monthNames[monthIndex]] = value;
+                    }
+                }
+            }
+        }
+
+        return schedule;
+    }
+
+    private getMonthSchedule(item: any, monthIndex: number): string {
+        if (!item?.monthlyData) return '';
+
+        const monthData = item.monthlyData.find((m: any) => m.month === monthIndex + 1);
+        if (!monthData?.maintenance) return '';
+
+        const schedules: string[] = [];
+
+        // Check all maintenance types
+        ['inventory', 'preventive', 'corrective', 'calibration'].forEach((type) => {
+            const value = monthData.maintenance[type] || monthData.maintenance[`${type}Created`] || monthData.maintenance[`${type}Updated`];
+
+            if (value && value !== '') {
+                const date = new Date(value);
+                schedules.push(`${type.charAt(0).toUpperCase()}: ${date.getDate()}`);
+            }
+        });
+
+        return schedules.join(', ');
     }
 }
