@@ -1,0 +1,172 @@
+{
+  "configVersion": 1,
+  "timestamp": 1775013860402,
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/chunk-4KT7N75N.js",
+        "/chunk-4MCHTRNA.js",
+        "/chunk-4N33UR4K.js",
+        "/chunk-7XDJEVBD.js",
+        "/chunk-AZ6JSYKU.js",
+        "/chunk-CZP2U27A.js",
+        "/chunk-EYUNLMA6.js",
+        "/chunk-FEJEOMOL.js",
+        "/chunk-GROBWBLF.js",
+        "/chunk-JGQHQ6P2.js",
+        "/chunk-KJ3WA6EM.js",
+        "/chunk-KXSKNPSK.js",
+        "/chunk-NWVKOQMP.js",
+        "/chunk-OXVY4BEJ.js",
+        "/chunk-SHWRU2BH.js",
+        "/chunk-SXJRKOBT.js",
+        "/chunk-WORJZVE6.js",
+        "/index.html",
+        "/main-MV4LS7TY.js",
+        "/manifest.webmanifest",
+        "/polyfills-5CFQRCPP.js",
+        "/styles-T3ZW72EZ.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/assets/demo/flags/flags_responsive.png",
+        "/assets/header.png.png",
+        "/assets/icons/icon-128x128.png",
+        "/assets/icons/icon-144x144.png",
+        "/assets/icons/icon-152x152.png",
+        "/assets/icons/icon-192x192.png",
+        "/assets/icons/icon-192x192.webp",
+        "/assets/icons/icon-384x384.png",
+        "/assets/icons/icon-48x48.png",
+        "/assets/icons/icon-512x512.png",
+        "/assets/icons/icon-512x512.webp",
+        "/assets/icons/icon-72x72.png",
+        "/assets/icons/icon-96x96.png",
+        "/assets/svg/file.svg",
+        "/header.png",
+        "/icons/icon-128x128.png",
+        "/icons/icon-144x144.png",
+        "/icons/icon-152x152.png",
+        "/icons/icon-192x192.png",
+        "/icons/icon-192x192.webp",
+        "/icons/icon-384x384.png",
+        "/icons/icon-48x48.png",
+        "/icons/icon-512x512.png",
+        "/icons/icon-512x512.webp",
+        "/icons/icon-72x72.png",
+        "/icons/icon-96x96.png",
+        "/media/flags_responsive-FLFJ4F7K.png",
+        "/media/primeicons-4GST5W3O.woff2",
+        "/media/primeicons-DHQU4SEP.svg",
+        "/media/primeicons-GEFHGEHP.ttf",
+        "/media/primeicons-P53SE5CV.woff"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-cache",
+      "patterns": [
+        "http:\\/\\/localhost:3000\\/api\\/.*"
+      ],
+      "strategy": "freshness",
+      "maxSize": 100,
+      "maxAge": 3600000,
+      "timeoutMs": 10000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/assets/demo/flags/flags_responsive.png": "c1c4ac0f8369b4aa4b4c22a052e472b8d5f479c6",
+    "/assets/header.png.png": "a8f5147bbb0761174c2af307495455116bfc00bf",
+    "/assets/icons/icon-128x128.png": "665d8b508ca7bac797c3ec57ca879a309ba20518",
+    "/assets/icons/icon-144x144.png": "064d7f38f637429f72a71271024e72c8af0dad67",
+    "/assets/icons/icon-152x152.png": "3ec9334b50999f26f83110691c9c737a24bb52f9",
+    "/assets/icons/icon-192x192.png": "5c7ec32b5b03825dd310dcb9b06325de1aed577e",
+    "/assets/icons/icon-192x192.webp": "b0fe9b92229c67802a7112a89212af7da5c7a874",
+    "/assets/icons/icon-384x384.png": "e36373ea1096810caebb9c6ccaedd3f43fb381b1",
+    "/assets/icons/icon-48x48.png": "70afaf4cd9dbb1dfd52c88587d0f5542cfcd83ac",
+    "/assets/icons/icon-512x512.png": "d1c759b38e69a2d6153528b1aacbe0b8ce678a66",
+    "/assets/icons/icon-512x512.webp": "191c10a3f798315c09f3cb182521282343064e44",
+    "/assets/icons/icon-72x72.png": "3cf7a60598f4da3f845872a8b73c2ba2059cb147",
+    "/assets/icons/icon-96x96.png": "1e1e334a479fffe02dbc84759face0649b9b5b94",
+    "/assets/svg/file.svg": "5ecdf08a567b10b38b527f17f3c5292b365971b3",
+    "/chunk-4KT7N75N.js": "e07fba0f5e9d046b746c61472d0b12650eb0ed61",
+    "/chunk-4MCHTRNA.js": "9e03abb0e1a56ad3dbcaf879f8f82e9cbf850218",
+    "/chunk-4N33UR4K.js": "c749fb7d712f9ef283876ffb0bcf2a03f246a3a8",
+    "/chunk-7XDJEVBD.js": "567578a0e4a3e990991cd59b0b4fdc2bd7925508",
+    "/chunk-AZ6JSYKU.js": "a4e2e94dd1ffe36c39c0fdc7664468b8899e80b9",
+    "/chunk-CZP2U27A.js": "1e523c12b18d509f21f8c9e79449e2e8c2f5d093",
+    "/chunk-EYUNLMA6.js": "246b4a2b674cf5f4335779aa76655000b9f31f62",
+    "/chunk-FEJEOMOL.js": "58ba5bc96d15d6a51c73b6fbe1345f1e7f422d73",
+    "/chunk-GROBWBLF.js": "1849dc64989db1193ceeb2f34c06687b956e8138",
+    "/chunk-JGQHQ6P2.js": "6cedc705c448da1e1a450dea1529362efb1a2b9f",
+    "/chunk-KJ3WA6EM.js": "0908fa20227fe3284edafc7bda1d264a7a45aae2",
+    "/chunk-KXSKNPSK.js": "a32b4cc45a656fcb0ce31a04d528ac2a9cd0ca0c",
+    "/chunk-NWVKOQMP.js": "73a6bcdba76e7c2c929976f2ec75fa10b04790db",
+    "/chunk-OXVY4BEJ.js": "da297e2358d103a643642f6b0aa2085ca70bbbf0",
+    "/chunk-SHWRU2BH.js": "466e94f59e99598b5cca25fffb941195df770939",
+    "/chunk-SXJRKOBT.js": "46cfad06222e2650a2a2a79dc45ef218c5652ddf",
+    "/chunk-WORJZVE6.js": "c4998be6cb410c7f8ee776b28bc9a623b9db210d",
+    "/header.png": "90a3effa78213cb09523fc992aa6753d0d7523f7",
+    "/icons/icon-128x128.png": "665d8b508ca7bac797c3ec57ca879a309ba20518",
+    "/icons/icon-144x144.png": "064d7f38f637429f72a71271024e72c8af0dad67",
+    "/icons/icon-152x152.png": "3ec9334b50999f26f83110691c9c737a24bb52f9",
+    "/icons/icon-192x192.png": "5c7ec32b5b03825dd310dcb9b06325de1aed577e",
+    "/icons/icon-192x192.webp": "b0fe9b92229c67802a7112a89212af7da5c7a874",
+    "/icons/icon-384x384.png": "e36373ea1096810caebb9c6ccaedd3f43fb381b1",
+    "/icons/icon-48x48.png": "70afaf4cd9dbb1dfd52c88587d0f5542cfcd83ac",
+    "/icons/icon-512x512.png": "d1c759b38e69a2d6153528b1aacbe0b8ce678a66",
+    "/icons/icon-512x512.webp": "191c10a3f798315c09f3cb182521282343064e44",
+    "/icons/icon-72x72.png": "3cf7a60598f4da3f845872a8b73c2ba2059cb147",
+    "/icons/icon-96x96.png": "1e1e334a479fffe02dbc84759face0649b9b5b94",
+    "/index.html": "e014b7562bb73109676248397b9a14bae0f5b932",
+    "/main-MV4LS7TY.js": "8e792a2577dc6a034bbbdb8c834db327c155c928",
+    "/manifest.webmanifest": "36ddca5cd47bb32d87ff2b24674fd8107d94a06b",
+    "/media/flags_responsive-FLFJ4F7K.png": "c1c4ac0f8369b4aa4b4c22a052e472b8d5f479c6",
+    "/media/primeicons-4GST5W3O.woff2": "837c1279b6af9d297f34fdb43e6fcc9206a79f32",
+    "/media/primeicons-DHQU4SEP.svg": "a07ae39027c1a780b42fd82fad7575c2924d9d28",
+    "/media/primeicons-GEFHGEHP.ttf": "3b878ca7e88945a8ec25814810b95367d8977ae6",
+    "/media/primeicons-P53SE5CV.woff": "361e3af71bb4e515feead2f787348a92a5527158",
+    "/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
+    "/styles-T3ZW72EZ.css": "69ac780d9594b6c94feb4eb33f1e08cf1b64379e"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}

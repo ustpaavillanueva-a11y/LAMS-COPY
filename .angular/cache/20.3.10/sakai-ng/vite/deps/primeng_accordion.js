@@ -1,18 +1,14 @@
 import {
+  transformToBoolean
+} from "./chunk-3DNZLJAM.js";
+import {
   Ripple
 } from "./chunk-UCC4SYHQ.js";
 import {
   ChevronDownIcon,
   ChevronUpIcon
 } from "./chunk-G3KLILSY.js";
-import {
-  transformToBoolean
-} from "./chunk-3DNZLJAM.js";
 import "./chunk-GGKQQQY2.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-PXYWQ7E3.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -20,6 +16,10 @@ import {
 import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
+import {
+  Bind,
+  BindModule
+} from "./chunk-PXYWQ7E3.js";
 import {
   SharedModule
 } from "./chunk-6D2SAAIV.js";

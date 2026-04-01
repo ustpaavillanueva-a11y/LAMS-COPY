@@ -1,18 +1,15 @@
 import {
+  zindexutils
+} from "./chunk-3DNZLJAM.js";
+import {
   ExclamationTriangleIcon,
   InfoCircleIcon,
   TimesCircleIcon,
   TimesIcon
 } from "./chunk-G3KLILSY.js";
 import {
-  zindexutils
-} from "./chunk-3DNZLJAM.js";
-import {
   CheckIcon
 } from "./chunk-GGKQQQY2.js";
-import {
-  Bind
-} from "./chunk-PXYWQ7E3.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -20,6 +17,9 @@ import {
 import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
+import {
+  Bind
+} from "./chunk-PXYWQ7E3.js";
 import {
   MessageService,
   PrimeTemplate,
