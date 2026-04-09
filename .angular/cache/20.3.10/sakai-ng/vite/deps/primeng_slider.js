@@ -7,21 +7,18 @@ import {
 } from "./chunk-IOM7T3UX.js";
 import "./chunk-P6SMTJBG.js";
 import {
+  Bind,
+  BindModule
+} from "./chunk-PXYWQ7E3.js";
+import {
   PARENT_INSTANCE
 } from "./chunk-M2NELYC7.js";
 import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  Bind,
-  BindModule
-} from "./chunk-PXYWQ7E3.js";
-import {
   SharedModule
 } from "./chunk-6D2SAAIV.js";
-import {
-  NG_VALUE_ACCESSOR
-} from "./chunk-SJUOZCFA.js";
 import "./chunk-OTTARZB5.js";
 import {
   $,
@@ -30,6 +27,9 @@ import {
   W,
   k2 as k
 } from "./chunk-U4LT4ZJN.js";
+import {
+  NG_VALUE_ACCESSOR
+} from "./chunk-SJUOZCFA.js";
 import {
   CommonModule,
   NgIf,

@@ -1,10 +1,9 @@
 import {
   Button,
   ButtonModule
-} from "./chunk-5OOGPNSH.js";
-import "./chunk-QV5SN4WD.js";
+} from "./chunk-5ITT3EJK.js";
+import "./chunk-2P7JFTHD.js";
 import "./chunk-IOM7T3UX.js";
-import "./chunk-QFW25L6H.js";
 import "./chunk-P6SMTJBG.js";
 import "./chunk-UCC4SYHQ.js";
 import {
@@ -13,6 +12,11 @@ import {
 import {
   MinusIcon
 } from "./chunk-GGKQQQY2.js";
+import "./chunk-2DG5XJ4L.js";
+import {
+  Bind,
+  BindModule
+} from "./chunk-PXYWQ7E3.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -20,10 +24,6 @@ import {
 import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-PXYWQ7E3.js";
 import {
   Footer,
   PrimeTemplate,

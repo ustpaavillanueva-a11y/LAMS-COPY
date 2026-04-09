@@ -1,11 +1,7 @@
 import {
   Tooltip,
   TooltipModule
-} from "./chunk-LERCPKH5.js";
-import {
-  Badge,
-  BadgeModule
-} from "./chunk-QFW25L6H.js";
+} from "./chunk-RI4JJN4Q.js";
 import "./chunk-P6SMTJBG.js";
 import {
   zindexutils
@@ -20,16 +16,20 @@ import {
 } from "./chunk-G3KLILSY.js";
 import "./chunk-GGKQQQY2.js";
 import {
+  Badge,
+  BadgeModule
+} from "./chunk-2DG5XJ4L.js";
+import {
+  Bind,
+  BindModule
+} from "./chunk-PXYWQ7E3.js";
+import {
   BaseComponent,
   PARENT_INSTANCE
 } from "./chunk-M2NELYC7.js";
 import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-PXYWQ7E3.js";
 import {
   PrimeTemplate,
   SharedModule

@@ -14,6 +14,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { FileUploadModule } from 'primeng/fileupload';
@@ -45,6 +46,7 @@ import Swal from 'sweetalert2';
         TooltipModule,
         DialogModule,
         SelectModule,
+        AutoCompleteModule,
         InputNumberModule,
         TextareaModule,
         FileUploadModule,
@@ -316,18 +318,46 @@ import Swal from 'sweetalert2';
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Issued To</label>
-                                <p-select [(ngModel)]="newAsset.issuedTo" [options]="users" placeholder="Select user" class="w-full" appendTo="body" optionLabel="lastName" [showClear]="true">
+                                <p-autoComplete
+                                    [(ngModel)]="newAsset.issuedTo"
+                                    [suggestions]="filteredUsers"
+                                    (completeMethod)="filterUsers($event)"
+                                    placeholder="Search user"
+                                    [dropdown]="true"
+                                    [forceSelection]="true"
+                                    [showClear]="true"
+                                    class="w-full"
+                                    appendTo="body"
+                                >
                                     <ng-template let-value pTemplate="selectedItem">
                                         <div *ngIf="value">{{ getFullName(value) }}</div>
                                     </ng-template>
                                     <ng-template let-option pTemplate="item">
                                         <div>{{ getFullName(option) }}</div>
                                     </ng-template>
-                                </p-select>
+                                </p-autoComplete>
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Program</label>
-                                <p-select [(ngModel)]="newAsset.program" [options]="programs" optionLabel="programName" optionValue="programId" placeholder="Select program" class="w-full" appendTo="body" />
+                                <p-autoComplete
+                                    [(ngModel)]="newAsset.program"
+                                    (ngModelChange)="onProgramChange($event)"
+                                    [suggestions]="filteredPrograms"
+                                    (completeMethod)="filterPrograms($event)"
+                                    dataKey="programId"
+                                    optionLabel="programName"
+                                    placeholder="Search existing or type new program"
+                                    [dropdown]="true"
+                                    [forceSelection]="false"
+                                    [showEmptyMessage]="true"
+                                    emptyMessage="No matches found. Type to add custom program."
+                                    class="w-full"
+                                    appendTo="body"
+                                >
+                                    <ng-template let-program pTemplate="item">
+                                        <div>{{ program.programName }}</div>
+                                    </ng-template>
+                                </p-autoComplete>
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Supplier</label>
@@ -504,20 +534,48 @@ import Swal from 'sweetalert2';
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Brand</label>
-                                <p-select [(ngModel)]="newAsset.inventoryCustodianSlip.brand" [options]="brands" optionLabel="brandName" optionValue="brandId" placeholder="Select brand" class="w-full" appendTo="body" />
+                                <p-autoComplete
+                                    [(ngModel)]="newAsset.inventoryCustodianSlip.brand"
+                                    (ngModelChange)="onBrandChange($event)"
+                                    [suggestions]="filteredBrands"
+                                    (completeMethod)="filterBrands($event)"
+                                    dataKey="brandId"
+                                    optionLabel="brandName"
+                                    placeholder="Search existing or type new brand"
+                                    [dropdown]="true"
+                                    [forceSelection]="false"
+                                    [showEmptyMessage]="true"
+                                    emptyMessage="No matches found. Type to add custom brand."
+                                    class="w-full"
+                                    appendTo="body"
+                                >
+                                    <ng-template let-brand pTemplate="item">
+                                        <div>{{ brand.brandName }}</div>
+                                    </ng-template>
+                                </p-autoComplete>
                             </div>
                             <div>
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">Color</label>
-                                <p-select
+                                <p-autoComplete
                                     [(ngModel)]="newAsset.inventoryCustodianSlip.color"
-                                    [options]="colors"
+                                    (ngModelChange)="onColorChange($event)"
+                                    [suggestions]="filteredColors"
+                                    (completeMethod)="filterColors($event)"
+                                    dataKey="colorId"
                                     optionLabel="colorName"
-                                    optionValue="colorId"
-                                    placeholder="Select color"
+                                    placeholder="Search existing or type new color"
+                                    [dropdown]="true"
+                                    [forceSelection]="false"
+                                    [showEmptyMessage]="true"
+                                    emptyMessage="No matches found. Type to add custom color."
+                                    [disabled]="isSoftwareCategory()"
                                     class="w-full"
                                     appendTo="body"
-                                    [disabled]="isSoftwareCategory()"
-                                />
+                                >
+                                    <ng-template let-color pTemplate="item">
+                                        <div>{{ color.colorName }}</div>
+                                    </ng-template>
+                                </p-autoComplete>
                             </div>
                             <div style="grid-column: 1 / -1;">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">QR Code Image *</label>
@@ -651,6 +709,12 @@ export class AssetsComponent implements OnInit {
         { label: 'Software', value: 'Software' },
         { label: 'Hardware', value: 'Hardware' }
     ];
+
+    // Filtered data for autocomplete
+    filteredUsers: any[] = [];
+    filteredPrograms: Program[] = [];
+    filteredBrands: Brand[] = [];
+    filteredColors: Color[] = [];
 
     constructor(
         private assetService: AssetService,
@@ -1191,46 +1255,81 @@ export class AssetsComponent implements OnInit {
         }
     }
 
-    closeDialog() {
-        this.assetDialog = false;
-        this.currentStep = 0;
-        this.newAsset = this.getEmptyAsset();
+    // AutoComplete filter methods
+    filterUsers(event: any) {
+        const query = event.query.toLowerCase();
+        this.filteredUsers = this.users.filter((user) => {
+            const fullName = this.getFullName(user).toLowerCase();
+            return fullName.includes(query);
+        });
     }
 
-    nextStep() {
-        if (this.currentStep < 1) {
-            this.currentStep++;
+    filterPrograms(event: any) {
+        const query = event.query.toLowerCase();
+        const filtered = this.programs.filter((program) => program.programName?.toLowerCase().includes(query));
+
+        // If no exact match found and query is not empty, show all matching results
+        // This allows users to see existing options or type a completely new value
+        this.filteredPrograms = filtered.length > 0 ? filtered : [];
+
+        // Note: With forceSelection=false, users can type any custom text even if no matches are shown
+    }
+
+    filterBrands(event: any) {
+        const query = event.query.toLowerCase();
+        const filtered = this.brands.filter((brand) => brand.brandName?.toLowerCase().includes(query));
+
+        // If no exact match found and query is not empty, show all matching results
+        // This allows users to see existing options or type a completely new value
+        this.filteredBrands = filtered.length > 0 ? filtered : [];
+
+        // Note: With forceSelection=false, users can type any custom text even if no matches are shown
+    }
+
+    filterColors(event: any) {
+        const query = event.query.toLowerCase();
+        const filtered = this.colors.filter((color) => color.colorName?.toLowerCase().includes(query));
+
+        // If no exact match found and query is not empty, show all matching results
+        // This allows users to see existing options or type a completely new value
+        this.filteredColors = filtered.length > 0 ? filtered : [];
+
+        // Note: With forceSelection=false, users can type any custom text even if no matches are shown
+    }
+
+    // AutoComplete change handlers - convert objects to strings when value changes
+    onProgramChange(value: any) {
+        // If an object is selected, extract the string value
+        if (value && typeof value === 'object' && value.programName) {
+            // Use setTimeout to avoid triggering ngModelChange again
+            setTimeout(() => {
+                this.newAsset.program = value.programName;
+            }, 0);
         }
+        // If it's already a string (typed text), ngModel handles it automatically
     }
 
-    previousStep() {
-        if (this.currentStep > 0) {
-            this.currentStep--;
+    onBrandChange(value: any) {
+        // If an object is selected, extract the string value
+        if (value && typeof value === 'object' && value.brandName) {
+            // Use setTimeout to avoid triggering ngModelChange again
+            setTimeout(() => {
+                this.newAsset.inventoryCustodianSlip.brand = value.brandName;
+            }, 0);
         }
+        // If it's already a string (typed text), ngModel handles it automatically
     }
 
-    // Request Maintenance Handlers
-    openRequestDialog(asset: Asset) {
-        this.requestAsset = asset;
-        this.maintenanceRequest = { maintenanceName: asset.assetName || '', maintenanceType: '', serviceMaintenance: '', asset: String(asset.assetId || ''), priorityLevel: '', reason: '' };
-        this.requestDialog = true;
-    }
-
-    closeRequestDialog() {
-        this.requestDialog = false;
-        this.requestAsset = null;
-    }
-
-    submitMaintenanceRequest() {
-        if (!this.requestAsset?.assetId) {
-            this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'Missing asset ID' });
-            return;
+    onColorChange(value: any) {
+        // If an object is selected, extract the string value
+        if (value && typeof value === 'object' && value.colorName) {
+            // Use setTimeout to avoid triggering ngModelChange again
+            setTimeout(() => {
+                this.newAsset.inventoryCustodianSlip.color = value.colorName;
+            }, 0);
         }
-        if (
-            !this.maintenanceRequest.maintenanceName ||
-            !this.maintenanceRequest.priorityLevel ||
-            !this.maintenanceRequest.maintenanceType ||
-            !this.maintenanceRequest.asset ||
+        // If it's already a string (typed text), ngModel handles it automatically
+    }
             !this.maintenanceRequest.serviceMaintenance ||
             !this.maintenanceRequest.reason?.trim()
         ) {
@@ -1384,6 +1483,27 @@ export class AssetsComponent implements OnInit {
         if (assetToSend.issuedTo && typeof assetToSend.issuedTo === 'object') {
             assetToSend.issuedTo = this.getFullName(assetToSend.issuedTo);
         }
+
+        // program field: extract value if it's an object (selected from list), otherwise keep custom text as is
+        if (assetToSend.program && typeof assetToSend.program === 'object') {
+            // User selected from existing programs - use programId or programName
+            assetToSend.program = assetToSend.program.programId || assetToSend.program.programName || '';
+        }
+        // If it's already a string (custom text input), keep it as is
+
+        // brand field: extract value if it's an object (selected from list), otherwise keep custom text as is
+        if (assetToSend.inventoryCustodianSlip.brand && typeof assetToSend.inventoryCustodianSlip.brand === 'object') {
+            // User selected from existing brands - use brandName (more meaningful than brandId)
+            assetToSend.inventoryCustodianSlip.brand = assetToSend.inventoryCustodianSlip.brand.brandName || assetToSend.inventoryCustodianSlip.brand.brandId || '';
+        }
+        // If it's already a string (custom text input), keep it as is
+
+        // color field: extract value if it's an object (selected from list), otherwise keep custom text as is
+        if (assetToSend.inventoryCustodianSlip.color && typeof assetToSend.inventoryCustodianSlip.color === 'object') {
+            // User selected from existing colors - use colorName (more meaningful than colorId)
+            assetToSend.inventoryCustodianSlip.color = assetToSend.inventoryCustodianSlip.color.colorName || assetToSend.inventoryCustodianSlip.color.colorId || '';
+        }
+        // If it's already a string (custom text input), keep it as is
 
         console.log(`📦 Creating asset ${index + 1}/${this.serialNumbersParsed.length}:`, {
             serialNumber: serialNumber,
@@ -1873,7 +1993,15 @@ export class AssetsComponent implements OnInit {
             Swal.fire({
                 title: 'QR Code',
                 html: `<img src="${qrCode}" alt="QR Code" style="width: 4in; height: 4in; border-radius: 8px; object-fit: contain;" />`,
-                confirmButtonText: 'Close'
+                confirmButtonText: 'Close',
+                width: '600px'
+            });
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No QR Code',
+                text: 'This asset does not have a QR code associated with it.',
+                confirmButtonText: 'OK'
             });
         }
     }

@@ -1,7 +1,7 @@
 import {
   Tooltip,
   TooltipModule
-} from "./chunk-LERCPKH5.js";
+} from "./chunk-RI4JJN4Q.js";
 import {
   ConnectedOverlayScrollHandler
 } from "./chunk-P6SMTJBG.js";
@@ -15,16 +15,16 @@ import {
   AngleRightIcon
 } from "./chunk-G3KLILSY.js";
 import {
+  Bind,
+  BindModule
+} from "./chunk-PXYWQ7E3.js";
+import {
   BaseComponent,
   PARENT_INSTANCE
 } from "./chunk-M2NELYC7.js";
 import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-PXYWQ7E3.js";
 import {
   OverlayService,
   PrimeTemplate,
@@ -2211,4 +2211,4 @@ export {
   TieredMenu,
   TieredMenuModule
 };
-//# sourceMappingURL=chunk-LDTI3LIF.js.map
+//# sourceMappingURL=chunk-ANOV6GEU.js.map
