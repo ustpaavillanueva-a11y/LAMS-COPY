@@ -1012,6 +1012,96 @@ export class AssetsComponent implements OnInit {
         // If it's a string (typed text), that's also fine - backend will handle it
     }
 
+    /**
+     * Ensure reference data (brand, color, program) exists
+     * Creates them via API if user typed custom values
+     */
+    async ensureReferenceDataExists(): Promise<void> {
+        const promises: Promise<any>[] = [];
+
+        // Check and create Brand if it's a custom string
+        if (this.newAsset.inventoryCustodianSlip.brand && typeof this.newAsset.inventoryCustodianSlip.brand === 'string') {
+            const brandName = this.newAsset.inventoryCustodianSlip.brand.trim();
+            console.log('🔨 Creating new brand:', brandName);
+
+            const brandPromise = this.assetService
+                .createBrand({ brandName })
+                .toPromise()
+                .then((createdBrand) => {
+                    console.log('✅ Brand created:', createdBrand);
+                    if (createdBrand) {
+                        // Replace string with the created brand object
+                        this.newAsset.inventoryCustodianSlip.brand = createdBrand;
+                        // Add to brands list for future use
+                        this.brands.push(createdBrand);
+                    }
+                })
+                .catch((error) => {
+                    console.error('❌ Failed to create brand:', error);
+                    // Set to empty to avoid error
+                    this.newAsset.inventoryCustodianSlip.brand = '';
+                });
+            promises.push(brandPromise);
+        }
+
+        // Check and create Color if it's a custom string
+        if (this.newAsset.inventoryCustodianSlip.color && typeof this.newAsset.inventoryCustodianSlip.color === 'string') {
+            const colorName = this.newAsset.inventoryCustodianSlip.color.trim();
+            console.log('🔨 Creating new color:', colorName);
+
+            const colorPromise = this.assetService
+                .createColor({ colorName })
+                .toPromise()
+                .then((createdColor) => {
+                    console.log('✅ Color created:', createdColor);
+                    if (createdColor) {
+                        // Replace string with the created color object
+                        this.newAsset.inventoryCustodianSlip.color = createdColor;
+                        // Add to colors list for future use
+                        this.colors.push(createdColor);
+                    }
+                })
+                .catch((error) => {
+                    console.error('❌ Failed to create color:', error);
+                    // Set to empty to avoid error
+                    this.newAsset.inventoryCustodianSlip.color = '';
+                });
+            promises.push(colorPromise);
+        }
+
+        // Check and create Program if it's a custom string
+        if (this.newAsset.program && typeof this.newAsset.program === 'string') {
+            const programName = this.newAsset.program.trim();
+            console.log('🔨 Creating new program:', programName);
+
+            const programPromise = this.assetService
+                .createProgram({ programName })
+                .toPromise()
+                .then((createdProgram) => {
+                    console.log('✅ Program created:', createdProgram);
+                    if (createdProgram) {
+                        // Replace string with the created program object
+                        this.newAsset.program = createdProgram;
+                        // Add to programs list for future use
+                        this.programs.push(createdProgram);
+                    }
+                })
+                .catch((error) => {
+                    console.error('❌ Failed to create program:', error);
+                    // Set to empty to avoid error
+                    this.newAsset.program = '';
+                });
+            promises.push(programPromise);
+        }
+
+        // Wait for all creations to complete
+        await Promise.all(promises);
+
+        if (promises.length > 0) {
+            console.log('🎉 All reference data created successfully!');
+        }
+    }
+
     closeDialog() {
         this.assetDialog = false;
         this.currentStep = 0;
@@ -1161,25 +1251,39 @@ export class AssetsComponent implements OnInit {
         console.log(`🔍 Creating ${this.serialNumbersParsed.length} separate assets SEQUENTIALLY (one per serial number)...`);
         console.log('⚠️ Sequential creation prevents duplicate ICS ID race condition');
 
-        // Store form data before closing dialog
-        const assetDataCopy = { ...this.newAsset };
-        const qrCodeFileCopy = this.newAsset.qrCodeImage;
-        const serialNumbersCopy = [...this.serialNumbersParsed];
+        // Check and create missing reference data (brands, colors, programs)
+        this.ensureReferenceDataExists()
+            .then(() => {
+                // Store form data AFTER creating reference data (so we have the IDs)
+                const assetDataCopy = JSON.parse(JSON.stringify(this.newAsset)); // Deep copy
+                const qrCodeFileCopy = this.newAsset.qrCodeImage;
+                const serialNumbersCopy = [...this.serialNumbersParsed];
 
-        // Close the modal immediately
-        this.assetDialog = false;
-        this.isSubmitting = true;
+                // Close the modal immediately
+                this.assetDialog = false;
+                this.isSubmitting = true;
 
-        // Show loading toast
-        this.messageService.add({
-            severity: 'info',
-            summary: 'Creating Assets',
-            detail: `Creating ${serialNumbersCopy.length} asset(s)... Please wait.`,
-            life: 30000 // Show for 30 seconds or until cleared
-        });
+                // Show loading toast
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Creating Assets',
+                    detail: `Creating ${serialNumbersCopy.length} asset(s)... Please wait.`,
+                    life: 30000 // Show for 30 seconds or until cleared
+                });
 
-        // Create assets SEQUENTIALLY to avoid duplicate ICS ID generation
-        this.createAssetsSequentially(0, [], qrCodeFileCopy, assetDataCopy, serialNumbersCopy);
+                // Create assets SEQUENTIALLY to avoid duplicate ICS ID generation
+                this.createAssetsSequentially(0, [], qrCodeFileCopy, assetDataCopy, serialNumbersCopy);
+            })
+            .catch((error) => {
+                this.isSubmitting = false;
+                console.error('❌ Failed to create reference data:', error);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to create reference data. Please try again.',
+                    life: 5000
+                });
+            });
     }
 
     // Helper method to create assets one by one (sequential)
