@@ -932,9 +932,19 @@ export class LabScheduleComponent implements OnInit {
                         body {
                             margin: 0;
                             padding: 0;
+                            padding-bottom: 80px;
                         }
                         .no-print {
                             display: none;
+                        }
+                        .print-footer-img {
+                            position: fixed;
+                            bottom: 0;
+                            left: 0;
+                            width: 100%;
+                            text-align: center;
+                            padding: 0 6mm;
+                            box-sizing: border-box;
                         }
                     }
                     body {
@@ -1171,7 +1181,7 @@ export class LabScheduleComponent implements OnInit {
                         </tbody>
                     </table>
                 </div>
-                <div style="text-align: center; margin-top: 8px;">
+                <div class="print-footer-img" style="text-align: center; margin-top: 8px;">
                     <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 60px; object-fit: contain;" />
                 </div>
             </body>

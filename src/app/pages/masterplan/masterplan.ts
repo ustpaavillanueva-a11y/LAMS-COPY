@@ -916,6 +916,67 @@ export class MasterPlanComponent implements OnInit {
         });
     }
 
+    exportToCsv(): void {
+        if (!this.equipmentList.length) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'No Data',
+                detail: 'No data available to export to CSV'
+            });
+            return;
+        }
+
+        const headers = this.showSchedule
+            ? ['ID Number', 'Asset Name', 'Serial Number', 'Quantity', 'Date Acquired', 'Location', 'Price', 'Functional', 'Under Repair', 'Inventory', 'Preventive', 'Corrective', 'Calibration']
+            : ['ID Number', 'Asset Name', 'Serial Number', 'Quantity', 'Date Acquired', 'Location', 'Price', 'Functional', 'Under Repair'];
+
+        const rows = this.equipmentList.map((item) => {
+            const eq = item.equipment || {};
+            const base = [
+                eq.assetId || 'N/A',
+                eq.equipmentName || 'N/A',
+                eq.serialNumber || 'N/A',
+                item.quantity || 1,
+                this.formatDate(eq.dateAcquired),
+                eq.location || 'N/A',
+                this.formatPrice(eq.price),
+                item.isFunctional !== false ? 'Yes' : 'No',
+                item.isUnderRepair ? 'Yes' : 'No'
+            ];
+
+            if (this.showSchedule) {
+                base.push(
+                    this.getScheduleText(item, 'inventory'),
+                    this.getScheduleText(item, 'preventive'),
+                    this.getScheduleText(item, 'corrective'),
+                    this.getScheduleText(item, 'calibration')
+                );
+            }
+
+            return base;
+        });
+
+        let csv = headers.join(',') + '\n';
+        rows.forEach((row) => {
+            csv += row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
+        });
+
+        const labName = this.laboratories.find((l) => l.laboratoryId === this.selectedLaboratory)?.laboratoryName || 'Lab';
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `MasterPlan_${labName}_${this.selectedYear}.csv`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Exported',
+            detail: 'CSV file downloaded successfully'
+        });
+    }
+
     // Helper method to get schedule for a specific month
     private getMaintenanceScheduleByType(item: any, maintenanceType: string): any {
         const schedule: any = {

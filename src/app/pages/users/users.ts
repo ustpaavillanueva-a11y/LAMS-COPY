@@ -1138,10 +1138,11 @@ export class UsersComponent implements OnInit {
                     .status-active { color: #16a34a; font-weight: 500; }
                     .status-inactive { color: #dc2626; font-weight: 500; }
                     @media print {
-                        body { margin: 0; }
+                        body { margin: 0; padding-bottom: 100px; }
                         table { page-break-inside: auto; }
                         tr { page-break-inside: avoid; page-break-after: auto; }
                         thead { display: table-header-group; }
+                        .print-footer-img { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 0 10mm; box-sizing: border-box; }
                     }
                 </style>
             </head>
@@ -1193,7 +1194,7 @@ export class UsersComponent implements OnInit {
                     <span class="total">Total Users: ${this.filteredUsers.length}</span>
                     <span>LAMS - User Management</span>
                 </div>
-                <div style="text-align: center; margin-top: 20px;">
+                <div class="print-footer-img" style="text-align: center; margin-top: 20px;">
                     <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 80px; object-fit: contain;" />
                 </div>
                 <script>
@@ -1236,9 +1237,10 @@ export class UsersComponent implements OnInit {
                     .status-active { color: green; }
                     .status-inactive { color: red; }
                     @media print {
-                        body { margin: 0; }
+                        body { margin: 0; padding-bottom: 100px; }
                         table { page-break-inside: auto; }
                         tr { page-break-inside: avoid; page-break-after: auto; }
+                        .print-footer-img { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 0 10mm; box-sizing: border-box; }
                     }
                 </style>
             </head>
@@ -1280,7 +1282,7 @@ export class UsersComponent implements OnInit {
                     </tbody>
                 </table>
                 <div class="total">Total Users: ${this.filteredUsers.length}</div>
-                <div style="text-align: center; margin-top: 20px;">
+                <div class="print-footer-img" style="text-align: center; margin-top: 20px;">
                     <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 80px; object-fit: contain;" />
                 </div>
             </body>

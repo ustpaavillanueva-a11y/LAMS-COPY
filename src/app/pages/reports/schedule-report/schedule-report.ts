@@ -284,7 +284,7 @@ export class ScheduleReportComponent implements OnInit {
                     .header { text-align: center; margin-bottom: 10px; }
                     .header h2 { margin: 0; font-size: 18px; color: #333; }
                     .meta-info { display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 10px; }
-                    @media print { body { margin: 0; } .no-print { display: none !important; } table { page-break-inside: auto; } tr { page-break-inside: avoid; } thead { display: table-header-group; } }
+                    @media print { body { margin: 0; padding-bottom: 100px; } .no-print { display: none !important; } table { page-break-inside: auto; } tr { page-break-inside: avoid; } thead { display: table-header-group; } .print-footer-img { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 0 10mm; box-sizing: border-box; } }
                 </style>
             </head>
             <body>
@@ -311,7 +311,7 @@ export class ScheduleReportComponent implements OnInit {
                     </thead>
                     <tbody>${rows}</tbody>
                 </table>
-                <div style="text-align: center; margin-top: 20px;">
+                <div class="print-footer-img" style="text-align: center; margin-top: 20px;">
                     <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 80px; object-fit: contain;" />
                 </div>
                 <script>window.onload = function() { window.print(); }</script>

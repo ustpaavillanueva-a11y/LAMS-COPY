@@ -282,7 +282,7 @@ export class AssetExportService {
                     <span class="total">Total Assets: ${assets.length}</span>
                     <span>LAMS - Laboratory Assets Management System</span>
                 </div>
-                <div style="text-align: center; margin-top: 20px;">
+                <div class="print-footer-img" style="text-align: center; margin-top: 20px;">
                     <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 80px; object-fit: contain;" />
                 </div>
                 ${pdfInstructions}
@@ -380,11 +380,12 @@ export class AssetExportService {
             .total { font-weight: bold; }
             .no-print { display: none; }
             @media print {
-                body { margin: 0; }
+                body { margin: 0; padding-bottom: 100px; }
                 .no-print { display: none !important; }
                 table { page-break-inside: auto; }
                 tr { page-break-inside: avoid; page-break-after: auto; }
                 thead { display: table-header-group; }
+                .print-footer-img { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 0 10mm; box-sizing: border-box; }
             }
         `;
     }

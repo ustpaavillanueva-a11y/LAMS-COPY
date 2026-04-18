@@ -6,29 +6,88 @@ import { MasterPlanData, MasterPlanSheet } from './masterplan.service';
 @Injectable({ providedIn: 'root' })
 export class MasterPlanPdfService {
     /**
+     * Load an image from URL and return as base64 data URL
+     */
+    private loadImageAsBase64(url: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0);
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.onerror = () => resolve(''); // Silently fail if image not found
+            img.src = url;
+        });
+    }
+
+    /**
+     * Add header image to a jsPDF page
+     */
+    private addHeader(doc: jsPDF, headerImg: string): number {
+        const pageWidth = doc.internal.pageSize.getWidth();
+        if (headerImg) {
+            const imgWidth = pageWidth - 28;
+            const imgHeight = 25;
+            doc.addImage(headerImg, 'PNG', 14, 5, imgWidth, imgHeight);
+            return 33;
+        }
+        return 10;
+    }
+
+    /**
+     * Add footer image to a jsPDF page
+     */
+    private addFooter(doc: jsPDF, footerImg: string): void {
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        if (footerImg) {
+            const imgWidth = pageWidth - 28;
+            const imgHeight = 18;
+            doc.addImage(footerImg, 'PNG', 14, pageHeight - imgHeight - 3, imgWidth, imgHeight);
+        }
+    }
+
+    /**
      * Export master plan data to PDF with multiple sheets/sections
      * @param masterPlanData - Master plan data to export
      * @param fileName - Output file name
      */
     exportToPdf(masterPlanData: MasterPlanData, fileName: string = 'MasterPlan.pdf'): void {
+        Promise.all([
+            this.loadImageAsBase64(`${window.location.origin}/header.png`),
+            this.loadImageAsBase64(`${window.location.origin}/footer.png`)
+        ]).then(([headerImg, footerImg]) => {
+            this._exportToPdf(masterPlanData, fileName, headerImg, footerImg);
+        });
+    }
+
+    private _exportToPdf(masterPlanData: MasterPlanData, fileName: string, headerImg: string, footerImg: string): void {
         const doc = new jsPDF('landscape', 'mm', 'a4');
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
 
+        // Header image
+        let startY = this.addHeader(doc, headerImg);
+
         // Document title
         doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
-        doc.text('MASTER PLAN', pageWidth / 2, 15, { align: 'center' });
+        doc.text('MASTER PLAN', pageWidth / 2, startY, { align: 'center' });
 
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
-        doc.text(`Year: ${masterPlanData.year}`, pageWidth / 2, 22, { align: 'center' });
+        doc.text(`Year: ${masterPlanData.year}`, pageWidth / 2, startY + 7, { align: 'center' });
 
         if (masterPlanData.laboratoryName) {
-            doc.text(`Laboratory: ${masterPlanData.laboratoryName}`, pageWidth / 2, 28, { align: 'center' });
+            doc.text(`Laboratory: ${masterPlanData.laboratoryName}`, pageWidth / 2, startY + 13, { align: 'center' });
         }
 
-        let startY = 35;
+        startY = startY + 20;
 
         // Process each sheet/laboratory
         masterPlanData.sheets.forEach((sheet, sheetIndex) => {
@@ -131,15 +190,21 @@ export class MasterPlanPdfService {
                         11: { cellWidth: 16, halign: 'center' },
                         12: { cellWidth: 16, halign: 'center' }
                     },
-                    margin: { left: 14, right: 14 },
+                    margin: { left: 14, right: 14, bottom: 30 },
                     alternateRowStyles: {
                         fillColor: [245, 245, 245] // Light gray for alternate rows
                     },
                     didDrawPage: (data) => {
-                        // Footer with page numbers
+                        // Header image on subsequent pages
+                        if (data.pageNumber > 1) {
+                            this.addHeader(doc, headerImg);
+                        }
+                        // Footer image
+                        this.addFooter(doc, footerImg);
+                        // Page number
                         doc.setFontSize(8);
                         doc.setFont('helvetica', 'normal');
-                        doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                        doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, pageWidth / 2, pageHeight - 22, { align: 'center' });
                     }
                 });
 
@@ -160,19 +225,31 @@ export class MasterPlanPdfService {
      * @param showSchedule - Whether to include maintenance schedule
      */
     exportEquipmentListToPdf(equipmentList: any[], laboratoryName: string, year: string, showSchedule: boolean = false): void {
+        Promise.all([
+            this.loadImageAsBase64(`${window.location.origin}/header.png`),
+            this.loadImageAsBase64(`${window.location.origin}/footer.png`)
+        ]).then(([headerImg, footerImg]) => {
+            this._exportEquipmentListToPdf(equipmentList, laboratoryName, year, showSchedule, headerImg, footerImg);
+        });
+    }
+
+    private _exportEquipmentListToPdf(equipmentList: any[], laboratoryName: string, year: string, showSchedule: boolean, headerImg: string, footerImg: string): void {
         const doc = new jsPDF('landscape', 'mm', 'a4');
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
 
+        // Header image
+        let startY = this.addHeader(doc, headerImg);
+
         // Document title
         doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
-        doc.text('MASTER PLAN - EQUIPMENT REPORT', pageWidth / 2, 15, { align: 'center' });
+        doc.text('MASTER PLAN - EQUIPMENT REPORT', pageWidth / 2, startY, { align: 'center' });
 
         doc.setFontSize(11);
         doc.setFont('helvetica', 'normal');
-        doc.text(`Laboratory: ${laboratoryName}`, pageWidth / 2, 22, { align: 'center' });
-        doc.text(`Year: ${year}`, pageWidth / 2, 27, { align: 'center' });
+        doc.text(`Laboratory: ${laboratoryName}`, pageWidth / 2, startY + 7, { align: 'center' });
+        doc.text(`Year: ${year}`, pageWidth / 2, startY + 12, { align: 'center' });
 
         // Prepare headers based on showSchedule
         const headers = showSchedule
@@ -205,7 +282,7 @@ export class MasterPlanPdfService {
         autoTable(doc, {
             head: headers,
             body: tableData,
-            startY: 32,
+            startY: startY + 17,
             theme: 'grid',
             headStyles: {
                 fillColor: [68, 114, 196], // Blue to match master plan
@@ -247,16 +324,22 @@ export class MasterPlanPdfService {
                       7: { cellWidth: 18, halign: 'center' },
                       8: { cellWidth: 18, halign: 'center' }
                   },
-            margin: { left: 10, right: 10 },
+            margin: { left: 10, right: 10, bottom: 30 },
             alternateRowStyles: {
                 fillColor: [245, 245, 245] // Light gray for alternate rows
             },
             didDrawPage: (data) => {
-                // Footer
+                // Header image on subsequent pages
+                if (data.pageNumber > 1) {
+                    this.addHeader(doc, headerImg);
+                }
+                // Footer image
+                this.addFooter(doc, footerImg);
+                // Page number
                 doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
                 const pageNumber = doc.getCurrentPageInfo().pageNumber;
-                doc.text(`Page ${pageNumber} | Generated on ${new Date().toLocaleDateString()}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                doc.text(`Page ${pageNumber} | Generated on ${new Date().toLocaleDateString()}`, pageWidth / 2, pageHeight - 22, { align: 'center' });
             }
         });
 
