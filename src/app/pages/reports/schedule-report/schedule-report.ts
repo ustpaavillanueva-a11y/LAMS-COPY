@@ -258,6 +258,71 @@ export class ScheduleReportComponent implements OnInit {
     }
 
     printReport() {
-        window.print();
+        const rows = this.filteredSchedules.map((s) => `
+            <tr>
+                <td>${s.laboratoryName || 'N/A'}</td>
+                <td>${this.formatDay(s.dayOfWeek)}</td>
+                <td>${s.startTime || 'N/A'}</td>
+                <td>${s.endTime || 'N/A'}</td>
+                <td>${s.instructorName || 'N/A'}</td>
+                <td>${s.subjectName || 'N/A'}</td>
+            </tr>
+        `).join('');
+
+        const printContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Lab Schedule Report</title>
+                <style>
+                    @page { size: A4 portrait; margin: 10mm; }
+                    body { font-family: Arial, sans-serif; padding: 15px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+                    th { background-color: #2563eb !important; color: white !important; padding: 8px 6px; text-align: left; font-weight: bold; border: 1px solid #1d4ed8; }
+                    td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+                    tr:nth-child(even) { background-color: #f8fafc !important; }
+                    .header { text-align: center; margin-bottom: 10px; }
+                    .header h2 { margin: 0; font-size: 18px; color: #333; }
+                    .meta-info { display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 10px; }
+                    @media print { body { margin: 0; } .no-print { display: none !important; } table { page-break-inside: auto; } tr { page-break-inside: avoid; } thead { display: table-header-group; } }
+                </style>
+            </head>
+            <body>
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <img src="${window.location.origin}/header.png" style="width: 100%; max-height: 120px; object-fit: contain;" />
+                </div>
+                <div class="header">
+                    <h2>Lab Schedule Report</h2>
+                </div>
+                <div class="meta-info">
+                    <span>Generated: ${new Date().toLocaleString()}</span>
+                    <span>Total Schedules: ${this.filteredSchedules.length}</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Laboratory</th>
+                            <th>Day</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Instructor</th>
+                            <th>Subject</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <div style="text-align: center; margin-top: 20px;">
+                    <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 80px; object-fit: contain;" />
+                </div>
+                <script>window.onload = function() { window.print(); }</script>
+            </body>
+            </html>
+        `;
+
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+        }
     }
 }

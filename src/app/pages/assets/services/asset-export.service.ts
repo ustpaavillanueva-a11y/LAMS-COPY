@@ -245,6 +245,9 @@ export class AssetExportService {
                 <style>${styles}</style>
             </head>
             <body>
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <img src="${window.location.origin}/header.png" style="width: 100%; max-height: 120px; object-fit: contain;" />
+                </div>
                 <div class="header">
                     <h1>Laboratory Assets Management System</h1>
                     <h3>Assets Report - ${campusName}</h3>
@@ -278,6 +281,9 @@ export class AssetExportService {
                 <div class="footer">
                     <span class="total">Total Assets: ${assets.length}</span>
                     <span>LAMS - Laboratory Assets Management System</span>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 80px; object-fit: contain;" />
                 </div>
                 ${pdfInstructions}
             </body>

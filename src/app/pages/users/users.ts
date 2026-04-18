@@ -1146,6 +1146,9 @@ export class UsersComponent implements OnInit {
                 </style>
             </head>
             <body>
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <img src="${window.location.origin}/header.png" style="width: 100%; max-height: 120px; object-fit: contain;" />
+                </div>
                 <div class="header">
                     <h1>User Management</h1>
                     <h3>Users Report - ${campusName}</h3>
@@ -1189,6 +1192,9 @@ export class UsersComponent implements OnInit {
                 <div class="footer">
                     <span class="total">Total Users: ${this.filteredUsers.length}</span>
                     <span>LAMS - User Management</span>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 80px; object-fit: contain;" />
                 </div>
                 <script>
                     window.onload = function() { window.print(); }
@@ -1237,6 +1243,9 @@ export class UsersComponent implements OnInit {
                 </style>
             </head>
             <body>
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <img src="${window.location.origin}/header.png" style="width: 100%; max-height: 120px; object-fit: contain;" />
+                </div>
                 <h1>Users Report</h1>
                 <h3>${campusName}</h3>
                 <div class="print-date">Generated: ${new Date().toLocaleString()}</div>
@@ -1271,6 +1280,9 @@ export class UsersComponent implements OnInit {
                     </tbody>
                 </table>
                 <div class="total">Total Users: ${this.filteredUsers.length}</div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 80px; object-fit: contain;" />
+                </div>
             </body>
             </html>
         `;

@@ -1107,6 +1107,9 @@ export class LabScheduleComponent implements OnInit {
                     <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
                     <button class="btn btn-secondary" onclick="window.close()">✕ Close</button>
                 </div>
+                <div style="text-align: center; margin-bottom: 8px;">
+                    <img src="${window.location.origin}/header.png" style="width: 100%; max-height: 100px; object-fit: contain;" />
+                </div>
                 <div class="header">
                     <h1>${headerTitle}</h1>
                     <p>Generated on: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
@@ -1167,6 +1170,9 @@ export class LabScheduleComponent implements OnInit {
         html += `
                         </tbody>
                     </table>
+                </div>
+                <div style="text-align: center; margin-top: 8px;">
+                    <img src="${window.location.origin}/footer.png" style="width: 100%; max-height: 60px; object-fit: contain;" />
                 </div>
             </body>
             </html>
