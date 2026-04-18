@@ -551,16 +551,22 @@ export class LabScheduleComponent implements OnInit {
 
         this.http.post<any>(subjectsUrl, payload).subscribe({
             next: (response: any) => {
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'success',
-                    title: `Subject "${this.newSubject.subjectName}" created successfully`,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-
                 this.closeSubjectDialog();
                 this.loadSubjects(); // Reload subjects to include the new one
+
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    html: `<span style="font-size: 1.25rem;">Subject created successfully</span>`,
+                    showConfirmButton: false,
+                    timer: 1500,
+                    customClass: { popup: 'swal-on-top' },
+                    backdrop: true,
+                    didOpen: () => {
+                        const container = document.querySelector('.swal2-container') as HTMLElement;
+                        if (container) container.style.zIndex = '9999';
+                    }
+                });
             },
             error: (error: any) => {
                 console.error('❌ Error creating subject:', error);
