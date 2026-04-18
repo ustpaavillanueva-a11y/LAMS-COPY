@@ -1,11 +1,11 @@
 import {
-  ConnectedOverlayScrollHandler,
-  DomHandler
-} from "./chunk-P6SMTJBG.js";
-import {
   ObjectUtils,
   zindexutils
 } from "./chunk-3DNZLJAM.js";
+import {
+  ConnectedOverlayScrollHandler,
+  DomHandler
+} from "./chunk-P6SMTJBG.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -14,13 +14,13 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  Bind
-} from "./chunk-PXYWQ7E3.js";
-import {
   OverlayService,
   PrimeTemplate,
   SharedModule
 } from "./chunk-6D2SAAIV.js";
+import {
+  Bind
+} from "./chunk-PXYWQ7E3.js";
 import {
   P,
   W,
@@ -1080,4 +1080,4 @@ var OverlayModule = class _OverlayModule {
 export {
   Overlay
 };
-//# sourceMappingURL=chunk-QOK6PSIQ.js.map
+//# sourceMappingURL=chunk-JST2WI76.js.map

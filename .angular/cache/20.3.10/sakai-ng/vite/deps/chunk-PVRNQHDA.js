@@ -19,20 +19,20 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  Bind,
-  BindModule
-} from "./chunk-PXYWQ7E3.js";
-import {
   PrimeTemplate,
   SharedModule
 } from "./chunk-6D2SAAIV.js";
 import {
-  NG_VALUE_ACCESSOR,
-  NgControl
-} from "./chunk-SJUOZCFA.js";
+  Bind,
+  BindModule
+} from "./chunk-PXYWQ7E3.js";
 import {
   Mt
 } from "./chunk-U4LT4ZJN.js";
+import {
+  NG_VALUE_ACCESSOR,
+  NgControl
+} from "./chunk-SJUOZCFA.js";
 import {
   CommonModule,
   NgClass,
@@ -2154,4 +2154,4 @@ export {
   InputNumber,
   InputNumberModule
 };
-//# sourceMappingURL=chunk-H7ACBIXA.js.map
+//# sourceMappingURL=chunk-PVRNQHDA.js.map

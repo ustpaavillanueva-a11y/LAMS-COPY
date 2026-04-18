@@ -13,15 +13,12 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  Bind,
-  BindModule
-} from "./chunk-PXYWQ7E3.js";
-import {
   SharedModule
 } from "./chunk-6D2SAAIV.js";
 import {
-  NG_VALUE_ACCESSOR
-} from "./chunk-SJUOZCFA.js";
+  Bind,
+  BindModule
+} from "./chunk-PXYWQ7E3.js";
 import "./chunk-OTTARZB5.js";
 import {
   $,
@@ -30,6 +27,9 @@ import {
   W,
   k2 as k
 } from "./chunk-U4LT4ZJN.js";
+import {
+  NG_VALUE_ACCESSOR
+} from "./chunk-SJUOZCFA.js";
 import {
   CommonModule,
   NgIf,

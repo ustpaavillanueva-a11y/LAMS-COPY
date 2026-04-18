@@ -9,13 +9,13 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  Bind
-} from "./chunk-PXYWQ7E3.js";
-import {
   PrimeTemplate,
   SharedModule,
   TranslationKeys
 } from "./chunk-6D2SAAIV.js";
+import {
+  Bind
+} from "./chunk-PXYWQ7E3.js";
 import {
   CommonModule,
   NgClass,
@@ -636,4 +636,4 @@ export {
   Chip,
   ChipModule
 };
-//# sourceMappingURL=chunk-7JDORBO3.js.map
+//# sourceMappingURL=chunk-VICELNQI.js.map
