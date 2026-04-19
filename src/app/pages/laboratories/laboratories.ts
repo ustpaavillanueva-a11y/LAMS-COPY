@@ -21,6 +21,8 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 @Component({
     selector: 'app-laboratories',
@@ -225,6 +227,9 @@ import Swal from 'sweetalert2';
                     <div>
                         <p-button label="Generate" icon="pi pi-refresh" (onClick)="generateReport()" severity="info" />
                     </div>
+                    <div *ngIf="reportWeekData.length > 0">
+                        <p-button label="Download Excel" icon="pi pi-download" (onClick)="downloadExcelReport()" severity="success" />
+                    </div>
                 </div>
 
                 <!-- Excel-like Utilization Table -->
@@ -247,17 +252,20 @@ import Swal from 'sweetalert2';
                                     <td class="border border-gray-300 px-2 py-1 text-center text-xs font-medium bg-gray-100">Available Hrs</td>
                                     <td class="border border-gray-300 px-2 py-1 text-center" *ngFor="let hrs of lab.availableHours">{{ hrs }}</td>
                                     <td class="border border-gray-300 px-2 py-1 text-center font-bold">{{ lab.totalAvailable }}</td>
-                                    <td class="border border-gray-300 px-2 py-1 text-center font-bold text-lg" [attr.rowspan]="2"
-                                        [ngClass]="{ 'text-red-500': lab.utilization < 50, 'text-yellow-600': lab.utilization >= 50 && lab.utilization < 75, 'text-green-600': lab.utilization >= 75 }">
+                                    <td class="border border-gray-300 px-2 py-1 text-center font-bold text-lg text-black" [attr.rowspan]="2">
                                         {{ lab.totalAvailable > 0 ? (lab.utilization | number:'1.2-2') : '0.00' }}%
                                     </td>
                                 </tr>
                                 <!-- Actual Hours Row -->
                                 <tr [ngClass]="{ 'bg-blue-50': i % 2 === 0, 'bg-white': i % 2 !== 0 }">
                                     <td class="border border-gray-300 px-2 py-1 text-center text-xs font-medium bg-gray-100">Actual Hrs</td>
-                                    <td class="border border-gray-300 px-2 py-1 text-center" *ngFor="let hrs of lab.actualHours"
-                                        [ngClass]="{ 'text-green-600 font-semibold': hrs > 0 }">{{ hrs }}</td>
-                                    <td class="border border-gray-300 px-2 py-1 text-center font-bold" [ngClass]="{ 'text-green-600': lab.totalActual > 0 }">{{ lab.totalActual }}</td>
+                                    <td class="border border-gray-300 px-1 py-0 text-center" *ngFor="let hrs of lab.actualHours; let j = index">
+                                        <input type="number" [value]="hrs" min="0" [max]="lab.availableHours[j]"
+                                            class="w-full text-center border-0 bg-transparent outline-none py-1 text-sm text-black"
+                                            style="appearance: textfield; -moz-appearance: textfield; -webkit-appearance: none;"
+                                            (change)="onActualHoursChange(i, j, $event)" />
+                                    </td>
+                                    <td class="border border-gray-300 px-2 py-1 text-center font-bold text-black">{{ lab.totalActual }}</td>
                                 </tr>
                             </ng-container>
                         </tbody>
@@ -587,6 +595,216 @@ export class LaboratoriesComponent implements OnInit {
         });
 
         this.cdr.detectChanges();
+    }
+
+    onActualHoursChange(labIndex: number, dayIndex: number, event: Event) {
+        const input = event.target as HTMLInputElement;
+        let value = parseFloat(input.value) || 0;
+        const maxHrs = this.reportWeekData[labIndex].availableHours[dayIndex];
+        if (value < 0) value = 0;
+        if (value > maxHrs) value = maxHrs;
+        input.value = value.toString();
+
+        const lab = this.reportWeekData[labIndex];
+        lab.actualHours[dayIndex] = value;
+        lab.totalActual = lab.actualHours.reduce((a: number, b: number) => a + b, 0);
+        lab.utilization = lab.totalAvailable > 0 ? (lab.totalActual / lab.totalAvailable) * 100 : 0;
+        this.cdr.detectChanges();
+    }
+
+    async downloadExcelReport() {
+        if (!this.reportWeekData.length || !this.reportFilters.week) return;
+
+        const wb = new ExcelJS.Workbook();
+        const ws = wb.addWorksheet('Utilization Report');
+
+        const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+        const month = this.reportFilters.month;
+        const year = month.getFullYear();
+        const mon = month.getMonth();
+        const { start, end } = this.reportFilters.week;
+        const numDays = this.weekDayHeaders.length;
+
+        // Column widths: Lab name, Type, Mon-Sat..., Total, % Utilization
+        const totalCols = numDays + 4; // lab + type + days + total + %util
+        ws.columns = [
+            { width: 25 }, // A: Laboratory
+            { width: 16 }, // B: Available/Actual
+            ...this.weekDayHeaders.map(() => ({ width: 10 })), // C-H: days
+            { width: 10 }, // Total
+            { width: 15 }, // % Utilization
+        ];
+
+        const lastCol = totalCols;
+        const thinBorder: Partial<ExcelJS.Borders> = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
+        const headerFill: ExcelJS.FillPattern = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD6DCE4' } };
+        const boldCenter: Partial<ExcelJS.Alignment> = { horizontal: 'center', vertical: 'middle' };
+
+        // --- HEADER ---
+        // Try to load header image
+        try {
+            const response = await fetch(this.headerImgUrl);
+            if (response.ok) {
+                const blob = await response.blob();
+                const buffer = await blob.arrayBuffer();
+                const imgId = wb.addImage({ buffer, extension: 'png' });
+                ws.mergeCells(1, 1, 3, lastCol);
+                ws.addImage(imgId, {
+                    tl: { col: 0, row: 0 },
+                    ext: { width: 750, height: 80 }
+                });
+            }
+        } catch (e) {}
+
+        // Row 4: LABORATORY MANAGEMENT OFFICE
+        let row = 4;
+        ws.mergeCells(row, 1, row, lastCol);
+        const lmoCell = ws.getCell(row, 1);
+        lmoCell.value = 'LABORATORY MANAGEMENT OFFICE';
+        lmoCell.font = { bold: true, size: 11 };
+        lmoCell.alignment = { horizontal: 'center' };
+
+        // Row 5: LABORATORY UTILIZATION REPORT
+        row = 5;
+        ws.mergeCells(row, 1, row, lastCol);
+        const titleCell = ws.getCell(row, 1);
+        titleCell.value = 'LABORATORY UTILIZATION REPORT';
+        titleCell.font = { bold: true, size: 12 };
+        titleCell.alignment = { horizontal: 'center' };
+
+        // Row 7: Month
+        row = 7;
+        ws.getCell(row, 1).value = 'Month:';
+        ws.getCell(row, 1).font = { bold: true };
+        ws.getCell(row, 2).value = `${monthNames[mon]} ${year}`;
+
+        // Row 8: Inclusive dates
+        row = 8;
+        ws.getCell(row, 1).value = 'Inclusive dates:';
+        ws.getCell(row, 1).font = { bold: true };
+        ws.getCell(row, 2).value = `${start}-${end}`;
+
+        // Row 9: Table header - day names
+        row = 9;
+        const headerRow = ws.getRow(row);
+        headerRow.height = 20;
+        // Columns: A=Lab, B=Type, C..=Days, Total, %Util
+        const headers = ['', '', ...this.weekDayHeaders, 'Total', '% UTILIZATION'];
+        headers.forEach((h, idx) => {
+            const cell = ws.getCell(row, idx + 1);
+            cell.value = h;
+            cell.font = { bold: true, size: 10 };
+            cell.alignment = boldCenter;
+            cell.fill = headerFill;
+            cell.border = thinBorder;
+        });
+
+        // Data rows
+        row = 10;
+        this.reportWeekData.forEach((lab) => {
+            // Available Hours row
+            const availRow = row;
+            ws.getCell(availRow, 1).value = lab.laboratoryName;
+            ws.getCell(availRow, 1).font = { bold: true, size: 10 };
+            ws.getCell(availRow, 1).alignment = { vertical: 'middle' };
+            ws.mergeCells(availRow, 1, availRow + 1, 1); // merge lab name across 2 rows
+            ws.getCell(availRow, 2).value = 'Available Hours';
+            ws.getCell(availRow, 2).font = { italic: true, size: 9 };
+            ws.getCell(availRow, 2).alignment = boldCenter;
+            lab.availableHours.forEach((hrs: number, di: number) => {
+                const cell = ws.getCell(availRow, 3 + di);
+                cell.value = hrs || '';
+                cell.alignment = boldCenter;
+            });
+            ws.getCell(availRow, 3 + numDays).value = lab.totalAvailable || '';
+            ws.getCell(availRow, 3 + numDays).font = { bold: true };
+            ws.getCell(availRow, 3 + numDays).alignment = boldCenter;
+
+            // % Utilization (merged across 2 rows)
+            const utilCol = 3 + numDays + 1;
+            ws.mergeCells(availRow, utilCol, availRow + 1, utilCol);
+            const utilCell = ws.getCell(availRow, utilCol);
+            utilCell.value = lab.totalAvailable > 0 ? parseFloat(lab.utilization.toFixed(2)) + '%' : '0.00%';
+            utilCell.font = { bold: true, size: 11 };
+            utilCell.alignment = boldCenter;
+
+            // Actual Hours row
+            const actualRow = availRow + 1;
+            ws.getCell(actualRow, 2).value = 'Actual Hours';
+            ws.getCell(actualRow, 2).font = { italic: true, size: 9 };
+            ws.getCell(actualRow, 2).alignment = boldCenter;
+            lab.actualHours.forEach((hrs: number, di: number) => {
+                const cell = ws.getCell(actualRow, 3 + di);
+                cell.value = hrs || '';
+                cell.alignment = boldCenter;
+            });
+            ws.getCell(actualRow, 3 + numDays).value = lab.totalActual || '';
+            ws.getCell(actualRow, 3 + numDays).font = { bold: true };
+            ws.getCell(actualRow, 3 + numDays).alignment = boldCenter;
+
+            // Borders for all cells in these 2 rows
+            for (let r = availRow; r <= actualRow; r++) {
+                for (let c = 1; c <= lastCol; c++) {
+                    ws.getCell(r, c).border = thinBorder;
+                }
+            }
+
+            row += 2;
+        });
+
+        // Blank row
+        row += 1;
+
+        // --- SIGNATORIES ---
+        const sigRow = row + 1;
+        ws.getCell(sigRow, 1).value = 'Prepared by:';
+        ws.getCell(sigRow, 1).font = { bold: false, size: 10 };
+        const notedCol = Math.ceil(lastCol / 2);
+        ws.getCell(sigRow, notedCol).value = 'Noted by:';
+        ws.getCell(sigRow, notedCol).font = { bold: false, size: 10 };
+        const headCol = lastCol - 1;
+        ws.getCell(sigRow, headCol).value = '';
+
+        const nameRow = sigRow + 3;
+        ws.getCell(nameRow, 1).value = '_________________________';
+        ws.getCell(nameRow, 1).font = { bold: true, size: 10 };
+        ws.getCell(nameRow + 1, 1).value = 'Laboratory Technician';
+        ws.getCell(nameRow + 1, 1).font = { size: 9 };
+
+        ws.getCell(nameRow, notedCol).value = '_________________________';
+        ws.getCell(nameRow, notedCol).font = { bold: true, size: 10 };
+        ws.getCell(nameRow + 1, notedCol).value = 'LMO - Coordinator';
+        ws.getCell(nameRow + 1, notedCol).font = { size: 9 };
+
+        ws.getCell(nameRow, headCol).value = '_________________________';
+        ws.getCell(nameRow, headCol).font = { bold: true, size: 10 };
+        ws.getCell(nameRow + 1, headCol).value = 'Head, Academic Head';
+        ws.getCell(nameRow + 1, headCol).font = { size: 9 };
+
+        // --- NOTES ---
+        const noteRow = nameRow + 4;
+        const notes = [
+            '*Available hours - potential student clock hours',
+            '*Actual hours - based on actual number of hours the laboratory is utilized',
+            '*% utilization = actual hours / available hours',
+            '*Cut-off is per month'
+        ];
+        notes.forEach((note, idx) => {
+            ws.mergeCells(noteRow + idx, 1, noteRow + idx, lastCol);
+            const cell = ws.getCell(noteRow + idx, 1);
+            cell.value = note;
+            cell.font = { italic: true, size: 9 };
+        });
+
+        // Generate and download
+        const buffer = await wb.xlsx.writeBuffer();
+        const fileName = `Laboratory_Utilization_Report_${monthNames[mon]}_${year}_${start}-${end}.xlsx`;
+        saveAs(new Blob([buffer]), fileName);
     }
 
     exportCSV() {
