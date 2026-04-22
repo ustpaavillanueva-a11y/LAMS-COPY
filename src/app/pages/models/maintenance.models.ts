@@ -5,14 +5,20 @@
 
 // ==================== ENUMS ====================
 
+/**
+ * Maintenance Status Enum
+ * Note: APPROVED is a legacy status name. In the new workflow, it's called SCHEDULED.
+ * Both are kept for backward compatibility with existing records.
+ */
 export enum MaintenanceStatus {
     PENDING = 'Pending',
-    SCHEDULED = 'Scheduled',
-    APPROVED = 'Approved',
+    SCHEDULED = 'Scheduled', // New workflow: Admin assigns technician and sets schedule
+    APPROVED = 'Approved', // Legacy status (same as Scheduled in new workflow)
     IN_PROGRESS = 'In Progress',
     ON_HOLD = 'On Hold',
     COMPLETED = 'Completed',
-    DISAPPROVED = 'Disapproved'
+    DISAPPROVED = 'Disapproved',
+    CANCELLED = 'Cancelled'
 }
 
 // ==================== CORE ENTITIES ====================
@@ -35,6 +41,7 @@ export interface MaintenanceApproval {
     expectedReading?: string;
     actualReading?: string;
     onHoldReason?: string;
+    cancelReason?: string;
 
     // Timestamps
     approvedAt?: Date | string;
@@ -45,6 +52,7 @@ export interface MaintenanceApproval {
     onHoldAt?: Date | string;
     resumedAt?: Date | string;
     completedAt?: Date | string;
+    cancelledAt?: Date | string;
     updatedAt?: Date | string;
 }
 
@@ -153,6 +161,10 @@ export interface DeclineMaintenancePayload {
     reason: string; // Required
 }
 
+export interface CancelMaintenancePayload {
+    reason: string; // Required
+}
+
 // ==================== TIMELINE & HISTORY ====================
 
 export interface MaintenanceTimelineEvent {
@@ -173,7 +185,8 @@ export enum TimelineEventType {
     HELD = 'held',
     RESUMED = 'resumed',
     COMPLETED = 'completed',
-    DECLINED = 'declined'
+    DECLINED = 'declined',
+    CANCELLED = 'cancelled'
 }
 
 export interface MaintenanceTimeline {
@@ -202,6 +215,7 @@ export enum MaintenanceAction {
     HOLD = 'hold',
     RESUME = 'resume',
     COMPLETE = 'complete',
+    CANCEL = 'cancel',
     VIEW = 'view',
     DELETE = 'delete',
     ASSIGN_TECHNICIAN = 'assign_technician'
@@ -246,5 +260,6 @@ export interface MaintenanceSummary {
     inProgressCount: number;
     onHoldCount: number;
     completedCount: number;
+    cancelledCount: number;
     overdueCount: number;
 }

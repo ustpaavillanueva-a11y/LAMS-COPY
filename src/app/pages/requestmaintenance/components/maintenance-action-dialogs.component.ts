@@ -12,7 +12,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CalendarModule } from 'primeng/calendar';
 import { SelectModule } from 'primeng/select';
-import { MaintenanceApproval, ConfirmSchedulePayload, StartMaintenancePayload, HoldMaintenancePayload, ResumeMaintenancePayload, CompleteMaintenancePayload } from '../../models/maintenance.models';
+import { MaintenanceApproval, ConfirmSchedulePayload, StartMaintenancePayload, HoldMaintenancePayload, ResumeMaintenancePayload, CompleteMaintenancePayload, CancelMaintenancePayload } from '../../models/maintenance.models';
 
 @Component({
     selector: 'app-maintenance-action-dialogs',
@@ -162,6 +162,38 @@ import { MaintenanceApproval, ConfirmSchedulePayload, StartMaintenancePayload, H
                 </div>
             </form>
         </p-dialog>
+
+        <!-- Cancel Maintenance Dialog -->
+        <p-dialog [(visible)]="cancelMaintenanceVisible" header="Cancel Maintenance" [modal]="true" [closable]="true" [style]="{ width: '500px' }" (onHide)="onCancelMaintenanceCancel()">
+            <form [formGroup]="cancelMaintenanceForm" (ngSubmit)="onCancelMaintenanceSubmit()">
+                <div class="mb-4">
+                    <p class="mb-2 text-gray-700">
+                        Cancel maintenance for: <strong>{{ selectedApproval?.maintenanceRequest?.asset?.assetName }}</strong>
+                    </p>
+                    <p class="text-sm text-orange-600">⚠️ This action cannot be undone. The maintenance will be marked as cancelled.</p>
+                    <p class="text-sm text-green-600" *ngIf="isInProgress()">✓ The asset status will be restored to "Serviceable" when you cancel this maintenance.</p>
+                </div>
+
+                <div class="mb-4">
+                    <label for="cancelReason" class="block mb-2">Reason for Cancellation <span class="text-red-500">*</span></label>
+                    <textarea
+                        id="cancelReason"
+                        formControlName="reason"
+                        pInputTextarea
+                        rows="4"
+                        class="w-full"
+                        placeholder="Explain why the maintenance is being cancelled (e.g., issue resolved, equipment no longer needed)..."
+                        [class.p-invalid]="cancelMaintenanceForm.get('reason')?.invalid && cancelMaintenanceForm.get('reason')?.touched"
+                    ></textarea>
+                    <small class="text-red-500" *ngIf="cancelMaintenanceForm.get('reason')?.invalid && cancelMaintenanceForm.get('reason')?.touched"> Reason is required when cancelling maintenance. </small>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <p-button label="Cancel" severity="secondary" type="button" (onClick)="onCancelMaintenanceCancel()" />
+                    <p-button label="Confirm Cancellation" icon="pi pi-ban" severity="danger" type="submit" [loading]="submitting" [disabled]="cancelMaintenanceForm.invalid" />
+                </div>
+            </form>
+        </p-dialog>
     `,
     styles: [``]
 })
@@ -173,24 +205,28 @@ export class MaintenanceActionDialogsComponent {
     @Input() holdMaintenanceVisible: boolean = false;
     @Input() resumeMaintenanceVisible: boolean = false;
     @Input() completeMaintenanceVisible: boolean = false;
+    @Input() cancelMaintenanceVisible: boolean = false;
 
     @Output() confirmScheduleVisibleChange = new EventEmitter<boolean>();
     @Output() startMaintenanceVisibleChange = new EventEmitter<boolean>();
     @Output() holdMaintenanceVisibleChange = new EventEmitter<boolean>();
     @Output() resumeMaintenanceVisibleChange = new EventEmitter<boolean>();
     @Output() completeMaintenanceVisibleChange = new EventEmitter<boolean>();
+    @Output() cancelMaintenanceVisibleChange = new EventEmitter<boolean>();
 
     @Output() confirmSchedule = new EventEmitter<ConfirmSchedulePayload>();
     @Output() startMaintenance = new EventEmitter<StartMaintenancePayload>();
     @Output() holdMaintenance = new EventEmitter<HoldMaintenancePayload>();
     @Output() resumeMaintenance = new EventEmitter<ResumeMaintenancePayload>();
     @Output() completeMaintenance = new EventEmitter<CompleteMaintenancePayload>();
+    @Output() cancelMaintenance = new EventEmitter<CancelMaintenancePayload>();
 
     confirmScheduleForm: FormGroup;
     startMaintenanceForm: FormGroup;
     holdMaintenanceForm: FormGroup;
     resumeMaintenanceForm: FormGroup;
     completeMaintenanceForm: FormGroup;
+    cancelMaintenanceForm: FormGroup;
 
     submitting: boolean = false;
 
@@ -216,6 +252,10 @@ export class MaintenanceActionDialogsComponent {
             observations: [''],
             expectedReading: [''],
             actualReading: ['']
+        });
+
+        this.cancelMaintenanceForm = this.fb.group({
+            reason: ['', Validators.required]
         });
     }
 
@@ -312,5 +352,29 @@ export class MaintenanceActionDialogsComponent {
         this.completeMaintenanceVisible = false;
         this.completeMaintenanceVisibleChange.emit(false);
         this.completeMaintenanceForm.reset();
+    }
+
+    // ==================== CANCEL MAINTENANCE ====================
+
+    onCancelMaintenanceSubmit(): void {
+        if (this.cancelMaintenanceForm.valid) {
+            this.cancelMaintenance.emit(this.cancelMaintenanceForm.value);
+            this.resetCancelMaintenanceDialog();
+        }
+    }
+
+    onCancelMaintenanceCancel(): void {
+        this.resetCancelMaintenanceDialog();
+    }
+
+    private resetCancelMaintenanceDialog(): void {
+        this.cancelMaintenanceVisible = false;
+        this.cancelMaintenanceVisibleChange.emit(false);
+        this.cancelMaintenanceForm.reset();
+    }
+
+    isInProgress(): boolean {
+        const status = this.selectedApproval?.maintenanceRequest?.maintenanceStatus?.requestStatusName;
+        return status === 'In Progress';
     }
 }

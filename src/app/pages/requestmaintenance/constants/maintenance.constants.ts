@@ -34,7 +34,8 @@ export class MaintenanceConstants {
         if (statusLower.includes('hold')) return 'danger';
         if (statusLower.includes('overdue')) return 'danger';
 
-        // Declined/Rejected states
+        // Declined/Rejected/Cancelled states
+        if (statusLower.includes('cancelled')) return 'danger';
         if (statusLower.includes('disapproved')) return 'secondary';
         if (statusLower.includes('declined')) return 'secondary';
         if (statusLower.includes('rejected')) return 'secondary';
@@ -46,6 +47,17 @@ export class MaintenanceConstants {
 
     /**
      * Defines allowed status transitions for validation
+     *
+     * NEW WORKFLOW (aligned with API documentation):
+     * Pending → Scheduled (when admin assigns technician and sets schedule)
+     * Scheduled → In Progress (when lab tech starts work on scheduled day)
+     * In Progress → On Hold (when work needs to pause)
+     * On Hold → In Progress (when work resumes)
+     * In Progress → Completed (when work is finished)
+     * Scheduled/In Progress/On Hold → Cancelled (when maintenance is cancelled)
+     *
+     * Note: APPROVED status is kept for backward compatibility (legacy records).
+     * In the new workflow, "Approved" has been renamed to "Scheduled".
      */
     static readonly STATUS_TRANSITIONS: StatusTransition[] = [
         {
@@ -54,19 +66,20 @@ export class MaintenanceConstants {
         },
         {
             from: MaintenanceStatus.SCHEDULED,
-            to: [MaintenanceStatus.APPROVED, MaintenanceStatus.IN_PROGRESS, MaintenanceStatus.DISAPPROVED]
+            to: [MaintenanceStatus.APPROVED, MaintenanceStatus.IN_PROGRESS, MaintenanceStatus.DISAPPROVED, MaintenanceStatus.CANCELLED]
         },
         {
+            // Legacy status - treat same as SCHEDULED
             from: MaintenanceStatus.APPROVED,
-            to: [MaintenanceStatus.IN_PROGRESS, MaintenanceStatus.DISAPPROVED]
+            to: [MaintenanceStatus.IN_PROGRESS, MaintenanceStatus.DISAPPROVED, MaintenanceStatus.CANCELLED]
         },
         {
             from: MaintenanceStatus.IN_PROGRESS,
-            to: [MaintenanceStatus.ON_HOLD, MaintenanceStatus.COMPLETED]
+            to: [MaintenanceStatus.ON_HOLD, MaintenanceStatus.COMPLETED, MaintenanceStatus.CANCELLED]
         },
         {
             from: MaintenanceStatus.ON_HOLD,
-            to: [MaintenanceStatus.IN_PROGRESS]
+            to: [MaintenanceStatus.IN_PROGRESS, MaintenanceStatus.CANCELLED]
         },
         {
             from: MaintenanceStatus.COMPLETED,
@@ -74,6 +87,10 @@ export class MaintenanceConstants {
         },
         {
             from: MaintenanceStatus.DISAPPROVED,
+            to: [] // Terminal state
+        },
+        {
+            from: MaintenanceStatus.CANCELLED,
             to: [] // Terminal state
         }
     ];
@@ -110,6 +127,7 @@ export class MaintenanceConstants {
                 MaintenanceAction.HOLD,
                 MaintenanceAction.RESUME,
                 MaintenanceAction.COMPLETE,
+                MaintenanceAction.CANCEL,
                 MaintenanceAction.VIEW,
                 MaintenanceAction.DELETE,
                 MaintenanceAction.ASSIGN_TECHNICIAN
@@ -125,6 +143,7 @@ export class MaintenanceConstants {
                 MaintenanceAction.HOLD,
                 MaintenanceAction.RESUME,
                 MaintenanceAction.COMPLETE,
+                MaintenanceAction.CANCEL,
                 MaintenanceAction.VIEW,
                 MaintenanceAction.DELETE,
                 MaintenanceAction.ASSIGN_TECHNICIAN
@@ -132,7 +151,17 @@ export class MaintenanceConstants {
         },
         {
             role: UserRole.LAB_TECH,
-            allowedActions: [MaintenanceAction.APPROVE, MaintenanceAction.DECLINE, MaintenanceAction.CONFIRM_SCHEDULE, MaintenanceAction.START, MaintenanceAction.HOLD, MaintenanceAction.RESUME, MaintenanceAction.COMPLETE, MaintenanceAction.VIEW]
+            allowedActions: [
+                MaintenanceAction.APPROVE,
+                MaintenanceAction.DECLINE,
+                MaintenanceAction.CONFIRM_SCHEDULE,
+                MaintenanceAction.START,
+                MaintenanceAction.HOLD,
+                MaintenanceAction.RESUME,
+                MaintenanceAction.COMPLETE,
+                MaintenanceAction.CANCEL,
+                MaintenanceAction.VIEW
+            ]
         },
         {
             role: UserRole.FACULTY,
@@ -182,6 +211,9 @@ export class MaintenanceConstants {
                 if (this.canPerformAction(role, MaintenanceAction.DECLINE) && role !== UserRole.LAB_TECH) {
                     actions.push(MaintenanceAction.DECLINE);
                 }
+                if (this.canPerformAction(role, MaintenanceAction.CANCEL)) {
+                    actions.push(MaintenanceAction.CANCEL);
+                }
                 break;
 
             case MaintenanceStatus.APPROVED:
@@ -200,15 +232,27 @@ export class MaintenanceConstants {
                 if (this.canPerformAction(role, MaintenanceAction.COMPLETE) && (isAssigned || role !== UserRole.LAB_TECH)) {
                     actions.push(MaintenanceAction.COMPLETE);
                 }
+                if (this.canPerformAction(role, MaintenanceAction.CANCEL)) {
+                    actions.push(MaintenanceAction.CANCEL);
+                }
                 break;
 
             case MaintenanceStatus.ON_HOLD:
                 if (this.canPerformAction(role, MaintenanceAction.RESUME) && (isAssigned || role !== UserRole.LAB_TECH)) {
                     actions.push(MaintenanceAction.RESUME);
                 }
+                if (this.canPerformAction(role, MaintenanceAction.CANCEL)) {
+                    actions.push(MaintenanceAction.CANCEL);
+                }
                 break;
 
             case MaintenanceStatus.COMPLETED:
+                if (this.canPerformAction(role, MaintenanceAction.DELETE) && role !== UserRole.LAB_TECH) {
+                    actions.push(MaintenanceAction.DELETE);
+                }
+                break;
+
+            case MaintenanceStatus.CANCELLED:
                 if (this.canPerformAction(role, MaintenanceAction.DELETE) && role !== UserRole.LAB_TECH) {
                     actions.push(MaintenanceAction.DELETE);
                 }
@@ -275,6 +319,12 @@ export class MaintenanceConstants {
                 icon: 'pi pi-check-circle',
                 severity: 'success' as const,
                 tooltip: 'Complete maintenance work'
+            },
+            [MaintenanceAction.CANCEL]: {
+                label: 'Cancel',
+                icon: 'pi pi-ban',
+                severity: 'danger' as const,
+                tooltip: 'Cancel maintenance'
             },
             [MaintenanceAction.VIEW]: {
                 label: 'View',

@@ -91,6 +91,17 @@ export class MaintenanceUtils {
             });
         }
 
+        // Cancelled event
+        if ((approval as any).cancelledAt) {
+            events.push({
+                status: MaintenanceStatus.CANCELLED,
+                timestamp: (approval as any).cancelledAt,
+                reason: (approval as any).cancelReason,
+                eventType: TimelineEventType.CANCELLED,
+                notes: 'Maintenance cancelled'
+            });
+        }
+
         // Sort events chronologically (oldest first)
         events.sort((a, b) => {
             const dateA = new Date(a.timestamp).getTime();
@@ -281,6 +292,7 @@ export class MaintenanceUtils {
             inProgressCount: this.filterByStatus(approvals, MaintenanceStatus.IN_PROGRESS).length,
             onHoldCount: this.filterByStatus(approvals, MaintenanceStatus.ON_HOLD).length,
             completedCount: this.filterByStatus(approvals, MaintenanceStatus.COMPLETED).length,
+            cancelledCount: this.filterByStatus(approvals, MaintenanceStatus.CANCELLED).length,
             overdueCount: this.getOverdueApprovals(approvals).length
         };
     }

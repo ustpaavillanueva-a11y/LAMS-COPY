@@ -28,6 +28,7 @@ export class MaintenanceStateService {
         inProgressCount: 0,
         onHoldCount: 0,
         completedCount: 0,
+        cancelledCount: 0,
         overdueCount: 0
     });
 
@@ -279,6 +280,17 @@ export class MaintenanceStateService {
         }
     ): Observable<any> {
         return this.maintenanceService.completeMaintenance(id, data).pipe(
+            tap(() => {
+                this.loadApprovals();
+            })
+        );
+    }
+
+    /**
+     * Cancel maintenance
+     */
+    cancelMaintenance(id: string, reason: string): Observable<any> {
+        return this.maintenanceService.cancelMaintenance(id, { reason }).pipe(
             tap(() => {
                 this.loadApprovals();
             })

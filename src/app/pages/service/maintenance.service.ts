@@ -246,6 +246,17 @@ export class MaintenanceService {
     }
 
     /**
+     * Cancel Maintenance - Lab tech cancels the maintenance for any reason
+     * Status transition: Scheduled/In Progress/On Hold → Cancelled
+     * Side effect: If maintenance was in progress, asset status changes back to "Serviceable"
+     * Reason is required
+     */
+    cancelMaintenance(id: string, data: { reason: string }): Observable<any> {
+        const url = `${this.baseApiUrl}/maintenance-approvals/${id}/cancel`;
+        return this.http.post<any>(url, data);
+    }
+
+    /**
      * Count Overdue Maintenance - Get count of maintenance items over 24 hours overdue
      * Used for Lab Tech dashboard metrics
      */

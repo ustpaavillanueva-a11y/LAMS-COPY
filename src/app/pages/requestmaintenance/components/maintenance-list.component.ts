@@ -6,7 +6,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TabViewModule } from 'primeng/tabview';
+import { Tabs } from 'primeng/tabs';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { SelectModule } from 'primeng/select';
@@ -14,7 +14,18 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { MessageService } from 'primeng/api';
 import { MaintenanceStateService } from '../services/maintenance-state.service';
-import { MaintenanceApproval, MaintenanceStatus, MaintenanceFilter, ConfirmSchedulePayload, StartMaintenancePayload, HoldMaintenancePayload, ResumeMaintenancePayload, CompleteMaintenancePayload } from '../../models/maintenance.models';
+import {
+    MaintenanceApproval,
+    MaintenanceStatus,
+    MaintenanceFilter,
+    MaintenanceSummary,
+    ConfirmSchedulePayload,
+    StartMaintenancePayload,
+    HoldMaintenancePayload,
+    ResumeMaintenancePayload,
+    CompleteMaintenancePayload,
+    CancelMaintenancePayload
+} from '../../models/maintenance.models';
 import { MaintenanceTableComponent } from './maintenance-table.component';
 import { MaintenanceDetailModalComponent } from './maintenance-detail-modal.component';
 import { MaintenanceActionDialogsComponent } from './maintenance-action-dialogs.component';
@@ -27,7 +38,7 @@ import Swal from 'sweetalert2';
 @Component({
     selector: 'app-maintenance-list',
     standalone: true,
-    imports: [CommonModule, FormsModule, TabViewModule, ButtonModule, TooltipModule, SelectModule, DatePickerModule, ToggleButtonModule, MaintenanceTableComponent, MaintenanceDetailModalComponent, MaintenanceActionDialogsComponent],
+    imports: [CommonModule, FormsModule, Tabs, ButtonModule, TooltipModule, SelectModule, DatePickerModule, ToggleButtonModule, MaintenanceTableComponent, MaintenanceDetailModalComponent, MaintenanceActionDialogsComponent],
     providers: [MessageService],
     template: `
         <div class="card">
@@ -100,9 +111,9 @@ import Swal from 'sweetalert2';
                 </div>
             </div>
 
-            <p-tabview [(activeIndex)]="activeTabIndex" (onChange)="onTabChange($event)">
+            <p-tabs [(activeIndex)]="activeTabIndex" (onChange)="onTabChange($event)">
                 <!-- All Tab (Super Admin and Campus Admin only) -->
-                <p-tabPanel *ngIf="isSuperAdmin() || isCampusAdmin()" [header]="'All (' + (summary$ | async)?.totalCount + ')'">
+                <p-tabpanel *ngIf="isSuperAdmin() || isCampusAdmin()" [header]="'All (' + (summary$ | async)?.totalCount + ')'">
                     <app-maintenance-table
                         [approvals]="allApprovals"
                         [loading]="loading"
@@ -114,12 +125,13 @@ import Swal from 'sweetalert2';
                         (hold)="onHold($event)"
                         (resume)="onResume($event)"
                         (complete)="onComplete($event)"
+                        (cancel)="onCancel($event)"
                         (delete)="onDelete($event)"
                     />
-                </p-tabPanel>
+                </p-tabpanel>
 
                 <!-- Pending Tab -->
-                <p-tabPanel [header]="'Pending (' + (summary$ | async)?.pendingCount + ')'">
+                <p-tabpanel [header]="'Pending (' + (summary$ | async)?.pendingCount + ')'">
                     <app-maintenance-table
                         [approvals]="pendingApprovals"
                         [loading]="loading"
@@ -131,12 +143,13 @@ import Swal from 'sweetalert2';
                         (hold)="onHold($event)"
                         (resume)="onResume($event)"
                         (complete)="onComplete($event)"
+                        (cancel)="onCancel($event)"
                         (delete)="onDelete($event)"
                     />
-                </p-tabPanel>
+                </p-tabpanel>
 
-                <!-- Scheduled Tab -->
-                <p-tabPanel [header]="'Scheduled (' + (summary$ | async)?.scheduledCount + ')'">
+                <!-- Scheduled Tab (includes both Scheduled and legacy Approved statuses) -->
+                <p-tabpanel [header]="'Scheduled (' + ((summary$ | async)?.scheduledCount || 0) + ((summary$ | async)?.approvedCount || 0) + ')'">
                     <app-maintenance-table
                         [approvals]="scheduledApprovals"
                         [loading]="loading"
@@ -148,29 +161,13 @@ import Swal from 'sweetalert2';
                         (hold)="onHold($event)"
                         (resume)="onResume($event)"
                         (complete)="onComplete($event)"
+                        (cancel)="onCancel($event)"
                         (delete)="onDelete($event)"
                     />
-                </p-tabPanel>
-
-                <!-- Approved Tab -->
-                <p-tabPanel [header]="'Approved (' + (summary$ | async)?.approvedCount + ')'">
-                    <app-maintenance-table
-                        [approvals]="approvedApprovals"
-                        [loading]="loading"
-                        (view)="onView($event)"
-                        (confirmSchedule)="onConfirmSchedule($event)"
-                        (approve)="onApprove($event)"
-                        (decline)="onDecline($event)"
-                        (start)="onStart($event)"
-                        (hold)="onHold($event)"
-                        (resume)="onResume($event)"
-                        (complete)="onComplete($event)"
-                        (delete)="onDelete($event)"
-                    />
-                </p-tabPanel>
+                </p-tabpanel>
 
                 <!-- In Progress Tab -->
-                <p-tabPanel [header]="'In Progress (' + (summary$ | async)?.inProgressCount + ')'">
+                <p-tabpanel [header]="'In Progress (' + (summary$ | async)?.inProgressCount + ')'">
                     <app-maintenance-table
                         [approvals]="inProgressApprovals"
                         [loading]="loading"
@@ -182,12 +179,13 @@ import Swal from 'sweetalert2';
                         (hold)="onHold($event)"
                         (resume)="onResume($event)"
                         (complete)="onComplete($event)"
+                        (cancel)="onCancel($event)"
                         (delete)="onDelete($event)"
                     />
-                </p-tabPanel>
+                </p-tabpanel>
 
                 <!-- On Hold Tab -->
-                <p-tabPanel [header]="'On Hold (' + (summary$ | async)?.onHoldCount + ')'">
+                <p-tabpanel [header]="'On Hold (' + (summary$ | async)?.onHoldCount + ')'">
                     <app-maintenance-table
                         [approvals]="onHoldApprovals"
                         [loading]="loading"
@@ -201,10 +199,10 @@ import Swal from 'sweetalert2';
                         (complete)="onComplete($event)"
                         (delete)="onDelete($event)"
                     />
-                </p-tabPanel>
+                </p-tabpanel>
 
                 <!-- Completed Tab -->
-                <p-tabPanel [header]="'Completed (' + (summary$ | async)?.completedCount + ')'">
+                <p-tabpanel [header]="'Completed (' + (summary$ | async)?.completedCount + ')'">
                     <app-maintenance-table
                         [approvals]="completedApprovals"
                         [loading]="loading"
@@ -216,10 +214,29 @@ import Swal from 'sweetalert2';
                         (hold)="onHold($event)"
                         (resume)="onResume($event)"
                         (complete)="onComplete($event)"
+                        (cancel)="onCancel($event)"
                         (delete)="onDelete($event)"
                     />
-                </p-tabPanel>
-            </p-tabview>
+                </p-tabpanel>
+
+                <!-- Cancelled Tab -->
+                <p-tabpanel [header]="'Cancelled (' + (summary$ | async)?.cancelledCount + ')'">
+                    <app-maintenance-table
+                        [approvals]="cancelledApprovals"
+                        [loading]="loading"
+                        (view)="onView($event)"
+                        (confirmSchedule)="onConfirmSchedule($event)"
+                        (approve)="onApprove($event)"
+                        (decline)="onDecline($event)"
+                        (start)="onStart($event)"
+                        (hold)="onHold($event)"
+                        (resume)="onResume($event)"
+                        (complete)="onComplete($event)"
+                        (cancel)="onCancel($event)"
+                        (delete)="onDelete($event)"
+                    />
+                </p-tabpanel>
+            </p-tabs>
         </div>
 
         <!-- Detail Modal -->
@@ -233,11 +250,13 @@ import Swal from 'sweetalert2';
             [(holdMaintenanceVisible)]="holdMaintenanceDialogVisible"
             [(resumeMaintenanceVisible)]="resumeMaintenanceDialogVisible"
             [(completeMaintenanceVisible)]="completeMaintenanceDialogVisible"
+            [(cancelMaintenanceVisible)]="cancelMaintenanceDialogVisible"
             (confirmSchedule)="handleConfirmSchedule($event)"
             (startMaintenance)="handleStartMaintenance($event)"
             (holdMaintenance)="handleHoldMaintenance($event)"
             (resumeMaintenance)="handleResumeMaintenance($event)"
             (completeMaintenance)="handleCompleteMaintenance($event)"
+            (cancelMaintenance)="handleCancelMaintenance($event)"
         />
     `,
     styles: [``]
@@ -245,17 +264,18 @@ import Swal from 'sweetalert2';
 export class MaintenanceListComponent implements OnInit {
     activeTabIndex = 0;
 
-    summary$ = this.stateService.summary$;
-    loading$ = this.stateService.loading$;
+    // Initialize observables in constructor to avoid initialization order issues
+    summary$!: Observable<MaintenanceSummary>;
+    loading$!: Observable<boolean>;
     loading = false;
 
     allApprovals: MaintenanceApproval[] = [];
     pendingApprovals: MaintenanceApproval[] = [];
-    scheduledApprovals: MaintenanceApproval[] = [];
-    approvedApprovals: MaintenanceApproval[] = [];
+    scheduledApprovals: MaintenanceApproval[] = []; // Includes both Scheduled and Approved (legacy)
     inProgressApprovals: MaintenanceApproval[] = [];
     onHoldApprovals: MaintenanceApproval[] = [];
     completedApprovals: MaintenanceApproval[] = [];
+    cancelledApprovals: MaintenanceApproval[] = [];
 
     selectedApproval: MaintenanceApproval | null = null;
     detailModalVisible = false;
@@ -264,6 +284,7 @@ export class MaintenanceListComponent implements OnInit {
     holdMaintenanceDialogVisible = false;
     resumeMaintenanceDialogVisible = false;
     completeMaintenanceDialogVisible = false;
+    cancelMaintenanceDialogVisible = false;
 
     // Filter properties
     showFilters = false;
@@ -300,6 +321,10 @@ export class MaintenanceListComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        // Initialize observables after dependency injection
+        this.summary$ = this.stateService.summary$;
+        this.loading$ = this.stateService.loading$;
+
         this.loadData();
         this.subscribeToApprovals();
         this.subscribeToLoading();
@@ -315,11 +340,16 @@ export class MaintenanceListComponent implements OnInit {
         this.stateService.approvals$.subscribe((approvals) => {
             this.allApprovals = this.stateService.getScopedApprovals();
             this.pendingApprovals = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.PENDING);
-            this.scheduledApprovals = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.SCHEDULED);
-            this.approvedApprovals = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.APPROVED);
+
+            // Combine Scheduled and Approved (legacy) into one list
+            const scheduled = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.SCHEDULED);
+            const approved = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.APPROVED);
+            this.scheduledApprovals = [...scheduled, ...approved];
+
             this.inProgressApprovals = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.IN_PROGRESS);
             this.onHoldApprovals = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.ON_HOLD);
             this.completedApprovals = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.COMPLETED);
+            this.cancelledApprovals = MaintenanceUtils.filterByStatus(this.allApprovals, MaintenanceStatus.CANCELLED);
         });
     }
 
@@ -368,10 +398,10 @@ export class MaintenanceListComponent implements OnInit {
     applyFilters(): void {
         const filter: MaintenanceFilter = {
             campusId: this.filterCampus || undefined,
-            priority: this.filterPriority || undefined,
+            priorityLevel: this.filterPriority || undefined,
             maintenanceType: this.filterMaintenanceType || undefined,
-            dateFrom: this.filterDateFrom ? this.filterDateFrom.toISOString() : undefined,
-            dateTo: this.filterDateTo ? this.filterDateTo.toISOString() : undefined,
+            dateFrom: this.filterDateFrom || undefined,
+            dateTo: this.filterDateTo || undefined,
             isOverdue: this.filterOverdue || undefined,
             assignedTechnicianId: this.filterTechnician || undefined
         };
@@ -379,11 +409,16 @@ export class MaintenanceListComponent implements OnInit {
         const filtered = MaintenanceUtils.filterMaintenanceApprovals(this.stateService.getScopedApprovals(), filter);
         this.allApprovals = filtered;
         this.pendingApprovals = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.PENDING);
-        this.scheduledApprovals = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.SCHEDULED);
-        this.approvedApprovals = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.APPROVED);
+
+        // Combine Scheduled and Approved (legacy) into one list
+        const scheduled = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.SCHEDULED);
+        const approved = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.APPROVED);
+        this.scheduledApprovals = [...scheduled, ...approved];
+
         this.inProgressApprovals = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.IN_PROGRESS);
         this.onHoldApprovals = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.ON_HOLD);
         this.completedApprovals = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.COMPLETED);
+        this.cancelledApprovals = MaintenanceUtils.filterByStatus(filtered, MaintenanceStatus.CANCELLED);
     }
 
     clearFilters(): void {
@@ -414,7 +449,7 @@ export class MaintenanceListComponent implements OnInit {
 
     private checkPermission(approval: MaintenanceApproval, actionName: string = 'this action'): boolean {
         const user = this.authService.getCurrentUser();
-        const permissionCheck = MaintenanceUtils.canPerformActionOnApproval(approval, user?.role || '', user?.campus?.campusId, user?.userId);
+        const permissionCheck = MaintenanceUtils.canPerformActionOnApproval(approval, user?.role || '', user?.campus || '', user?.user_id || '');
 
         if (!permissionCheck.allowed) {
             this.messageService.add({ severity: 'error', summary: 'Permission Denied', detail: permissionCheck.reason || `You do not have permission to ${actionName}`, life: 4000 });
@@ -479,7 +514,42 @@ export class MaintenanceListComponent implements OnInit {
             }
         });
     }
+    // ==================== CANCEL ====================
 
+    onCancel(approval: MaintenanceApproval): void {
+        if (!this.checkPermission(approval, 'cancel maintenance')) return;
+
+        this.selectedApproval = approval;
+        this.cancelMaintenanceDialogVisible = true;
+    }
+
+    handleCancelMaintenance(payload: CancelMaintenancePayload): void {
+        if (!this.selectedApproval) return;
+
+        const status = this.selectedApproval.maintenanceRequest?.maintenanceStatus?.requestStatusName;
+        const wasInProgress = status === 'In Progress';
+
+        this.stateService.cancelMaintenance(this.selectedApproval.maintenanceApprovalId, payload.reason).subscribe({
+            next: () => {
+                const assetStatusMessage = wasInProgress ? ' Asset restored to serviceable.' : '';
+                this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Cancelled',
+                    detail: `Maintenance cancelled.${assetStatusMessage}`,
+                    life: 4000
+                });
+                this.selectedApproval = null;
+            },
+            error: (error) => {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: error.error?.message || 'Failed to cancel maintenance',
+                    life: 5000
+                });
+            }
+        });
+    }
     // ==================== DECLINE ====================
 
     onDecline(approval: MaintenanceApproval): void {
@@ -537,10 +607,10 @@ export class MaintenanceListComponent implements OnInit {
     }
 
     // ==================== HOLD ====================
-if (!this.checkPermission(approval, 'put maintenance on hold')) return;
 
-        
     onHold(approval: MaintenanceApproval): void {
+        if (!this.checkPermission(approval, 'put maintenance on hold')) return;
+
         this.selectedApproval = approval;
         this.holdMaintenanceDialogVisible = true;
     }
@@ -560,10 +630,10 @@ if (!this.checkPermission(approval, 'put maintenance on hold')) return;
     }
 
     // ==================== RESUME ====================
-if (!this.checkPermission(approval, 'resume maintenance')) return;
 
-        
     onResume(approval: MaintenanceApproval): void {
+        if (!this.checkPermission(approval, 'resume maintenance')) return;
+
         this.selectedApproval = approval;
         this.resumeMaintenanceDialogVisible = true;
     }
@@ -581,12 +651,11 @@ if (!this.checkPermission(approval, 'resume maintenance')) return;
             }
         });
     }
-if (!this.checkPermission(approval, 'complete maintenance')) return;
-
-        
     // ==================== COMPLETE ====================
 
     onComplete(approval: MaintenanceApproval): void {
+        if (!this.checkPermission(approval, 'complete maintenance')) return;
+
         this.selectedApproval = approval;
         this.completeMaintenanceDialogVisible = true;
     }
@@ -604,12 +673,11 @@ if (!this.checkPermission(approval, 'complete maintenance')) return;
             }
         });
     }
-if (!this.checkPermission(approval, 'delete this approval')) return;
-
-        
     // ==================== DELETE ====================
 
     onDelete(approval: MaintenanceApproval): void {
+        if (!this.checkPermission(approval, 'delete this approval')) return;
+
         Swal.fire({
             title: 'Delete Maintenance Approval?',
             text: `Delete maintenance approval for ${approval.maintenanceRequest?.asset?.assetName}? This action cannot be undone.`,

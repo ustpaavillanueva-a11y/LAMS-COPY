@@ -113,6 +113,9 @@ import { AuthService } from '../../service/auth.service';
                             <!-- Complete Button -->
                             <p-button *ngIf="hasAction(approval, maintenanceActions.COMPLETE)" icon="pi pi-check-circle" severity="success" [rounded]="true" [text]="true" (onClick)="onComplete(approval)" pTooltip="Complete maintenance" />
 
+                            <!-- Cancel Button -->
+                            <p-button *ngIf="hasAction(approval, maintenanceActions.CANCEL)" icon="pi pi-ban" severity="danger" [rounded]="true" [text]="true" (onClick)="onCancel(approval)" pTooltip="Cancel maintenance" />
+
                             <!-- Delete Button -->
                             <p-button *ngIf="hasAction(approval, maintenanceActions.DELETE)" icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="onDelete(approval)" pTooltip="Delete approval" />
                         </div>
@@ -140,6 +143,7 @@ export class MaintenanceTableComponent implements OnChanges {
     @Output() hold = new EventEmitter<MaintenanceApproval>();
     @Output() resume = new EventEmitter<MaintenanceApproval>();
     @Output() complete = new EventEmitter<MaintenanceApproval>();
+    @Output() cancel = new EventEmitter<MaintenanceApproval>();
     @Output() delete = new EventEmitter<MaintenanceApproval>();
 
     searchValue: string = '';
@@ -236,6 +240,10 @@ export class MaintenanceTableComponent implements OnChanges {
 
     onComplete(approval: MaintenanceApproval): void {
         this.complete.emit(approval);
+    }
+
+    onCancel(approval: MaintenanceApproval): void {
+        this.cancel.emit(approval);
     }
 
     onDelete(approval: MaintenanceApproval): void {
