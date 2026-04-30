@@ -16,7 +16,7 @@ import { TooltipModule } from 'primeng/tooltip';
             <p-button *ngIf="showView" icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" pTooltip="View" (onClick)="onView()" [disabled]="viewDisabled" />
             <p-button *ngIf="showEdit" icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" pTooltip="Edit" (onClick)="onEdit()" [disabled]="editDisabled" />
             <p-button *ngIf="showDelete" icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" pTooltip="Delete" (onClick)="onDelete()" [disabled]="deleteDisabled" />
-            <p-button *ngFor="let action of customActions" [icon]="action.icon" [severity]="action.severity || 'secondary'" [rounded]="true" [text]="true" [pTooltip]="action.tooltip" (onClick)="action.onClick(data)" [disabled]="action.disabled" />
+            <p-button *ngFor="let action of customActions" [icon]="action.icon" [severity]="action.severity ?? 'secondary'" [rounded]="true" [text]="true" [pTooltip]="action.tooltip" (onClick)="action.onClick(data)" [disabled]="action.disabled" />
         </div>
     `
 })
@@ -53,7 +53,7 @@ export class ActionButtonsComponent {
 export interface CustomAction {
     icon: string;
     tooltip: string;
-    severity?: string;
+    severity?: 'success' | 'info' | 'danger' | 'secondary' | 'contrast' | 'help';
     disabled?: boolean;
     onClick: (data: any) => void;
 }
