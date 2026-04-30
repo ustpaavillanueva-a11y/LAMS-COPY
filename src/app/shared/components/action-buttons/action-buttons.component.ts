@@ -53,7 +53,7 @@ export class ActionButtonsComponent {
 export interface CustomAction {
     icon: string;
     tooltip: string;
-    severity?: 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast';
+    severity?: string;
     disabled?: boolean;
     onClick: (data: any) => void;
 }

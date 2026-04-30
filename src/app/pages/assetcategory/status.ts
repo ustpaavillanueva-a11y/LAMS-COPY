@@ -1,20 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 
 // PrimeNG
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TableModule, Table } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { TooltipModule } from 'primeng/tooltip';
-import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
 import { MessageService } from 'primeng/api';
+import { TableModule } from 'primeng/table';
 
 // Core
 import { BaseComponent } from '../../core/base/base.component';
@@ -25,6 +17,9 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import { DialogService } from '../../shared/services/dialog.service';
 import { ExportService, ExportColumn } from '../../shared/services/export.service';
 import { debounceInput } from '../../shared/utils/rxjs-operators';
+import { DataTableComponent, TableColumn } from '../../shared/components/data-table/data-table.component';
+import { ToolbarComponent } from '../../shared/components/toolbar/toolbar.component';
+import { ActionButtonsComponent } from '../../shared/components/action-buttons/action-buttons.component';
 
 // Services
 import { AssetService, Status } from '../service/asset.service';
@@ -32,70 +27,38 @@ import { AssetService, Status } from '../service/asset.service';
 @Component({
     selector: 'app-status',
     standalone: true,
-    imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule],
+    imports: [CommonModule, ToastModule, TableModule, DataTableComponent, ToolbarComponent, ActionButtonsComponent],
     styleUrls: ['../../../assets/pages/_assetcategory.scss'],
     providers: [MessageService],
     template: `
         <p-toast />
-        <p-toolbar styleClass="mb-4">
-            <ng-template #start>
-                <div class="flex items-center gap-2">
-                    <p-button label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNewDialog()" [disabled]="isUpdating" />
-                    <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length || isDeleting" />
-                </div>
-            </ng-template>
-            <ng-template #end>
-                <div class="flex items-center gap-2">
-                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportData()" />
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="onSearchInput()" placeholder="Search statuses..." />
-                    </p-iconfield>
-                </div>
-            </ng-template>
-        </p-toolbar>
-        <p-table
-            #dt
-            [value]="filteredItems"
-            [rows]="10"
-            [paginator]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
+
+        <app-toolbar [showNew]="true" [showDelete]="true" [selectedCount]="selectedItems.length" (newClick)="openNewDialog()" (deleteClick)="deleteSelected()" />
+
+        <app-data-table
+            [data]="filteredItems"
+            [columns]="columns"
             [loading]="loading"
-            [rowHover]="true"
-            dataKey="statusId"
+            [searchable]="true"
+            [exportable]="true"
+            [selectable]="true"
+            [paginator]="true"
+            [rows]="10"
+            title="Status"
+            searchPlaceholder="Search status..."
             [(selection)]="selectedItems"
-            (selectionChange)="onSelectionChange($event)"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} statuses"
-            [showCurrentPageReport]="true"
-            [tableStyle]="{ 'min-width': '70rem' }"
+            (search)="onSearchInput($event)"
+            (exportExcel)="exportData()"
         >
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width:3rem"><p-tableHeaderCheckbox /></th>
-                    <th style="min-width:25rem">ID</th>
-                    <th pSortableColumn="statusName" style="min-width:20rem">Status <p-sortIcon field="statusName" /></th>
-                    <th style="min-width:12rem">Actions</th>
-                </tr>
+            <ng-template #body let-item>
+                <td><p-tableCheckbox [value]="item" /></td>
+                <td>{{ item.statusId }}</td>
+                <td>{{ item.statusName }}</td>
+                <td>
+                    <app-action-buttons [data]="item" [showView]="false" [showEdit]="true" [showDelete]="true" [editDisabled]="isUpdating" [deleteDisabled]="isDeleting" (edit)="edit($event)" (delete)="delete($event)" />
+                </td>
             </ng-template>
-            <ng-template pTemplate="body" let-row>
-                <tr>
-                    <td><p-tableCheckbox [value]="row" /></td>
-                    <td>{{ row.statusId }}</td>
-                    <td>{{ row.statusName }}</td>
-                    <td>
-                        <div class="flex gap-2">
-                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="edit(row)" [disabled]="isUpdating" />
-                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" [disabled]="isDeleting" />
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="4" class="text-center py-5">No statuses found</td>
-                </tr>
-            </ng-template>
-        </p-table>
+        </app-data-table>
     `
 })
 export class StatusComponent extends BaseComponent implements OnInit {
@@ -196,13 +159,6 @@ export class StatusComponent extends BaseComponent implements OnInit {
             });
     }
 
-    /**
-     * Filter statuses
-     */
-    filter(): void {
-        this.filteredItems = this.items.filter((item) => item.statusName?.toLowerCase().includes(this.searchValue.toLowerCase()));
-    }
-
     onSelectionChange(event: any) {}
 
     /**
@@ -295,7 +251,7 @@ export class StatusComponent extends BaseComponent implements OnInit {
         if (this.isDeleting) return;
 
         const confirmed = await this.dialogService.confirmDelete(`status "${item.statusName}"`);
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
 
@@ -325,7 +281,7 @@ export class StatusComponent extends BaseComponent implements OnInit {
 
         const confirmed = await this.dialogService.confirm('Delete Selected', `Are you sure you want to delete ${this.selectedItems.length} status(es)?`);
 
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
         let deletedCount = 0;

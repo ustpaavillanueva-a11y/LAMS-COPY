@@ -6,6 +6,7 @@ import { takeUntil, finalize } from 'rxjs/operators';
 
 // PrimeNG
 import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -29,58 +30,28 @@ import { UserService } from '../service/user.service';
 @Component({
     selector: 'app-campuses',
     standalone: true,
-    imports: [
-        CommonModule,
-        FormsModule,
-        CardModule,
-        ToastModule,
-        ButtonModule,
-        DataTableComponent,
-        ToolbarComponent,
-        ActionButtonsComponent
-    ],
+    imports: [CommonModule, FormsModule, CardModule, TableModule, ToastModule, ButtonModule, DataTableComponent, ToolbarComponent, ActionButtonsComponent],
     styleUrls: ['../../../assets/pages/_campuses.scss'],
     providers: [MessageService],
     template: `
         <p-toast />
 
-        <app-toolbar
-            [showNew]="true"
-            [showDelete]="true"
-            [selectedCount]="selectedCampuses.length"
-            (newClick)="openNewCampusDialog()"
-            (deleteClick)="deleteSelectedCampuses()"
-        >
+        <app-toolbar [showNew]="true" [showDelete]="true" [selectedCount]="selectedCampuses.length" (newClick)="openNewCampusDialog()" (deleteClick)="deleteSelectedCampuses()">
             <ng-template #end>
                 <div class="flex items-center gap-2">
-                    <button pButton label="Export" icon="pi pi-upload" (click)="exportData()" class="p-button-secondary" />
+                    <button pButton label="Export" icon="pi pi-upload" (click)="exportData()" class="p-button-secondary"></button>
                 </div>
             </ng-template>
         </app-toolbar>
 
-        <app-data-table
-            [data]="filteredCampuses"
-            [columns]="tableColumns"
-            [loading]="loading"
-            [searchable]="true"
-            [selectable]="true"
-            [paginator]="true"
-            [rows]="10"
-            [(selection)]="selectedCampuses"
-            (search)="onSearchInput($event)"
-        >
+        <app-data-table [data]="filteredCampuses" [columns]="tableColumns" [loading]="loading" [searchable]="true" [selectable]="true" [paginator]="true" [rows]="10" [(selection)]="selectedCampuses" (search)="onSearchInput($event)">
             <ng-template #body let-campus>
                 <td><p-tableCheckbox [value]="campus" /></td>
                 <td>{{ formatId(campus.campusId) }}</td>
                 <td>{{ campus.campusName }}</td>
                 <td>{{ campus.campusDirector || 'N/A' }}</td>
                 <td>
-                    <app-action-buttons
-                        [data]="campus"
-                        [showView]="false"
-                        (edit)="editCampus($event)"
-                        (delete)="deleteCampus($event)"
-                    />
+                    <app-action-buttons [data]="campus" [showView]="false" (edit)="editCampus($event)" (delete)="deleteCampus($event)" />
                 </td>
             </ng-template>
         </app-data-table>
@@ -133,15 +104,10 @@ export class CampusesComponent extends BaseComponent implements OnInit {
      * Setup debounced search
      */
     private setupSearchDebounce(): void {
-        this.searchSubject$
-            .pipe(
-                debounceInput(300),
-                takeUntil(this.destroy$)
-            )
-            .subscribe((searchTerm) => {
-                this.currentSearchTerm = searchTerm;
-                this.filterCampuses();
-            });
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.currentSearchTerm = searchTerm;
+            this.filterCampuses();
+        });
     }
 
     /**
@@ -159,7 +125,8 @@ export class CampusesComponent extends BaseComponent implements OnInit {
 
         this.loadingState = LoadingState.LOADING;
 
-        this.userService.getCampuses()
+        this.userService
+            .getCampuses()
             .pipe(
                 takeUntil(this.destroy$),
                 finalize(() => {
@@ -186,16 +153,13 @@ export class CampusesComponent extends BaseComponent implements OnInit {
      */
     private filterCampuses(): void {
         const searchValue = this.currentSearchTerm.toLowerCase();
-        
+
         if (!searchValue.trim()) {
             this.filteredCampuses = [...this.campuses];
             return;
         }
 
-        this.filteredCampuses = this.campuses.filter((campus) =>
-            campus.campusName?.toLowerCase().includes(searchValue) ||
-            campus.campusDirector?.toLowerCase().includes(searchValue)
-        );
+        this.filteredCampuses = this.campuses.filter((campus) => campus.campusName?.toLowerCase().includes(searchValue) || campus.campusDirector?.toLowerCase().includes(searchValue));
     }
 
     /**
@@ -236,13 +200,14 @@ export class CampusesComponent extends BaseComponent implements OnInit {
 
         this.isUpdating = true;
 
-        this.userService.createCampus({ 
-            campusName: campusName.trim(), 
-            campusDirector: campusDirector.trim() 
-        })
+        this.userService
+            .createCampus({
+                campusName: campusName.trim(),
+                campusDirector: campusDirector.trim()
+            })
             .pipe(
                 takeUntil(this.destroy$),
-                finalize(() => this.isUpdating = false)
+                finalize(() => (this.isUpdating = false))
             )
             .subscribe({
                 next: () => {
@@ -293,13 +258,14 @@ export class CampusesComponent extends BaseComponent implements OnInit {
 
         this.isUpdating = true;
 
-        this.userService.updateCampus(campus.campusId, {
-            campusName: campusName.trim(),
-            campusDirector: campusDirector.trim()
-        })
+        this.userService
+            .updateCampus(campus.campusId, {
+                campusName: campusName.trim(),
+                campusDirector: campusDirector.trim()
+            })
             .pipe(
                 takeUntil(this.destroy$),
-                finalize(() => this.isUpdating = false)
+                finalize(() => (this.isUpdating = false))
             )
             .subscribe({
                 next: () => {
@@ -319,14 +285,15 @@ export class CampusesComponent extends BaseComponent implements OnInit {
         if (this.isDeleting) return;
 
         const confirmed = await this.dialogService.confirmDelete(`campus "${campus.campusName}"`);
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
 
-        this.userService.deleteCampus(campus.campusId)
+        this.userService
+            .deleteCampus(campus.campusId)
             .pipe(
                 takeUntil(this.destroy$),
-                finalize(() => this.isDeleting = false)
+                finalize(() => (this.isDeleting = false))
             )
             .subscribe({
                 next: () => {
@@ -354,12 +321,9 @@ export class CampusesComponent extends BaseComponent implements OnInit {
 
         if (this.isDeleting) return;
 
-        const confirmed = await this.dialogService.confirm(
-            'Confirm Delete',
-            `Are you sure you want to delete ${this.selectedCampuses.length} campus(es)?`
-        );
+        const confirmed = await this.dialogService.confirm('Confirm Delete', `Are you sure you want to delete ${this.selectedCampuses.length} campus(es)?`);
 
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
         let deletedCount = 0;
@@ -367,7 +331,8 @@ export class CampusesComponent extends BaseComponent implements OnInit {
         const totalCount = this.selectedCampuses.length;
 
         this.selectedCampuses.forEach((campus) => {
-            this.userService.deleteCampus(campus.campusId)
+            this.userService
+                .deleteCampus(campus.campusId)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: () => {
@@ -395,10 +360,7 @@ export class CampusesComponent extends BaseComponent implements OnInit {
             if (failed === 0) {
                 this.dialogService.showSuccess(`${deleted} campus(es) deleted successfully`);
             } else {
-                this.dialogService.showWarning(
-                    `${deleted} campus(es) deleted, ${failed} failed`,
-                    'Partial Delete'
-                );
+                this.dialogService.showWarning(`${deleted} campus(es) deleted, ${failed} failed`, 'Partial Delete');
             }
         }
     }
@@ -421,11 +383,7 @@ export class CampusesComponent extends BaseComponent implements OnInit {
             { field: 'campusDirector', header: 'Campus Director' }
         ];
 
-        this.exportService.exportToCsv(
-            this.filteredCampuses,
-            'campuses_export',
-            exportColumns
-        );
+        this.exportService.exportToCsv(this.filteredCampuses, 'campuses_export', exportColumns);
 
         this.messageService.add({
             severity: 'success',

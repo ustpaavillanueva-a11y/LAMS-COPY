@@ -159,13 +159,6 @@ export class ProgramComponent extends BaseComponent implements OnInit {
             });
     }
 
-    /**
-     * Filter programs
-     */
-    filter(): void {
-        this.filteredItems = this.items.filter((item) => item.programName?.toLowerCase().includes(this.searchValue.toLowerCase()));
-    }
-
     onSelectionChange(event: any) {}
 
     /**
@@ -258,7 +251,7 @@ export class ProgramComponent extends BaseComponent implements OnInit {
         if (this.isDeleting) return;
 
         const confirmed = await this.dialogService.confirmDelete(`program "${item.programName}"`);
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
 
@@ -288,7 +281,7 @@ export class ProgramComponent extends BaseComponent implements OnInit {
 
         const confirmed = await this.dialogService.confirm('Delete Selected', `Are you sure you want to delete ${this.selectedItems.length} program(s)?`);
 
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
         let deletedCount = 0;

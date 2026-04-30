@@ -159,13 +159,6 @@ export class ColorComponent extends BaseComponent implements OnInit {
             });
     }
 
-    /**
-     * Filter colors
-     */
-    filter(): void {
-        this.filteredItems = this.items.filter((item) => item.colorName?.toLowerCase().includes(this.searchValue.toLowerCase()));
-    }
-
     onSelectionChange(event: any) {}
 
     /**
@@ -288,7 +281,7 @@ export class ColorComponent extends BaseComponent implements OnInit {
 
         const confirmed = await this.dialogService.confirm('Delete Selected', `Are you sure you want to delete ${this.selectedItems.length} color(s)?`);
 
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
         let deletedCount = 0;

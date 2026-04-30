@@ -157,7 +157,7 @@ import { environment } from '../../../environments/environment';
                         <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
                         <p-iconfield>
                             <p-inputicon styleClass="pi pi-search" />
-                            <input pInputText type="text" [(ngModel)]="searchValue" (input)="filter()" placeholder="Search laboratories..." />
+                            <input pInputText type="text" [(ngModel)]="currentSearchTerm" (input)="filter()" placeholder="Search laboratories..." />
                         </p-iconfield>
                     </div>
                 </ng-template>
@@ -365,7 +365,7 @@ export class LaboratoriesComponent extends BaseComponent implements OnInit {
 
     // Search
     private searchSubject$ = new Subject<string>();
-    private currentSearchTerm: string = '';
+    currentSearchTerm: string = '';
 
     // Dialog state
     labDialog: boolean = false;
@@ -553,7 +553,7 @@ export class LaboratoriesComponent extends BaseComponent implements OnInit {
         if (this.isDeleting) return;
 
         const confirmed = await this.dialogService.confirmDelete(`laboratory "${lab.laboratoryName}"`);
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
 
@@ -588,7 +588,7 @@ export class LaboratoriesComponent extends BaseComponent implements OnInit {
 
         const confirmed = await this.dialogService.confirm('Confirm Delete', `Are you sure you want to delete ${this.selectedLabs.length} laboratory(ies)?`);
 
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
         let deletedCount = 0;

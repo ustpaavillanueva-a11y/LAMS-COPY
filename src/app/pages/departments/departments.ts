@@ -6,6 +6,7 @@ import { takeUntil, finalize } from 'rxjs/operators';
 
 // PrimeNG
 import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -30,58 +31,28 @@ import { AuthService } from '../service/auth.service';
 @Component({
     selector: 'app-departments',
     standalone: true,
-    imports: [
-        CommonModule,
-        FormsModule,
-        CardModule,
-        ToastModule,
-        ButtonModule,
-        DataTableComponent,
-        ToolbarComponent,
-        ActionButtonsComponent
-    ],
+    imports: [CommonModule, FormsModule, CardModule, TableModule, ToastModule, ButtonModule, DataTableComponent, ToolbarComponent, ActionButtonsComponent],
     styleUrls: ['../../../assets/pages/_departments.scss'],
     providers: [MessageService],
     template: `
         <p-toast />
 
-        <app-toolbar
-            [showNew]="!isSuperAdmin"
-            [showDelete]="true"
-            [selectedCount]="selectedDepartments.length"
-            (newClick)="openNewDepartmentDialog()"
-            (deleteClick)="deleteSelectedDepartments()"
-        >
+        <app-toolbar [showNew]="!isSuperAdmin" [showDelete]="true" [selectedCount]="selectedDepartments.length" (newClick)="openNewDepartmentDialog()" (deleteClick)="deleteSelectedDepartments()">
             <ng-template #end>
                 <div class="flex items-center gap-2">
-                    <button pButton label="Export" icon="pi pi-upload" (click)="exportData()" class="p-button-secondary" />
+                    <button pButton label="Export" icon="pi pi-upload" (click)="exportData()" class="p-button-secondary"></button>
                 </div>
             </ng-template>
         </app-toolbar>
 
-        <app-data-table
-            [data]="filteredDepartments"
-            [columns]="tableColumns"
-            [loading]="loading"
-            [searchable]="true"
-            [selectable]="true"
-            [paginator]="true"
-            [rows]="10"
-            [(selection)]="selectedDepartments"
-            (search)="onSearchInput($event)"
-        >
+        <app-data-table [data]="filteredDepartments" [columns]="tableColumns" [loading]="loading" [searchable]="true" [selectable]="true" [paginator]="true" [rows]="10" [(selection)]="selectedDepartments" (search)="onSearchInput($event)">
             <ng-template #body let-department>
                 <td><p-tableCheckbox [value]="department" /></td>
                 <td>{{ formatId(department.departmentId) }}</td>
                 <td>{{ department.departmentName }}</td>
                 <td>{{ department.campus?.campusName || 'N/A' }}</td>
                 <td>
-                    <app-action-buttons
-                        [data]="department"
-                        [showView]="false"
-                        (edit)="editDepartment($event)"
-                        (delete)="deleteDepartment($event)"
-                    />
+                    <app-action-buttons [data]="department" [showView]="false" (edit)="editDepartment($event)" (delete)="deleteDepartment($event)" />
                 </td>
             </ng-template>
         </app-data-table>
@@ -157,15 +128,10 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
      * Setup debounced search
      */
     private setupSearchDebounce(): void {
-        this.searchSubject$
-            .pipe(
-                debounceInput(300),
-                takeUntil(this.destroy$)
-            )
-            .subscribe((searchTerm) => {
-                this.currentSearchTerm = searchTerm;
-                this.filterDepartments();
-            });
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.currentSearchTerm = searchTerm;
+            this.filterDepartments();
+        });
     }
 
     /**
@@ -183,7 +149,8 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
 
         this.loadingState = LoadingState.LOADING;
 
-        this.userService.getDepartments()
+        this.userService
+            .getDepartments()
             .pipe(
                 takeUntil(this.destroy$),
                 finalize(() => {
@@ -209,7 +176,8 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
      * Load campuses for dropdown
      */
     loadCampuses(): void {
-        this.userService.getCampuses()
+        this.userService
+            .getCampuses()
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (response: any) => {
@@ -226,16 +194,13 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
      */
     private filterDepartments(): void {
         const searchValue = this.currentSearchTerm.toLowerCase();
-        
+
         if (!searchValue.trim()) {
             this.filteredDepartments = [...this.departments];
             return;
         }
 
-        this.filteredDepartments = this.departments.filter((dept) =>
-            dept.departmentName?.toLowerCase().includes(searchValue) ||
-            dept.campus?.campusName?.toLowerCase().includes(searchValue)
-        );
+        this.filteredDepartments = this.departments.filter((dept) => dept.departmentName?.toLowerCase().includes(searchValue) || dept.campus?.campusName?.toLowerCase().includes(searchValue));
     }
 
     /**
@@ -269,10 +234,11 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
 
         this.isUpdating = true;
 
-        this.userService.createDepartment({ departmentName: departmentName.trim() })
+        this.userService
+            .createDepartment({ departmentName: departmentName.trim() })
             .pipe(
                 takeUntil(this.destroy$),
-                finalize(() => this.isUpdating = false)
+                finalize(() => (this.isUpdating = false))
             )
             .subscribe({
                 next: () => {
@@ -316,12 +282,13 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
 
         this.isUpdating = true;
 
-        this.userService.updateDepartment(department.departmentId, {
-            departmentName: departmentName.trim()
-        })
+        this.userService
+            .updateDepartment(department.departmentId, {
+                departmentName: departmentName.trim()
+            })
             .pipe(
                 takeUntil(this.destroy$),
-                finalize(() => this.isUpdating = false)
+                finalize(() => (this.isUpdating = false))
             )
             .subscribe({
                 next: () => {
@@ -341,14 +308,15 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
         if (this.isDeleting) return;
 
         const confirmed = await this.dialogService.confirmDelete(`department "${department.departmentName}"`);
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
 
-        this.userService.deleteDepartment(department.departmentId)
+        this.userService
+            .deleteDepartment(department.departmentId)
             .pipe(
                 takeUntil(this.destroy$),
-                finalize(() => this.isDeleting = false)
+                finalize(() => (this.isDeleting = false))
             )
             .subscribe({
                 next: () => {
@@ -376,12 +344,9 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
 
         if (this.isDeleting) return;
 
-        const confirmed = await this.dialogService.confirm(
-            'Confirm Delete',
-            `Are you sure you want to delete ${this.selectedDepartments.length} department(s)?`
-        );
+        const confirmed = await this.dialogService.confirm('Confirm Delete', `Are you sure you want to delete ${this.selectedDepartments.length} department(s)?`);
 
-        if (!confirmed.isConfirmed) return;
+        if (!confirmed) return;
 
         this.isDeleting = true;
         let deletedCount = 0;
@@ -389,7 +354,8 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
         const totalCount = this.selectedDepartments.length;
 
         this.selectedDepartments.forEach((department) => {
-            this.userService.deleteDepartment(department.departmentId)
+            this.userService
+                .deleteDepartment(department.departmentId)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe({
                     next: () => {
@@ -417,10 +383,7 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
             if (failed === 0) {
                 this.dialogService.showSuccess(`${deleted} department(s) deleted successfully`);
             } else {
-                this.dialogService.showWarning(
-                    `${deleted} department(s) deleted, ${failed} failed`,
-                    'Partial Delete'
-                );
+                this.dialogService.showWarning(`${deleted} department(s) deleted, ${failed} failed`, 'Partial Delete');
             }
         }
     }
@@ -443,11 +406,7 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
             { field: 'campus.campusName', header: 'Campus Name' }
         ];
 
-        this.exportService.exportToCsv(
-            this.filteredDepartments,
-            'departments_export',
-            exportColumns
-        );
+        this.exportService.exportToCsv(this.filteredDepartments, 'departments_export', exportColumns);
 
         this.messageService.add({
             severity: 'success',

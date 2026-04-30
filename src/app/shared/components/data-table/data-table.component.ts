@@ -72,7 +72,7 @@ import { SelectModule } from 'primeng/select';
                 <th *ngIf="selectable" style="width:3rem">
                     <p-tableHeaderCheckbox />
                 </th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.sortable ? col.field : null" [style]="col.style">
+                <th *ngFor="let col of columns" [pSortableColumn]="col.sortable ? col.field : undefined" [style]="col.style">
                     {{ col.header }}
                     <p-sortIcon *ngIf="col.sortable" [field]="col.field" />
                 </th>
