@@ -1,20 +1,7 @@
+import { WebSocketEvent, WebSocketService } from '@/shared/services/websocket.service';
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
-import { WebSocketService, WebSocketEvent } from '../../shared/services/websocket.service';
-
-export interface Asset {
-    assetId: string;
-    assetName: string;
-    assetCode: string;
-    status: string;
-    campus: string;
-    laboratory: string;
-    brand?: string;
-    model?: string;
-    serialNo?: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
+import { Asset } from '../../../shared/models/websocket-interfaces';
 
 @Injectable({
     providedIn: 'root'

@@ -1,18 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { WebSocketService, WebSocketEvent } from '../../shared/services/websocket.service';
-
-export interface MaintenanceRequest {
-    requestId: string;
-    assetId: string;
-    requestedBy: string;
-    issue: string;
-    priority: string;
-    status: string;
-    campus: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
+import { MaintenanceRequest } from '../../shared/models/websocket-interfaces';
 
 @Injectable({
     providedIn: 'root'

@@ -1,28 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { WebSocketService, WebSocketEvent } from '../../shared/services/websocket.service';
-
-export interface CalendarEvent {
-    eventId: string;
-    title: string;
-    start: Date;
-    end: Date;
-    description?: string;
-    campus: string;
-    createdBy: string;
-}
-
-export interface Schedule {
-    scheduleId: string;
-    laboratoryId: string;
-    userId: string;
-    startTime: Date;
-    endTime: Date;
-    day: string;
-    subject?: string;
-    status: string;
-    campus: string;
-}
+import { CalendarEvent, Schedule } from '../../shared/models/websocket-interfaces';
 
 @Injectable({
     providedIn: 'root'

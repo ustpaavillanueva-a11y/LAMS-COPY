@@ -17,3 +17,6 @@ export * from './components/chart-wrapper/chart-wrapper.component';
 export * from './services/dialog.service';
 export * from './services/export.service';
 export * from './services/websocket.service';
+
+// Shared models
+export * from './models/websocket-interfaces';

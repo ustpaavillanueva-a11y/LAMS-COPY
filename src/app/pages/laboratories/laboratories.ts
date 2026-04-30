@@ -518,20 +518,26 @@ export class LaboratoriesComponent extends BaseComponent implements OnInit {
             laboratoryLocation: this.newLab.laboratoryLocation
         };
 
-        this.http
-            .post<any>(this.apiUrl, payload)
+        // Check if this is an update (has laboratoryId) or create (no laboratoryId)
+        const isUpdate = !!this.newLab.laboratoryId;
+        const request$ = isUpdate ? this.http.patch<any>(`${this.apiUrl}/${this.newLab.laboratoryId}`, payload) : this.http.post<any>(this.apiUrl, payload);
+
+        const successMessage = isUpdate ? 'Laboratory updated successfully' : 'Laboratory created successfully';
+
+        request$
             .pipe(
                 takeUntil(this.destroy$),
                 finalize(() => (this.isUpdating = false))
             )
             .subscribe({
                 next: (response) => {
-                    this.dialogService.showSuccess('Laboratory created successfully');
+                    this.dialogService.showSuccess(successMessage);
                     this.closeDialog();
                     this.loadLaboratories();
                 },
                 error: (error) => {
-                    this.errorHandler.handleError(error, 'creating laboratory');
+                    const action = isUpdate ? 'updating' : 'creating';
+                    this.errorHandler.handleError(error, `${action} laboratory`);
                 }
             });
     }
