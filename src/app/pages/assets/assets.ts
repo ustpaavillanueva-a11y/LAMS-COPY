@@ -735,11 +735,6 @@ export class AssetsComponent implements OnInit {
                 console.error('- GET /api/colors');
                 console.error('- GET /api/brands');
 
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Data Load Error',
-                    detail: 'Failed to load programs, colors, and brands. Please refresh the page.'
-                });
                 // Still try to load assets even if reference data fails
                 this.loadAssets();
             }
