@@ -474,6 +474,7 @@ import Swal from 'sweetalert2';
                                     <td *ngIf="isLabTech()">
                                         <div class="actions">
                                             <p-button icon="pi pi-play" severity="success" [rounded]="true" [text]="true" pTooltip="Start Maintenance" (onClick)="startMaintenanceWork(row)" />
+                                            <p-button icon="pi pi-ban" severity="danger" [rounded]="true" [text]="true" pTooltip="Cancel" (onClick)="cancelMaintenance(row)" />
                                         </div>
                                     </td>
                                 </tr>
@@ -528,7 +529,15 @@ import Swal from 'sweetalert2';
                                     </td>
                                     <td *ngIf="isLabTech()">
                                         <div class="actions">
-                                            <p-button icon="pi pi-check" severity="success" [rounded]="true" [text]="true" pTooltip="Complete" (onClick)="confirm(row)" />
+                                            <!-- Show Resume button if ON_HOLD, otherwise show Complete and Hold -->
+                                            <ng-container *ngIf="row.status === 'ON_HOLD'">
+                                                <p-button icon="pi pi-play-circle" severity="success" [rounded]="true" [text]="true" pTooltip="Resume" (onClick)="resumeMaintenance(row)" />
+                                            </ng-container>
+                                            <ng-container *ngIf="row.status !== 'ON_HOLD'">
+                                                <p-button icon="pi pi-check" severity="success" [rounded]="true" [text]="true" pTooltip="Complete" (onClick)="confirm(row)" />
+                                                <p-button icon="pi pi-pause" severity="warn" [rounded]="true" [text]="true" pTooltip="Hold" (onClick)="holdMaintenance(row)" />
+                                            </ng-container>
+                                            <p-button icon="pi pi-ban" severity="danger" [rounded]="true" [text]="true" pTooltip="Cancel" (onClick)="cancelMaintenance(row)" />
                                         </div>
                                     </td>
                                 </tr>
@@ -795,10 +804,10 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
 
     loadApprovals() {
         console.log('=== LOADING MAINTENANCE APPROVALS ===');
-        
+
         // Clear existing approval data to avoid duplicates
         this.completedItems = [];
-        
+
         // Load Pending approvals (if any exist as approvals vs requests)
         this.maintenanceService.getPendingApprovals().subscribe({
             next: (data: any[]) => {
@@ -812,7 +821,7 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
                 console.error('Error loading pending approvals:', error);
             }
         });
-        
+
         // Load Scheduled approvals
         this.maintenanceService.getScheduledApprovals().subscribe({
             next: (data: any[]) => {
@@ -860,7 +869,7 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     categorizeItems() {
         console.log('=== CATEGORIZING ITEMS ===');
         this.pendingItems = this.items.filter((item) => item.maintenanceStatus?.requestStatusName?.toLowerCase() === 'pending');
-        
+
         // Don't overwrite completedItems from approvals - only add from requests if needed
         const completedRequests = this.items.filter((item) => item.maintenanceStatus?.requestStatusName?.toLowerCase() === 'completed');
 
@@ -1733,6 +1742,155 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
             error: (error: any) => {
                 console.error('Error completing maintenance request:', error);
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to complete maintenance request: ' + (error.error?.message || error.message) });
+            }
+        });
+    }
+
+    holdMaintenance(item: any) {
+        Swal.fire({
+            title: 'Hold Maintenance Work',
+            html: `
+                <p style="margin-bottom: 1rem;">Put maintenance on hold for: <strong>${item.maintenanceRequest?.maintenanceName}</strong></p>
+                <textarea id="holdReason" class="swal2-textarea" placeholder="Enter reason for holding the work (required)..."></textarea>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Hold Work',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#f59e0b',
+            preConfirm: () => {
+                const reason = (document.getElementById('holdReason') as HTMLTextAreaElement)?.value?.trim();
+                if (!reason) {
+                    Swal.showValidationMessage('Please enter a reason for holding the work');
+                    return false;
+                }
+                return reason;
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                const reason = result.value;
+
+                this.maintenanceService.holdMaintenance(item.maintenanceApprovalId, { reason }).subscribe({
+                    next: (response) => {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Maintenance work has been put on hold.',
+                            icon: 'success'
+                        });
+
+                        // Reload approvals to reflect status change
+                        this.loadApprovals();
+                    },
+                    error: (error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Failed to hold maintenance: ' + (error.error?.message || error.message)
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    resumeMaintenance(item: any) {
+        Swal.fire({
+            title: 'Resume Maintenance Work',
+            html: `
+                <p style="margin-bottom: 1rem;">Resume maintenance for: <strong>${item.maintenanceRequest?.maintenanceName}</strong></p>
+                <textarea id="resumeNotes" class="swal2-textarea" placeholder="Add any notes about resuming the work (optional)..."></textarea>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Resume Work',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#10b981',
+            preConfirm: () => {
+                const notes = (document.getElementById('resumeNotes') as HTMLTextAreaElement)?.value?.trim() || '';
+                return notes;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const notes = result.value;
+                const payload = notes ? { notes } : {};
+
+                this.maintenanceService.resumeMaintenance(item.maintenanceApprovalId, payload).subscribe({
+                    next: (response) => {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Maintenance work has been resumed.',
+                            icon: 'success'
+                        });
+
+                        // Reload approvals to reflect status change
+                        this.loadApprovals();
+                    },
+                    error: (error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Failed to resume maintenance: ' + (error.error?.message || error.message)
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    cancelMaintenance(item: any) {
+        Swal.fire({
+            title: 'Cancel Maintenance',
+            html: `
+                <p style="margin-bottom: 1rem;">Cancel maintenance for: <strong>${item.maintenanceRequest?.maintenanceName}</strong></p>
+                <p style="margin-bottom: 0.5rem; color: #dc2626;">⚠️ This action cannot be undone. The maintenance will be marked as cancelled.</p>
+                <textarea id="cancelReason" class="swal2-textarea" placeholder="Enter reason for cancelling (required)..."></textarea>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Cancel Maintenance',
+            cancelButtonText: 'Go Back',
+            confirmButtonColor: '#dc2626',
+            preConfirm: () => {
+                const reason = (document.getElementById('cancelReason') as HTMLTextAreaElement)?.value?.trim();
+                if (!reason) {
+                    Swal.showValidationMessage('Please enter a reason for cancelling');
+                    return false;
+                }
+                return reason;
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                const reason = result.value;
+
+                this.maintenanceService.cancelMaintenance(item.maintenanceApprovalId, { reason }).subscribe({
+                    next: (response) => {
+                        Swal.fire({
+                            title: 'Cancelled!',
+                            text: 'Maintenance has been cancelled successfully.',
+                            icon: 'success'
+                        });
+
+                        // Remove from current tab
+                        const scheduledIndex = this.scheduledItems.findIndex((i) => i.maintenanceApprovalId === item.maintenanceApprovalId);
+                        if (scheduledIndex > -1) {
+                            this.scheduledItems.splice(scheduledIndex, 1);
+                        }
+                        const inProgressIndex = this.inProgressItems.findIndex((i) => i.maintenanceApprovalId === item.maintenanceApprovalId);
+                        if (inProgressIndex > -1) {
+                            this.inProgressItems.splice(inProgressIndex, 1);
+                        }
+
+                        // Reload approvals
+                        this.loadApprovals();
+                    },
+                    error: (error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Failed to cancel maintenance: ' + (error.error?.message || error.message)
+                        });
+                    }
+                });
             }
         });
     }

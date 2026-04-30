@@ -147,7 +147,7 @@ import { AssetUtils } from './utils/asset.utils';
                         <button pButton icon="pi pi-qrcode" class="p-button-rounded p-button-text" (click)="viewQrCode(asset.qrCode)" pTooltip="View QR Code"></button>
                     </td>
                     <td>
-                        <button *ngIf="!isFaculty" pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning" (click)="edit(asset)" pTooltip="Edit"></button>
+                        <button *ngIf="isCampusAdmin() || isFaculty || isLabTech" pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-success" (click)="view(asset)" pTooltip="View Asset"></button>
                         <button *ngIf="!isFaculty" pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="delete(asset)" pTooltip="Delete"></button>
                         <button pButton icon="pi pi-wrench" class="p-button-rounded p-button-text p-button-info" (click)="requestMaintenance(asset)" pTooltip="Request Maintenance"></button>
                     </td>
@@ -681,6 +681,8 @@ export class AssetsComponent implements OnInit {
     }
 
     loadReferenceData() {
+        console.log('🔄 Starting to load reference data...');
+
         // Load all reference data in parallel using forkJoin
         forkJoin({
             programs: this.assetService.getPrograms(),
@@ -691,6 +693,9 @@ export class AssetsComponent implements OnInit {
             brands: this.assetService.getBrands()
         }).subscribe({
             next: (data) => {
+                console.log('✅ forkJoin completed successfully!');
+                console.log('Raw data received:', data);
+
                 // Store all reference data
                 this.programs = data.programs || [];
                 this.suppliers = data.suppliers || [];
@@ -700,16 +705,36 @@ export class AssetsComponent implements OnInit {
                 this.brands = data.brands || [];
 
                 console.log('=== REFERENCE DATA LOADED ===');
-                console.log('Programs:', this.programs.length);
-                console.log('Brands:', this.brands.length);
-                console.log('Colors:', this.colors.length);
+                console.log('Programs:', this.programs.length, this.programs);
+                console.log('Brands:', this.brands.length, this.brands);
+                console.log('Colors:', this.colors.length, this.colors);
+                console.log('Suppliers:', this.suppliers.length);
+                console.log('Locations:', this.locations.length);
+                console.log('Statuses:', this.statuses.length);
+                console.log('API Base URL:', 'Check network tab for actual endpoints');
                 console.log('============================');
 
                 // Now that reference data is loaded, load and enrich assets
                 this.loadAssets();
             },
             error: (error) => {
-                console.error('Error loading reference data:', error);
+                console.error('❌ ERROR: forkJoin FAILED!');
+                console.error('This means at least one of the API calls failed.');
+                console.error('❌ ERROR loading reference data:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    status: error.status,
+                    statusText: error.statusText,
+                    url: error.url
+                });
+                console.error('Check the Network tab to see which API call failed:');
+                console.error('- GET /api/programs');
+                console.error('- GET /api/suppliers');
+                console.error('- GET /api/locations');
+                console.error('- GET /api/status');
+                console.error('- GET /api/colors');
+                console.error('- GET /api/brands');
+
                 // Still try to load assets even if reference data fails
                 this.loadAssets();
             }
@@ -1548,96 +1573,311 @@ export class AssetsComponent implements OnInit {
     }
 
     view(item: Asset) {
-        const assetName = item.assetName || item.AssetName || 'Unknown Asset';
-        const icsData = item.inventoryCustodianSlip || {};
-        const icsTableData = this.getIcsTableData(icsData);
-
-        let icsHtml = '';
-        if (icsTableData.length > 0) {
-            icsHtml = `
-                <div style="margin-top: 20px; border-top: 2px solid #ddd; padding-top: 20px;">
-                    <h3 style="color: #1f2937; margin-bottom: 12px; font-size: 16px; font-weight: 600;">📋 Inventory Custodian Slip (ICS) Details</h3>
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #f3f4f6;">
-                                <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Field</th>
-                                <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${icsTableData
-                                .map(
-                                    (row, idx) => `
-                                <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'};">
-                                    <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">${row.field}</td>
-                                    <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${row.value}</td>
-                                </tr>
-                            `
-                                )
-                                .join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
+        if (!item || !item.assetId) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Asset data is missing' });
+            return;
         }
 
-        const html = `
-            <div style="text-align: left; max-height: 70vh; overflow-y: auto;">
-                <h3 style="color: #1f2937; margin-bottom: 12px; font-size: 16px; font-weight: 600;">📦 Asset Details</h3>
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                    <thead>
-                        <tr style="background-color: #f3f4f6;">
-                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Field</th>
-                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="background-color: #ffffff;">
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Asset Name</td>
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${assetName}</td>
-                        </tr>
-                        <tr style="background-color: #f9fafb;">
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Asset ID</td>
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.assetId || 'N/A'}</td>
-                        </tr>
-                        <tr style="background-color: #ffffff;">
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Property Number</td>
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.propertyNumber || item.PropertyNo || 'N/A'}</td>
-                        </tr>
-                        <tr style="background-color: #f9fafb;">
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Category</td>
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.category || item.Category || 'N/A'}</td>
-                        </tr>
-                        <tr style="background-color: #ffffff;">
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Found Cluster</td>
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.foundCluster || item.FoundCluster || 'N/A'}</td>
-                        </tr>
-                        <tr style="background-color: #f9fafb;">
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Issued To</td>
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.issuedTo || item.IssuedTo || 'N/A'}</td>
-                        </tr>
-                        <tr style="background-color: #ffffff;">
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Purpose</td>
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.purpose || item.Purpose || 'N/A'}</td>
-                        </tr>
-                        <tr style="background-color: #f9fafb;">
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Date Acquired</td>
-                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.assetCreated || item.DateAcquired || 'N/A'}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                ${icsHtml}
-            </div>
-        `;
-        Swal.fire({
-            title: 'Asset Details',
-            html,
-            confirmButtonText: 'Close',
-            width: '700px'
+        // Fetch full asset details from API
+        this.assetService.getAsset(item.assetId as any).subscribe({
+            next: (fullAsset: any) => {
+                const assetName = fullAsset.assetName || 'Unknown Asset';
+                const icsData = fullAsset.inventoryCustodianSlip || {};
+                const icsTableData = this.getIcsTableData(icsData);
+                const maintenanceHistory = fullAsset.maintenance_history || [];
+
+                let icsHtml = '';
+                if (icsTableData.length > 0) {
+                    icsHtml = `
+                        <!-- ICS Details Accordion -->
+                        <div class="accordion-section">
+                            <div class="accordion-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active'); this.querySelector('.accordion-icon').classList.toggle('active');">
+                                <span>📋 Inventory Custodian Slip (ICS) Details</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f3f4f6;">
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Field</th>
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${icsTableData
+                                            .map(
+                                                (row, idx) => `
+                                            <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'};">
+                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">${row.field}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${row.value}</td>
+                                            </tr>
+                                        `
+                                            )
+                                            .join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let maintenanceHtml = '';
+                if (maintenanceHistory.length > 0) {
+                    maintenanceHtml = `
+                        <!-- Maintenance History Accordion -->
+                        <div class="accordion-section">
+                            <div class="accordion-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active'); this.querySelector('.accordion-icon').classList.toggle('active');">
+                                <span>🔧 Maintenance History (${maintenanceHistory.length})</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f3f4f6;">
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Date</th>
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Type</th>
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Status</th>
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Service</th>
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${maintenanceHistory
+                                            .map(
+                                                (maint: any, idx: number) => `
+                                            <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'};">
+                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${new Date(maint.maintenance_date).toLocaleDateString()}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${maint.maintenance_type || 'N/A'}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${maint.maintenance_status || 'N/A'}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${maint.service || 'N/A'}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${maint.remarks || 'N/A'}</td>
+                                            </tr>
+                                        `
+                                            )
+                                            .join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    maintenanceHtml = `
+                        <!-- Maintenance History Accordion -->
+                        <div class="accordion-section">
+                            <div class="accordion-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active'); this.querySelector('.accordion-icon').classList.toggle('active');">
+                                <span>🔧 Maintenance History</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <p style="color: #6b7280; font-size: 13px; font-style: italic; margin: 0;">No maintenance history available</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const html = `
+                    <style>
+                        .accordion-section {
+                            border: 1px solid #e5e7eb;
+                            border-radius: 8px;
+                            margin-bottom: 12px;
+                            overflow: hidden;
+                        }
+                        .accordion-header {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            padding: 14px 18px;
+                            cursor: pointer;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            font-weight: 600;
+                            font-size: 14px;
+                            transition: all 0.3s ease;
+                        }
+                        .accordion-header:hover {
+                            opacity: 0.9;
+                        }
+                        .accordion-content {
+                            max-height: 0;
+                            overflow: hidden;
+                            transition: max-height 0.3s ease;
+                            background: white;
+                        }
+                        .accordion-content.active {
+                            max-height: 2000px;
+                            padding: 18px;
+                        }
+                        .accordion-icon {
+                            transition: transform 0.3s ease;
+                            font-size: 12px;
+                        }
+                        .accordion-icon.active {
+                            transform: rotate(180deg);
+                        }
+                    </style>
+                    <div style="text-align: left; max-height: 70vh; overflow-y: auto;">
+                        <!-- Asset Details Accordion -->
+                        <div class="accordion-section">
+                            <div class="accordion-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active'); this.querySelector('.accordion-icon').classList.toggle('active');">
+                                <span>📦 Asset Details</span>
+                                <span class="accordion-icon active">▼</span>
+                            </div>
+                            <div class="accordion-content active">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f3f4f6;">
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Field</th>
+                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Asset Name</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${assetName}</td>
+                                        </tr>
+                                        <tr style="background-color: #f9fafb;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Asset ID</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.assetId || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Property Number</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.propertyNumber || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #f9fafb;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Category</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.category || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Found Cluster</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.foundCluster || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #f9fafb;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Issued To</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.issuedTo || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Purpose</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.purpose || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #f9fafb;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Program</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.program?.programName || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Status</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.status?.statusName || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #f9fafb;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Laboratory</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.laboratories?.laboratoryName || 'N/A'} ${fullAsset.laboratories?.laboratoryLocation ? '(' + fullAsset.laboratories.laboratoryLocation + ')' : ''}</td>
+                                        </tr>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Campus</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.campus?.campusName || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #f9fafb;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Supplier</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.supplier || 'N/A'}</td>
+                                        </tr>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Date Created</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.assetCreated ? new Date(fullAsset.assetCreated).toLocaleDateString() : 'N/A'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        ${icsHtml}
+                        ${maintenanceHtml}
+                    </div>
+                `;
+
+                const buttons: any = {
+                    confirmButtonText: 'Close',
+                    confirmButtonColor: '#6b7280'
+                };
+
+                // Show Edit button only for LabTech
+                if (this.isLabTech) {
+                    buttons.showDenyButton = true;
+                    buttons.denyButtonText = 'Edit Asset';
+                    buttons.denyButtonColor = '#667eea';
+                }
+
+                Swal.fire({
+                    title: 'Asset Details',
+                    html,
+                    width: '900px',
+                    ...buttons
+                }).then((result) => {
+                    if (result.isDenied && this.isLabTech) {
+                        // Open edit modal
+                        this.edit(fullAsset);
+                    }
+                });
+            },
+            error: (error) => {
+                console.error('Error fetching asset details:', error);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to load asset details'
+                });
+            }
         });
     }
 
     edit(item: Asset) {
+        if (!item || !item.assetId) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Asset data is missing' });
+            return;
+        }
+
+        // Check if reference data is loaded, if not reload it
+        if (this.programs.length === 0 || this.brands.length === 0 || this.colors.length === 0) {
+            console.warn('⚠️ Reference data not loaded. Reloading...');
+            this.messageService.add({
+                severity: 'info',
+                summary: 'Loading',
+                detail: 'Loading dropdown data...'
+            });
+
+            // Reload reference data and then open edit modal
+            forkJoin({
+                programs: this.assetService.getPrograms(),
+                colors: this.assetService.getColors(),
+                brands: this.assetService.getBrands()
+            }).subscribe({
+                next: (data) => {
+                    this.programs = data.programs || [];
+                    this.colors = data.colors || [];
+                    this.brands = data.brands || [];
+
+                    console.log('✅ Reference data reloaded:');
+                    console.log('Programs:', this.programs.length);
+                    console.log('Colors:', this.colors.length);
+                    console.log('Brands:', this.brands.length);
+
+                    // Now open the edit modal
+                    this.openEditModal(item);
+                },
+                error: (error) => {
+                    console.error('❌ Failed to reload reference data:', error);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Failed to load dropdown data. Please try again or refresh the page.'
+                    });
+                }
+            });
+        } else {
+            // Reference data is already loaded, proceed with edit
+            this.openEditModal(item);
+        }
+    }
+
+    openEditModal(item: Asset) {
         if (!item || !item.assetId) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Asset data is missing' });
             return;
@@ -1673,8 +1913,34 @@ export class AssetsComponent implements OnInit {
         const serialNumber = ics.serialNumber || '';
         const modelNumber = ics.modelNumber || '';
         const estimatedUsefullLife = ics.estimatedUsefullLife || '';
-        const brand = ics.brand || '';
-        const color = ics.color || '';
+        const brand = ics.brand?.brandId || ics.brand || '';
+        const color = ics.color?.colorId || ics.color || '';
+
+        // Debug logging
+        console.log('🔍 Edit Asset - Dropdown Data:');
+        console.log('Programs available:', this.programs.length, this.programs);
+        console.log('Brands available:', this.brands.length, this.brands);
+        console.log('Colors available:', this.colors.length, this.colors);
+        console.log('Selected program:', program);
+        console.log('Selected brand:', brand);
+        console.log('Selected color:', color);
+
+        if (this.programs.length === 0 || this.brands.length === 0 || this.colors.length === 0) {
+            console.error('❌ ERROR: Dropdown arrays are still empty after reload!');
+            console.error('Check the Network tab in DevTools to see if these API calls succeeded:');
+            console.error('- GET /api/programs');
+            console.error('- GET /api/colors');
+            console.error('- GET /api/brands');
+        }
+
+        // Build program dropdown options
+        const programOptions = this.programs.map((p) => `<option value="${p.programId}" ${p.programId === program ? 'selected' : ''}>${p.programName}</option>`).join('');
+
+        // Build brand dropdown options
+        const brandOptions = this.brands.map((b) => `<option value="${b.brandId}" ${b.brandId === brand ? 'selected' : ''}>${b.brandName}</option>`).join('');
+
+        // Build color dropdown options
+        const colorOptions = this.colors.map((c) => `<option value="${c.colorId}" ${c.colorId === color ? 'selected' : ''}>${c.colorName}</option>`).join('');
 
         const html = `
             <div style="text-align: left; max-width: 750px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; max-height: 70vh; overflow-y: auto; padding-right: 10px;">
@@ -1716,7 +1982,10 @@ export class AssetsComponent implements OnInit {
                         </div>
                         <div>
                             <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Program</label>
-                            <input type="text" id="program" value="${program}" placeholder="Program ID" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+                            <select id="program" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;">
+                                <option value="">Select Program</option>
+                                ${programOptions}
+                            </select>
                         </div>
                         <div>
                             <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Supplier</label>
@@ -1791,11 +2060,17 @@ export class AssetsComponent implements OnInit {
                         </div>
                         <div>
                             <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Brand</label>
-                            <input type="text" id="brand" value="${brand}" placeholder="Brand" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+                            <select id="brand" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;">
+                                <option value="">Select Brand</option>
+                                ${brandOptions}
+                            </select>
                         </div>
                         <div>
                             <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Color</label>
-                            <input type="text" id="color" value="${color}" placeholder="Color" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
+                            <select id="color" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;">
+                                <option value="">Select Color</option>
+                                ${colorOptions}
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -1822,7 +2097,7 @@ export class AssetsComponent implements OnInit {
                     foundCluster: (document.getElementById('foundCluster') as HTMLInputElement)?.value.trim() || '',
                     purpose: (document.getElementById('purpose') as HTMLInputElement)?.value.trim() || '',
                     issuedTo: (document.getElementById('issuedTo') as HTMLInputElement)?.value.trim() || '',
-                    program: (document.getElementById('program') as HTMLInputElement)?.value.trim() || '',
+                    program: (document.getElementById('program') as HTMLSelectElement)?.value.trim() || '',
                     supplier: (document.getElementById('supplier') as HTMLInputElement)?.value.trim() || '',
                     laboratories: (document.getElementById('laboratories') as HTMLInputElement)?.value.trim() || '',
                     inventoryCustodianSlip: {
@@ -1840,20 +2115,39 @@ export class AssetsComponent implements OnInit {
                         serialNumber: (document.getElementById('serialNumber') as HTMLInputElement)?.value.trim() || '',
                         modelNumber: (document.getElementById('modelNumber') as HTMLInputElement)?.value.trim() || '',
                         estimatedUsefullLife: (document.getElementById('estimatedUsefullLife') as HTMLInputElement)?.value.trim() || '',
-                        brand: (document.getElementById('brand') as HTMLInputElement)?.value.trim() || '',
-                        color: (document.getElementById('color') as HTMLInputElement)?.value.trim() || ''
+                        brand: (document.getElementById('brand') as HTMLSelectElement)?.value.trim() || '',
+                        color: (document.getElementById('color') as HTMLSelectElement)?.value.trim() || ''
                     }
                 };
             }
         }).then((result) => {
             if (result.isConfirmed && result.value) {
-                this.assetService.patchAsset(assetId as any, result.value).subscribe({
-                    next: () => {
-                        Swal.fire('Asset updated successfully');
-                        this.loadAssets();
-                    },
-                    error: (err) => {
-                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update asset' });
+                // Show confirmation modal before saving
+                Swal.fire({
+                    title: 'Confirm Update?',
+                    text: 'Are you sure you want to save these changes to the asset?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#667eea',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Save Changes',
+                    cancelButtonText: 'Cancel'
+                }).then((confirmResult) => {
+                    if (confirmResult.isConfirmed) {
+                        this.assetService.patchAsset(assetId as any, result.value).subscribe({
+                            next: () => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Asset updated successfully',
+                                    confirmButtonColor: '#667eea'
+                                });
+                                this.loadAssets();
+                            },
+                            error: (err) => {
+                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update asset' });
+                            }
+                        });
                     }
                 });
             }

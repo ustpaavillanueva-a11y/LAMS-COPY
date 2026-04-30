@@ -216,7 +216,7 @@ export class MaintenanceService {
      * Confirm Schedule - Lab tech confirms that scheduled maintenance time is available
      * Status transition: Pending → Scheduled
      */
-    confirmSchedule(id: string, data: { notes?: string }): Observable<any> {
+    confirmSchedule(id: string, data: { isStarting?: boolean; notes?: string; reason?: string }): Observable<any> {
         const url = `${this.baseApiUrl}/maintenance-approvals/${id}/confirm-schedule`;
         return this.http.post<any>(url, data);
     }
