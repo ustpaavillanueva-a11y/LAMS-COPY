@@ -1,5 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
+
+// PrimeNG
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { TableModule, Table } from 'primeng/table';
@@ -10,14 +15,24 @@ import { ToastModule } from 'primeng/toast';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { MessageService } from 'primeng/api';
-import { FormsModule } from '@angular/forms';
+
+// Core
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+
+// Shared
+import { DialogService } from '../../shared/services/dialog.service';
+import { ExportService, ExportColumn } from '../../shared/services/export.service';
+import { debounceInput } from '../../shared/utils/rxjs-operators';
+
+// Services
 import { AssetService, Status } from '../service/asset.service';
-import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-status',
     standalone: true,
-    imports: [CommonModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, FormsModule],
+    imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule],
     styleUrls: ['../../../assets/pages/_assetcategory.scss'],
     providers: [MessageService],
     template: `
@@ -25,21 +40,22 @@ import Swal from 'sweetalert2';
         <p-toolbar styleClass="mb-4">
             <ng-template #start>
                 <div class="flex items-center gap-2">
-                    <p-button label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNewDialog()" />
-                    <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length" />
+                    <p-button label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNewDialog()" [disabled]="isUpdating" />
+                    <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length || isDeleting" />
                 </div>
             </ng-template>
             <ng-template #end>
                 <div class="flex items-center gap-2">
-                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportData()" />
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="filter()" placeholder="Search statuses..." />
+                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="onSearchInput()" placeholder="Search statuses..." />
                     </p-iconfield>
                 </div>
             </ng-template>
         </p-toolbar>
         <p-table
+            #dt
             [value]="filteredItems"
             [rows]="10"
             [paginator]="true"
@@ -68,9 +84,8 @@ import Swal from 'sweetalert2';
                     <td>{{ row.statusName }}</td>
                     <td>
                         <div class="flex gap-2">
-                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(row)" />
-                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="edit(row)" />
-                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" />
+                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="edit(row)" [disabled]="isUpdating" />
+                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" [disabled]="isDeleting" />
                         </div>
                     </td>
                 </tr>
@@ -83,177 +98,301 @@ import Swal from 'sweetalert2';
         </p-table>
     `
 })
-export class StatusComponent implements OnInit {
+export class StatusComponent extends BaseComponent implements OnInit {
+    // State management
+    loadingState: LoadingState = LoadingState.IDLE;
+    isUpdating: boolean = false;
+    isDeleting: boolean = false;
+
     items: Status[] = [];
     filteredItems: Status[] = [];
     selectedItems: Status[] = [];
-    searchValue: string = '';
-    loading: boolean = true;
+
+    // Table columns
+    columns: TableColumn[] = [
+        { field: 'statusId', header: 'ID', sortable: true },
+        { field: 'statusName', header: 'Status', sortable: true }
+    ];
+
+    private searchSubject$ = new Subject<string>();
+
+    // Computed properties
+    get loading(): boolean {
+        return isLoading(this.loadingState);
+    }
 
     constructor(
+        private assetService: AssetService,
         private messageService: MessageService,
-        private assetService: AssetService
-    ) {}
+        private dialogService: DialogService,
+        private exportService: ExportService,
+        private errorHandler: ErrorHandlerService
+    ) {
+        super();
+    }
 
     ngOnInit() {
         this.loadItems();
+        this.setupSearchDebounce();
     }
 
-    loadItems() {
-        this.loading = true;
-
-        this.assetService.getStatuses().subscribe({
-            next: (data) => {
-                if (data && data.length > 0) {
-                }
-                this.items = data || [];
-                this.filteredItems = [...this.items];
-                this.loading = false;
-            },
-            error: (error) => {
-                console.error('❌ Error loading statuses:', error);
-                console.error('🚨 Error status code:', error?.status);
-                console.error('💬 Error message:', error?.message);
-                console.error('📝 Error details:', error?.error);
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load statuses: ' + (error?.error?.message || error?.message) });
-                this.loading = false;
-            }
+    /**
+     * Setup search debouncing
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.filterData(searchTerm);
         });
     }
 
-    filter() {
+    /**
+     * Handle search input
+     */
+    onSearchInput(searchTerm: string): void {
+        this.searchSubject$.next(searchTerm);
+    }
+
+    /**
+     * Filter data based on search term
+     */
+    private filterData(searchTerm: string): void {
+        if (!searchTerm) {
+            this.filteredItems = [...this.items];
+            return;
+        }
+
+        const term = searchTerm.toLowerCase();
+        this.filteredItems = this.items.filter((item) => item.statusName?.toLowerCase().includes(term) || item.statusId?.toString().toLowerCase().includes(term));
+    }
+
+    /**
+     * Load statuses
+     */
+    loadItems(): void {
+        if (this.loading) return;
+
+        this.loadingState = LoadingState.LOADING;
+
+        this.assetService
+            .getStatuses()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
+                    }
+                })
+            )
+            .subscribe({
+                next: (data) => {
+                    this.items = data || [];
+                    this.filteredItems = [...this.items];
+                    this.loadingState = LoadingState.SUCCESS;
+                },
+                error: (error) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'loading statuses');
+                }
+            });
+    }
+
+    /**
+     * Filter statuses
+     */
+    filter(): void {
         this.filteredItems = this.items.filter((item) => item.statusName?.toLowerCase().includes(this.searchValue.toLowerCase()));
     }
 
-    onSelectionChange(event: any) {
-    }
+    onSelectionChange(event: any) {}
 
-    openNewDialog() {
-        Swal.fire({
+    /**
+     * Open dialog to create new status
+     */
+    async openNewDialog(): Promise<void> {
+        if (this.isUpdating) return;
+
+        const result = await this.dialogService.showForm({
             title: 'New Status',
-            html: `<input type="text" id="statusName" class="swal2-input" placeholder="Status Name" />`,
-            confirmButtonText: 'Create',
-            cancelButtonText: 'Cancel',
-            showCancelButton: true,
-            preConfirm: () => {
-                const statusName = (document.getElementById('statusName') as HTMLInputElement)?.value.trim();
-                if (!statusName) {
-                    Swal.showValidationMessage('Status name is required');
-                    return false;
+            fields: [
+                {
+                    name: 'statusName',
+                    label: 'Status Name',
+                    type: 'text',
+                    required: true,
+                    placeholder: 'Enter status name'
                 }
-                return { statusName };
-            }
-        }).then((res) => {
-            if (res.isConfirmed && res.value) {
-                this.assetService.createStatus(res.value).subscribe({
-                    next: (created) => {
-                        this.items.push(created);
-                        this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Created', detail: 'Status created' });
-                    },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Create failed' })
-                });
-            }
+            ]
         });
+
+        if (!result.isConfirmed) return;
+
+        this.isUpdating = true;
+
+        this.assetService
+            .createStatus(result.value)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: (created) => {
+                    this.items.push(created);
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Status created successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'creating status');
+                }
+            });
     }
 
-    view(item: Status) {
-        Swal.fire({
-            title: 'View Status',
-            html: `
-                <div style="text-align: left;">
-                    <p><strong>Status Name:</strong> ${item.statusName}</p>
-                </div>
-            `,
-            icon: 'info'
-        });
-    }
+    /**
+     * Edit status
+     */
+    async edit(item: Status): Promise<void> {
+        if (this.isUpdating) return;
 
-    edit(item: Status) {
-        Swal.fire({
+        const result = await this.dialogService.showForm({
             title: 'Edit Status',
-            html: `<input type="text" id="statusName" class="swal2-input" value="${item.statusName}" />`,
-            confirmButtonText: 'Update',
-            cancelButtonText: 'Cancel',
-            showCancelButton: true,
-            preConfirm: () => {
-                const statusName = (document.getElementById('statusName') as HTMLInputElement)?.value.trim();
-                if (!statusName) {
-                    Swal.showValidationMessage('Status name is required');
-                    return false;
+            fields: [
+                {
+                    name: 'statusName',
+                    label: 'Status Name',
+                    type: 'text',
+                    required: true,
+                    value: item.statusName
                 }
-                return { statusName };
-            }
-        }).then((res) => {
-            if (res.isConfirmed && res.value) {
-                this.assetService.updateStatus(item.statusId!, res.value).subscribe({
-                    next: (updated) => {
-                        const idx = this.items.findIndex((s) => s.statusId === updated.statusId);
-                        if (idx > -1) this.items[idx] = updated;
-                        this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Updated', detail: 'Status updated' });
-                    },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Update failed' })
-                });
-            }
+            ]
         });
+
+        if (!result.isConfirmed) return;
+
+        this.isUpdating = true;
+
+        this.assetService
+            .updateStatus(item.statusId!, result.value)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: (updated) => {
+                    const idx = this.items.findIndex((s) => s.statusId === updated.statusId);
+                    if (idx > -1) this.items[idx] = updated;
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Status updated successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'updating status');
+                }
+            });
     }
 
-    delete(item: Status) {
-        Swal.fire({
-            title: 'Delete Status',
-            text: `Delete "${item.statusName}"?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Delete'
-        }).then((res) => {
-            if (res.isConfirmed) {
-                this.assetService.deleteStatus(item.statusId!).subscribe({
+    /**
+     * Delete status
+     */
+    async delete(item: Status): Promise<void> {
+        if (this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirmDelete(`status "${item.statusName}"`);
+        if (!confirmed.isConfirmed) return;
+
+        this.isDeleting = true;
+
+        this.assetService
+            .deleteStatus(item.statusId!)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isDeleting = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.items = this.items.filter((s) => s.statusId !== item.statusId);
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Status deleted successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'deleting status');
+                }
+            });
+    }
+
+    /**
+     * Delete selected statuses
+     */
+    async deleteSelected(): Promise<void> {
+        if (!this.selectedItems?.length || this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirm('Delete Selected', `Are you sure you want to delete ${this.selectedItems.length} status(es)?`);
+
+        if (!confirmed.isConfirmed) return;
+
+        this.isDeleting = true;
+        let deletedCount = 0;
+        let failedCount = 0;
+        const totalCount = this.selectedItems.length;
+
+        this.selectedItems.forEach((item) => {
+            this.assetService
+                .deleteStatus(item.statusId!)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
                     next: () => {
-                        this.items = this.items.filter((s) => s.statusId !== item.statusId);
-                        this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Status deleted' });
+                        deletedCount++;
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
                     },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Delete failed' })
+                    error: (error) => {
+                        failedCount++;
+                        console.error(`Failed to delete status ${item.statusId}:`, error);
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    }
                 });
-            }
         });
     }
 
-    deleteSelected() {
-        if (!this.selectedItems?.length) return;
-        Swal.fire({
-            title: 'Delete Selected',
-            text: `Delete ${this.selectedItems.length} status(es)?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Delete'
-        }).then((res) => {
-            if (res.isConfirmed) {
-                const ids = this.selectedItems.map((s) => s.statusId!);
-                Promise.all(ids.map((id) => this.assetService.deleteStatus(id).toPromise()))
-                    .then(() => {
-                        this.items = this.items.filter((s) => !ids.includes(s.statusId!));
-                        this.filteredItems = [...this.items];
-                        this.selectedItems = [];
-                        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Selected statuses deleted' });
-                    })
-                    .catch(() => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Bulk delete failed' }));
+    /**
+     * Check if bulk delete operation is complete
+     */
+    private checkBulkDeleteComplete(deleted: number, failed: number, total: number): void {
+        if (deleted + failed === total) {
+            this.isDeleting = false;
+
+            // Reload items to get fresh state
+            this.loadItems();
+            this.selectedItems = [];
+
+            if (failed === 0) {
+                this.dialogService.showSuccess(`${deleted} status(es) deleted successfully`);
+            } else {
+                this.dialogService.showWarning(`${deleted} status(es) deleted, ${failed} failed`, 'Partial Delete');
             }
-        });
+        }
     }
 
-    exportCSV() {
-        let csv = 'Status Name,ID\n';
-        this.items.forEach((item) => {
-            csv += `${(item.statusName || '').replace(/,/g, ';')},${item.statusId}\n`;
+    /**
+     * Export data to CSV
+     */
+    exportData(): void {
+        if (this.items.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'No data to export'
+            });
+            return;
+        }
+
+        const exportColumns: ExportColumn[] = [
+            { field: 'statusName', header: 'Status Name' },
+            { field: 'statusId', header: 'ID' }
+        ];
+
+        this.exportService.exportToCsv(this.items, 'statuses', exportColumns);
+
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Data exported to CSV'
         });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'statuses.csv';
-        a.click();
-        URL.revokeObjectURL(url);
     }
 }

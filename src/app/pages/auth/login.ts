@@ -8,8 +8,12 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { MessageModule } from 'primeng/message';
 import { HttpClientModule } from '@angular/common/http';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 import { AuthService } from '../service/auth.service';
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -43,7 +47,7 @@ import Swal from 'sweetalert2';
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                             </div>
 
-                            <p-button label="Sign In" styleClass="w-full" [loading]="isLoading" (onClick)="onLogin()"> </p-button>
+                            <p-button label="Sign In" styleClass="w-full" [loading]="isLoadingState" [disabled]="isLoadingState" (onClick)="onLogin()"> </p-button>
                         </div>
                     </div>
                 </div>
@@ -51,65 +55,75 @@ import Swal from 'sweetalert2';
         </div>
     `
 })
-export class Login {
+export class Login extends BaseComponent {
     email: string = '';
     password: string = '';
     checked: boolean = false;
-    isLoading: boolean = false;
+    loadingState: LoadingState = LoadingState.IDLE;
 
     constructor(
         private authService: AuthService,
-        private router: Router
-    ) {}
+        private router: Router,
+        private errorHandler: ErrorHandlerService
+    ) {
+        super();
+    }
+
+    // Getter for template
+    get isLoadingState(): boolean {
+        return isLoading(this.loadingState);
+    }
 
     onLogin(): void {
+        // Input validation
         if (!this.email || !this.password) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Missing Information',
-                text: 'Please enter both email and password',
-                confirmButtonColor: '#3B82F6'
-            });
+            this.errorHandler.showWarning('Please enter both email and password', 'Missing Information');
             return;
         }
 
-        this.isLoading = true;
+        // Prevent duplicate login attempts
+        if (this.isLoadingState) {
+            return;
+        }
 
-        this.authService.login(this.email, this.password).subscribe({
-            next: (response) => {
-                this.isLoading = false;
-               
-                if (response.success) {
-                    const userName = response.user?.firstName || response.user?.firstName || 'User';
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Login Successful!',
-                        text: `Welcome back, ${userName}!`,
-                        timer: 2000,
-                        showConfirmButton: false,
-                        confirmButtonColor: '#10B981'
-                    }).then(() => {
-                        this.router.navigate(['/app']);
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Login Failed',
-                        text: response.message || 'Invalid email or password',
-                        confirmButtonColor: '#EF4444'
-                    });
+        this.loadingState = LoadingState.LOADING;
+
+        this.authService
+            .login(this.email, this.password)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    // Always reset to idle state when done
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
+                    }
+                })
+            )
+            .subscribe({
+                next: (response) => {
+                    if (response.success) {
+                        const userName = response.user?.firstName || response.user?.lastName || 'User';
+                        this.loadingState = LoadingState.SUCCESS;
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Login Successful!',
+                            text: `Welcome back, ${userName}!`,
+                            timer: 2000,
+                            showConfirmButton: false,
+                            confirmButtonColor: '#10B981'
+                        }).then(() => {
+                            this.router.navigate(['/app']);
+                        });
+                    } else {
+                        this.loadingState = LoadingState.ERROR;
+                        this.errorHandler.showWarning(response.message || 'Invalid email or password', 'Login Failed');
+                    }
+                },
+                error: (error) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'Login attempt', 'Unable to connect to the server. Please check your connection and try again.');
                 }
-            },
-            error: (error) => {
-                this.isLoading = false;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Connection Error',
-                    text: 'Unable to connect to the server. Please try again.',
-                    confirmButtonColor: '#EF4444'
-                });
-                console.error('Login error:', error);
-            }
-        });
+            });
     }
 }

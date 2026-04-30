@@ -1,6 +1,11 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
+
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
@@ -17,17 +22,41 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { DatePickerModule } from 'primeng/datepicker';
 import { MessageService } from 'primeng/api';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-import { ActivatedRoute, Router } from '@angular/router';
-import Swal from 'sweetalert2';
+
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { DialogService } from '../../shared/services/dialog.service';
+import { ExportService, ExportColumn } from '../../shared/services/export.service';
+import { debounceInput } from '../../shared/utils/rxjs-operators';
+
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-laboratories',
     standalone: true,
-    imports: [CommonModule, TableModule, FormsModule, ButtonModule, RippleModule, ToastModule, ToolbarModule, InputTextModule, TagModule, InputIconModule, IconFieldModule, TooltipModule, DialogModule, SelectModule, InputNumberModule, TextareaModule, DatePickerModule],
+    imports: [
+        CommonModule,
+        TableModule,
+        FormsModule,
+        ButtonModule,
+        RippleModule,
+        ToastModule,
+        ToolbarModule,
+        InputTextModule,
+        TagModule,
+        InputIconModule,
+        IconFieldModule,
+        TooltipModule,
+        DialogModule,
+        SelectModule,
+        InputNumberModule,
+        TextareaModule,
+        DatePickerModule
+    ],
     providers: [MessageService],
     template: `
         <p-toast />
@@ -252,18 +281,21 @@ import { saveAs } from 'file-saver';
                                     <td class="border border-gray-300 px-2 py-1 text-center text-xs font-medium bg-gray-100">Available Hrs</td>
                                     <td class="border border-gray-300 px-2 py-1 text-center" *ngFor="let hrs of lab.availableHours">{{ hrs }}</td>
                                     <td class="border border-gray-300 px-2 py-1 text-center font-bold">{{ lab.totalAvailable }}</td>
-                                    <td class="border border-gray-300 px-2 py-1 text-center font-bold text-lg text-black" [attr.rowspan]="2">
-                                        {{ lab.totalAvailable > 0 ? (lab.utilization | number:'1.2-2') : '0.00' }}%
-                                    </td>
+                                    <td class="border border-gray-300 px-2 py-1 text-center font-bold text-lg text-black" [attr.rowspan]="2">{{ lab.totalAvailable > 0 ? (lab.utilization | number: '1.2-2') : '0.00' }}%</td>
                                 </tr>
                                 <!-- Actual Hours Row -->
                                 <tr [ngClass]="{ 'bg-blue-50': i % 2 === 0, 'bg-white': i % 2 !== 0 }">
                                     <td class="border border-gray-300 px-2 py-1 text-center text-xs font-medium bg-gray-100">Actual Hrs</td>
                                     <td class="border border-gray-300 px-1 py-0 text-center" *ngFor="let hrs of lab.actualHours; let j = index">
-                                        <input type="number" [value]="hrs" min="0" [max]="lab.availableHours[j]"
+                                        <input
+                                            type="number"
+                                            [value]="hrs"
+                                            min="0"
+                                            [max]="lab.availableHours[j]"
                                             class="w-full text-center border-0 bg-transparent outline-none py-1 text-sm text-black"
                                             style="appearance: textfield; -moz-appearance: textfield; -webkit-appearance: none;"
-                                            (change)="onActualHoursChange(i, j, $event)" />
+                                            (change)="onActualHoursChange(i, j, $event)"
+                                        />
                                     </td>
                                     <td class="border border-gray-300 px-2 py-1 text-center font-bold text-black">{{ lab.totalActual }}</td>
                                 </tr>
@@ -316,17 +348,24 @@ import { saveAs } from 'file-saver';
         </p-dialog>
     `
 })
-export class LaboratoriesComponent implements OnInit {
+export class LaboratoriesComponent extends BaseComponent implements OnInit {
     @ViewChild('dt') dt: Table | undefined;
+
+    // State management
+    loadingState: LoadingState = LoadingState.IDLE;
+    isUpdating: boolean = false;
+    isDeleting: boolean = false;
 
     laboratories: any[] = [];
     filteredLaboratories: any[] = [];
     selectedLabs: any[] = [];
     selectedAssets: any[] = [];
-    searchValue: string = '';
-    loading: boolean = true;
     selectedLaboratoryId: string | null = null;
     selectedLaboratoryData: any = null;
+
+    // Search
+    private searchSubject$ = new Subject<string>();
+    private currentSearchTerm: string = '';
 
     // Dialog state
     labDialog: boolean = false;
@@ -340,6 +379,11 @@ export class LaboratoriesComponent implements OnInit {
     reportWeekData: any[] = [];
     headerImgUrl = `${window.location.origin}/header.png`;
 
+    // Computed properties
+    get loading(): boolean {
+        return isLoading(this.loadingState);
+    }
+
     private apiUrl = `${environment.apiUrl}/laboratories`;
 
     constructor(
@@ -347,12 +391,19 @@ export class LaboratoriesComponent implements OnInit {
         private http: HttpClient,
         private route: ActivatedRoute,
         private router: Router,
-        private cdr: ChangeDetectorRef
-    ) {}
+        private cdr: ChangeDetectorRef,
+        private dialogService: DialogService,
+        private exportService: ExportService,
+        private errorHandler: ErrorHandlerService
+    ) {
+        super();
+    }
 
     ngOnInit() {
+        this.setupSearchDebounce();
+
         // Check if navigated with a specific laboratory ID
-        this.route.paramMap.subscribe((params) => {
+        this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
             const labId = params.get('id');
             if (labId) {
                 this.selectedLaboratoryId = labId;
@@ -360,6 +411,16 @@ export class LaboratoriesComponent implements OnInit {
             } else {
                 this.loadLaboratories();
             }
+        });
+    }
+
+    /**
+     * Setup debounced search
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.currentSearchTerm = searchTerm;
+            this.filter();
         });
     }
 
@@ -373,51 +434,57 @@ export class LaboratoriesComponent implements OnInit {
     }
 
     loadLaboratories(laboratoryId?: string) {
-        this.loading = true;
+        if (this.loading) return;
 
-        this.http.get<any[]>(this.apiUrl).subscribe({
-            next: (data: any[]) => {
-                if (data && data.length > 0) {
-                }
-                console.table(data);
-                this.laboratories = data || [];
+        this.loadingState = LoadingState.LOADING;
 
-                // If a specific laboratory ID is provided, filter to show only that one
-                if (laboratoryId) {
-                    const filtered = this.laboratories.filter((lab) => lab.laboratoryId === laboratoryId);
-                    if (filtered.length > 0) {
-                        this.selectedLaboratoryData = filtered[0];
-                        this.filteredLaboratories = filtered;
-                    } else {
-                        console.warn('⚠️ Laboratory not found with ID:', laboratoryId);
-                        this.filteredLaboratories = [];
+        this.http
+            .get<any[]>(this.apiUrl)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
                     }
-                } else {
-                    this.filteredLaboratories = [...this.laboratories];
-                }
+                })
+            )
+            .subscribe({
+                next: (data: any[]) => {
+                    this.laboratories = data || [];
 
-                this.loading = false;
-            },
-            error: (error: any) => {
-                console.error('❌ Error loading laboratories:', error);
-                console.error('Error status:', error?.status);
-                console.error('Error message:', error?.message);
-                console.error('Error details:', error?.error);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Failed to load laboratories: ' + error?.message
-                });
-                this.loading = false;
-            }
-        });
+                    // If a specific laboratory ID is provided, filter to show only that one
+                    if (laboratoryId) {
+                        const filtered = this.laboratories.filter((lab) => lab.laboratoryId === laboratoryId);
+                        if (filtered.length > 0) {
+                            this.selectedLaboratoryData = filtered[0];
+                            this.filteredLaboratories = filtered;
+                        } else {
+                            console.warn('⚠️ Laboratory not found with ID:', laboratoryId);
+                            this.filteredLaboratories = [];
+                        }
+                    } else {
+                        this.filteredLaboratories = [...this.laboratories];
+                    }
+
+                    this.loadingState = LoadingState.SUCCESS;
+                },
+                error: (error: any) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'loading laboratories');
+                }
+            });
     }
 
     filter() {
+        const searchValue = this.currentSearchTerm.toLowerCase();
+
+        if (!searchValue.trim()) {
+            this.filteredLaboratories = [...this.laboratories];
+            return;
+        }
+
         this.filteredLaboratories = this.laboratories.filter((lab) => {
-            return (
-                lab.laboratoryName?.toLowerCase().includes(this.searchValue.toLowerCase()) || lab.laboratoryId?.toLowerCase().includes(this.searchValue.toLowerCase()) || lab.campus?.campusName?.toLowerCase().includes(this.searchValue.toLowerCase())
-            );
+            return lab.laboratoryName?.toLowerCase().includes(searchValue) || lab.laboratoryId?.toLowerCase().includes(searchValue) || lab.campus?.campusName?.toLowerCase().includes(searchValue);
         });
     }
 
@@ -443,30 +510,30 @@ export class LaboratoriesComponent implements OnInit {
             return;
         }
 
+        if (this.isUpdating) return;
+        this.isUpdating = true;
+
         const payload = {
             laboratoryName: this.newLab.laboratoryName,
             laboratoryLocation: this.newLab.laboratoryLocation
         };
 
-        this.http.post<any>(this.apiUrl, payload).subscribe({
-            next: (response) => {
-                Swal.fire({
-                    title: 'Good job!',
-                    text: 'Laboratory created successfully!',
-                    icon: 'success'
-                });
-                this.closeDialog();
-                this.loadLaboratories();
-            },
-            error: (error) => {
-                console.error('❌ Error creating laboratory:', error);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Failed to create laboratory: ' + (error?.error?.message || error?.message)
-                });
-            }
-        });
+        this.http
+            .post<any>(this.apiUrl, payload)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: (response) => {
+                    this.dialogService.showSuccess('Laboratory created successfully');
+                    this.closeDialog();
+                    this.loadLaboratories();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'creating laboratory');
+                }
+            });
     }
 
     view(lab: any) {
@@ -482,21 +549,82 @@ export class LaboratoriesComponent implements OnInit {
         this.labDialog = true;
     }
 
-    delete(lab: any) {
-        this.messageService.add({
-            severity: 'warn',
-            summary: 'Delete Laboratory',
-            detail: `Delete: ${lab.laboratoryName}?`
+    async delete(lab: any) {
+        if (this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirmDelete(`laboratory "${lab.laboratoryName}"`);
+        if (!confirmed.isConfirmed) return;
+
+        this.isDeleting = true;
+
+        this.http
+            .delete(`${this.apiUrl}/${lab.laboratoryId}`)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isDeleting = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.dialogService.showSuccess('Laboratory deleted successfully');
+                    this.loadLaboratories();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'deleting laboratory');
+                }
+            });
+    }
+
+    async deleteSelected() {
+        if (!this.selectedLabs || this.selectedLabs.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Please select laboratories to delete'
+            });
+            return;
+        }
+
+        if (this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirm('Confirm Delete', `Are you sure you want to delete ${this.selectedLabs.length} laboratory(ies)?`);
+
+        if (!confirmed.isConfirmed) return;
+
+        this.isDeleting = true;
+        let deletedCount = 0;
+        let failedCount = 0;
+        const totalCount = this.selectedLabs.length;
+
+        this.selectedLabs.forEach((lab) => {
+            this.http
+                .delete(`${this.apiUrl}/${lab.laboratoryId}`)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: () => {
+                        deletedCount++;
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    },
+                    error: (error) => {
+                        failedCount++;
+                        console.error(`Failed to delete laboratory ${lab.laboratoryId}:`, error);
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    }
+                });
         });
     }
 
-    deleteSelected() {
-        if (!this.selectedLabs || this.selectedLabs.length === 0) return;
-        this.messageService.add({
-            severity: 'warn',
-            summary: 'Delete',
-            detail: `Delete ${this.selectedLabs.length} laboratory(ies)?`
-        });
+    private checkBulkDeleteComplete(deleted: number, failed: number, total: number): void {
+        if (deleted + failed === total) {
+            this.isDeleting = false;
+            this.selectedLabs = [];
+            this.loadLaboratories();
+
+            if (failed === 0) {
+                this.dialogService.showSuccess(`${deleted} laboratory(ies) deleted successfully`);
+            } else {
+                this.dialogService.showWarning(`${deleted} laboratory(ies) deleted, ${failed} failed`, 'Partial Delete');
+            }
+        }
     }
 
     goToReports() {
@@ -569,11 +697,12 @@ export class LaboratoriesComponent implements OnInit {
         const dayDates: { day: number; dayOfWeek: number }[] = [];
         for (let d = start; d <= end; d++) {
             const dow = new Date(year, mon, d).getDay();
-            if (dow !== 0) { // skip Sunday
+            if (dow !== 0) {
+                // skip Sunday
                 dayDates.push({ day: d, dayOfWeek: dow });
             }
         }
-        this.weekDayHeaders = dayDates.map(dd => `${dayShortNames[dd.dayOfWeek]} (${dd.day})`);
+        this.weekDayHeaders = dayDates.map((dd) => `${dayShortNames[dd.dayOfWeek]} (${dd.day})`);
 
         // Build data per laboratory
         this.reportWeekData = this.laboratories.map((lab) => {
@@ -632,7 +761,7 @@ export class LaboratoriesComponent implements OnInit {
             { width: 16 }, // B: Available/Actual
             ...this.weekDayHeaders.map(() => ({ width: 10 })), // C-H: days
             { width: 10 }, // Total
-            { width: 15 }, // % Utilization
+            { width: 15 } // % Utilization
         ];
 
         const lastCol = totalCols;
@@ -788,12 +917,7 @@ export class LaboratoriesComponent implements OnInit {
 
         // --- NOTES ---
         const noteRow = nameRow + 4;
-        const notes = [
-            '*Available hours - potential student clock hours',
-            '*Actual hours - based on actual number of hours the laboratory is utilized',
-            '*% utilization = actual hours / available hours',
-            '*Cut-off is per month'
-        ];
+        const notes = ['*Available hours - potential student clock hours', '*Actual hours - based on actual number of hours the laboratory is utilized', '*% utilization = actual hours / available hours', '*Cut-off is per month'];
         notes.forEach((note, idx) => {
             ws.mergeCells(noteRow + idx, 1, noteRow + idx, lastCol);
             const cell = ws.getCell(noteRow + idx, 1);
@@ -808,18 +932,28 @@ export class LaboratoriesComponent implements OnInit {
     }
 
     exportCSV() {
-        let csv = 'Laboratory ID,Laboratory Name,Campus\n';
-        this.laboratories.forEach((lab) => {
-            csv += `${lab.laboratoryId},${lab.laboratoryName},${lab.campus?.campusName}\n`;
-        });
+        if (this.laboratories.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'No data to export'
+            });
+            return;
+        }
 
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'laboratories.csv';
-        a.click();
-        window.URL.revokeObjectURL(url);
+        const exportColumns: ExportColumn[] = [
+            { field: 'laboratoryId', header: 'Laboratory ID' },
+            { field: 'laboratoryName', header: 'Laboratory Name' },
+            { field: 'campus.campusName', header: 'Campus' }
+        ];
+
+        this.exportService.exportToCsv(this.laboratories, 'laboratories_export', exportColumns);
+
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Laboratories exported to CSV'
+        });
     }
 
     isBase64Image(qrCode: string): boolean {

@@ -1,250 +1,354 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TableModule, Table } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { TooltipModule } from 'primeng/tooltip';
-import { ToolbarModule } from 'primeng/toolbar';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
+
+// PrimeNG
 import { ToastModule } from 'primeng/toast';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
 import { MessageService } from 'primeng/api';
-import { FormsModule } from '@angular/forms';
-import { UserService } from '../service/user.service';
+import { TableModule } from 'primeng/table';
+
+// Core
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+
+// Shared
+import { DialogService } from '../../shared/services/dialog.service';
+import { ExportService, ExportColumn } from '../../shared/services/export.service';
+import { debounceInput } from '../../shared/utils/rxjs-operators';
+import { DataTableComponent, TableColumn } from '../../shared/components/data-table/data-table.component';
+import { ToolbarComponent } from '../../shared/components/toolbar/toolbar.component';
+import { ActionButtonsComponent } from '../../shared/components/action-buttons/action-buttons.component';
+
+// Services
 import { AssetService } from '../service/asset.service';
-import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-brand',
     standalone: true,
-    imports: [CommonModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, FormsModule],
+    imports: [CommonModule, ToastModule, TableModule, DataTableComponent, ToolbarComponent, ActionButtonsComponent],
     styleUrls: ['../../../assets/pages/_assetcategory.scss'],
     providers: [MessageService],
     template: `
         <p-toast />
-        <p-toolbar styleClass="mb-4">
-            <ng-template #start>
-                <div class="flex items-center gap-2">
-                    <p-button label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNewDialog()" />
-                    <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length" />
-                </div>
-            </ng-template>
-            <ng-template #end>
-                <div class="flex items-center gap-2">
-                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="filter()" placeholder="Search brands..." />
-                    </p-iconfield>
-                </div>
-            </ng-template>
-        </p-toolbar>
-        <p-table
-            [value]="filteredItems"
-            [rows]="10"
-            [paginator]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
+
+        <app-toolbar [showNew]="true" [showDelete]="true" [selectedCount]="selectedItems.length" (newClick)="openNewDialog()" (deleteClick)="deleteSelected()" />
+
+        <app-data-table
+            [data]="filteredItems"
+            [columns]="columns"
             [loading]="loading"
-            [rowHover]="true"
-            dataKey="brandId"
+            [searchable]="true"
+            [exportable]="true"
+            [selectable]="true"
+            [paginator]="true"
+            [rows]="10"
+            title="Brands"
+            searchPlaceholder="Search brands..."
             [(selection)]="selectedItems"
-            (selectionChange)="onSelectionChange($event)"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} brands"
-            [showCurrentPageReport]="true"
-            [tableStyle]="{ 'min-width': '70rem' }"
+            (search)="onSearchInput($event)"
+            (exportExcel)="exportData()"
         >
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width:3rem"><p-tableHeaderCheckbox /></th>
-                    <th style="min-width:25rem">ID</th>
-                    <th pSortableColumn="brandName" style="min-width:20rem">Brand <p-sortIcon field="brandName" /></th>
-                    <th style="min-width:12rem">Actions</th>
-                </tr>
+            <ng-template #body let-item>
+                <td><p-tableCheckbox [value]="item" /></td>
+                <td>{{ item.brandId }}</td>
+                <td>{{ item.brandName }}</td>
+                <td>
+                    <app-action-buttons [data]="item" [showView]="false" [showEdit]="true" [showDelete]="true" [editDisabled]="isUpdating" [deleteDisabled]="isDeleting" (edit)="edit($event)" (delete)="delete($event)" />
+                </td>
             </ng-template>
-            <ng-template pTemplate="body" let-row>
-                <tr>
-                    <td><p-tableCheckbox [value]="row" /></td>
-                    <td>{{ row.brandId }}</td>
-                    <td>{{ row.brandName }}</td>
-                    <td>
-                        <div class="flex gap-2">
-                            <!-- <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(row)" /> -->
-                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="edit(row)" />
-                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" />
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="4" class="text-center py-5">No brands found</td>
-                </tr>
-            </ng-template>
-        </p-table>
+        </app-data-table>
     `
 })
-export class BrandComponent implements OnInit {
+export class BrandComponent extends BaseComponent implements OnInit {
+    // State management
+    loadingState: LoadingState = LoadingState.IDLE;
+    isUpdating: boolean = false;
+    isDeleting: boolean = false;
+
     items: any[] = [];
     filteredItems: any[] = [];
     selectedItems: any[] = [];
-    searchValue: string = '';
-    loading: boolean = true;
+
+    // Table columns
+    columns: TableColumn[] = [
+        { field: 'brandId', header: 'ID', sortable: true },
+        { field: 'brandName', header: 'Brand', sortable: true }
+    ];
+
+    private searchSubject$ = new Subject<string>();
+
+    // Computed properties
+    get loading(): boolean {
+        return isLoading(this.loadingState);
+    }
 
     constructor(
-        private userService: UserService,
+        private assetService: AssetService,
         private messageService: MessageService,
-        private assetService: AssetService
-    ) {}
+        private dialogService: DialogService,
+        private exportService: ExportService,
+        private errorHandler: ErrorHandlerService
+    ) {
+        super();
+    }
 
     ngOnInit() {
         this.loadItems();
+        this.setupSearchDebounce();
     }
 
-    loadItems() {
-        this.loading = true;
-        this.assetService.getBrands().subscribe({
-            next: (data) => {
-                this.items = data || [];
-                this.filteredItems = [...this.items];
-                this.loading = false;
-            },
-            error: (error) => {
-                console.error('Error loading brands:', error);
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load brands' });
-                this.loading = false;
-            }
+    /**
+     * Setup search debouncing
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.filterData(searchTerm);
         });
     }
 
-    filter() {
-        this.filteredItems = this.items.filter((item) => item.brandName?.toLowerCase().includes(this.searchValue.toLowerCase()));
+    /**
+     * Handle search input
+     */
+    onSearchInput(searchTerm: string): void {
+        this.searchSubject$.next(searchTerm);
+    }
+
+    /**
+     * Filter data based on search term
+     */
+    private filterData(searchTerm: string): void {
+        if (!searchTerm) {
+            this.filteredItems = [...this.items];
+            return;
+        }
+
+        const term = searchTerm.toLowerCase();
+        this.filteredItems = this.items.filter((item) => item.brandName?.toLowerCase().includes(term) || item.brandId?.toString().toLowerCase().includes(term));
+    }
+
+    /**
+     * Load brands
+     */
+    loadItems(): void {
+        if (this.loading) return;
+
+        this.loadingState = LoadingState.LOADING;
+
+        this.assetService
+            .getBrands()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
+                    }
+                })
+            )
+            .subscribe({
+                next: (data) => {
+                    this.items = data || [];
+                    this.filteredItems = [...this.items];
+                    this.loadingState = LoadingState.SUCCESS;
+                },
+                error: (error) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'loading brands');
+                }
+            });
     }
 
     onSelectionChange(event: any) {}
 
-    openNewDialog() {
-        Swal.fire({
+    /**
+     * Open dialog to create new brand
+     */
+    async openNewDialog(): Promise<void> {
+        if (this.isUpdating) return;
+
+        const result = await this.dialogService.showForm({
             title: 'New Brand',
-            html: `<input type="text" id="brandName" class="swal2-input" placeholder="Brand Name" />`,
-            confirmButtonText: 'Create',
-            cancelButtonText: 'Cancel',
-            showCancelButton: true,
-            preConfirm: () => {
-                const brandName = (document.getElementById('brandName') as HTMLInputElement)?.value.trim();
-                if (!brandName) {
-                    Swal.showValidationMessage('Brand name is required');
-                    return false;
+            fields: [
+                {
+                    name: 'brandName',
+                    label: 'Brand Name',
+                    type: 'text',
+                    required: true,
+                    placeholder: 'Enter brand name'
                 }
-                return { brandName };
-            }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                this.assetService.createBrand(result.value).subscribe({
-                    next: (created) => {
-                        this.items.push(created);
-                        this.filteredItems = [...this.items];
-                        Swal.fire({
-                            title: 'Good job!',
-                            text: 'Brand created successfully!',
-                            icon: 'success'
-                        });
-                    },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Create failed' })
-                });
-            }
+            ]
         });
+
+        if (!result.isConfirmed) return;
+
+        this.isUpdating = true;
+
+        this.assetService
+            .createBrand(result.value)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: (created) => {
+                    this.items.push(created);
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Brand created successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'creating brand');
+                }
+            });
     }
 
-    view(item: any) {
-        Swal.fire({ title: 'Brand', html: `<strong>Name:</strong> ${item.brandName}`, icon: 'info' });
-    }
+    /**
+     * Edit brand
+     */
+    async edit(item: any): Promise<void> {
+        if (this.isUpdating) return;
 
-    edit(item: any) {
-        Swal.fire({
+        const result = await this.dialogService.showForm({
             title: 'Edit Brand',
-            html: `<input type="text" id="brandName" class="swal2-input" value="${item.brandName}" />`,
-            confirmButtonText: 'Update',
-            cancelButtonText: 'Cancel',
-            showCancelButton: true,
-            preConfirm: () => {
-                const brandName = (document.getElementById('brandName') as HTMLInputElement)?.value.trim();
-                if (!brandName) {
-                    Swal.showValidationMessage('Brand name is required');
-                    return false;
+            fields: [
+                {
+                    name: 'brandName',
+                    label: 'Brand Name',
+                    type: 'text',
+                    required: true,
+                    value: item.brandName
                 }
-                return { brandName };
-            }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                this.assetService.updateBrand(item.brandId, result.value).subscribe({
-                    next: (updated) => {
-                        const idx = this.items.findIndex((b) => b.brandId === updated.brandId);
-                        if (idx > -1) this.items[idx] = updated;
-                        this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Updated', detail: 'Brand updated' });
-                    },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Update failed' })
-                });
-            }
+            ]
         });
+
+        if (!result.isConfirmed) return;
+
+        this.isUpdating = true;
+
+        this.assetService
+            .updateBrand(item.brandId, result.value)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: (updated) => {
+                    const idx = this.items.findIndex((b) => b.brandId === updated.brandId);
+                    if (idx > -1) this.items[idx] = updated;
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Brand updated successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'updating brand');
+                }
+            });
     }
 
-    delete(item: any) {
-        Swal.fire({
-            title: 'Delete Brand',
-            text: `Delete "${item.brandName}"?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Delete'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.assetService.deleteBrand(item.brandId).subscribe({
+    /**
+     * Delete brand
+     */
+    async delete(item: any): Promise<void> {
+        if (this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirmDelete(`brand "${item.brandName}"`);
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+
+        this.assetService
+            .deleteBrand(item.brandId)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isDeleting = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.items = this.items.filter((b) => b.brandId !== item.brandId);
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Brand deleted successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'deleting brand');
+                }
+            });
+    }
+
+    /**
+     * Delete selected brands
+     */
+    async deleteSelected(): Promise<void> {
+        if (!this.selectedItems?.length || this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirm('Delete Selected', `Are you sure you want to delete ${this.selectedItems.length} brand(s)?`);
+
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+        let deletedCount = 0;
+        let failedCount = 0;
+        const totalCount = this.selectedItems.length;
+
+        this.selectedItems.forEach((item) => {
+            this.assetService
+                .deleteBrand(item.brandId)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
                     next: () => {
-                        this.items = this.items.filter((b) => b.brandId !== item.brandId);
-                        this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Brand deleted' });
+                        deletedCount++;
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
                     },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Delete failed' })
+                    error: (error) => {
+                        failedCount++;
+                        console.error(`Failed to delete brand ${item.brandId}:`, error);
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    }
                 });
-            }
         });
     }
 
-    deleteSelected() {
-        if (!this.selectedItems?.length) return;
-        Swal.fire({
-            title: 'Delete Selected',
-            text: `Delete ${this.selectedItems.length} brand(s)?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Delete'
-        }).then((res) => {
-            if (res.isConfirmed) {
-                const ids = this.selectedItems.map((b) => b.brandId);
-                Promise.all(ids.map((id) => this.assetService.deleteBrand(id).toPromise()))
-                    .then(() => {
-                        this.items = this.items.filter((b) => !ids.includes(b.brandId));
-                        this.filteredItems = [...this.items];
-                        this.selectedItems = [];
-                        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Selected brands deleted' });
-                    })
-                    .catch(() => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Bulk delete failed' }));
+    /**
+     * Check if bulk delete operation is complete
+     */
+    private checkBulkDeleteComplete(deleted: number, failed: number, total: number): void {
+        if (deleted + failed === total) {
+            this.isDeleting = false;
+
+            // Reload items to get fresh state
+            this.loadItems();
+            this.selectedItems = [];
+
+            if (failed === 0) {
+                this.dialogService.showSuccess(`${deleted} brand(s) deleted successfully`);
+            } else {
+                this.dialogService.showWarning(`${deleted} brand(s) deleted, ${failed} failed`, 'Partial Delete');
             }
-        });
+        }
     }
 
-    exportCSV() {
-        let csv = 'Brand Name,ID\n';
-        this.items.forEach((item) => {
-            csv += `${(item.brandName || '').replace(/,/g, ';')},${item.brandId}\n`;
+    /**
+     * Export data to CSV
+     */
+    exportData(): void {
+        if (this.items.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'No data to export'
+            });
+            return;
+        }
+
+        const exportColumns: ExportColumn[] = [
+            { field: 'brandName', header: 'Brand Name' },
+            { field: 'brandId', header: 'ID' }
+        ];
+
+        this.exportService.exportToCsv(this.items, 'brands', exportColumns);
+
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Data exported to CSV'
         });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'brands.csv';
-        a.click();
-        URL.revokeObjectURL(url);
     }
 }
