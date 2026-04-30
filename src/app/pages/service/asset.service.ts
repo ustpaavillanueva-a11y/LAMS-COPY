@@ -183,7 +183,7 @@ export class AssetService {
     }
 
     getPrograms(): Observable<Program[]> {
-        return this.http.get<Program[]>(`${this.baseApiUrl}/programs`).pipe(tap());
+        return this.http.get<Program[]>(`${this.baseApiUrl}/programs`).pipe(tap((data) => console.log('✅ getPrograms API Response:', data)));
     }
     createProgram(body: Partial<Program>): Observable<Program> {
         return this.http.post<Program>(`${this.baseApiUrl}/programs`, body);
