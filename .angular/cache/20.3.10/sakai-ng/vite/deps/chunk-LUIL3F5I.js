@@ -1,7 +1,4 @@
 import {
-  withHttpTransferCache
-} from "./chunk-P5A6SZJJ.js";
-import {
   DomEventsPlugin,
   DomRendererFactory2,
   EVENT_MANAGER_PLUGINS,
@@ -16,6 +13,9 @@ import {
   getDOM,
   setRootDomAdapter
 } from "./chunk-RH3RUHL2.js";
+import {
+  withHttpTransferCache
+} from "./chunk-P5A6SZJJ.js";
 import {
   XhrFactory,
   parseCookieValue
@@ -1288,4 +1288,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-QGCRAMSP.js.map
+//# sourceMappingURL=chunk-LUIL3F5I.js.map

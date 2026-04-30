@@ -1,13 +1,13 @@
 import {
+  Badge,
+  BadgeModule
+} from "./chunk-EVSARLCR.js";
+import {
   Fluid
 } from "./chunk-QV5SN4WD.js";
 import {
   AutoFocus
 } from "./chunk-IOM7T3UX.js";
-import {
-  Badge,
-  BadgeModule
-} from "./chunk-EVSARLCR.js";
 import {
   Ripple
 } from "./chunk-UCC4SYHQ.js";
@@ -2079,4 +2079,4 @@ export {
   Button,
   ButtonModule
 };
-//# sourceMappingURL=chunk-HU4PBENI.js.map
+//# sourceMappingURL=chunk-S75JNSMM.js.map
