@@ -19,6 +19,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { FileUploadModule } from 'primeng/fileupload';
 import { StepperModule } from 'primeng/stepper';
+import { AccordionModule } from 'primeng/accordion';
 import { MessageService } from 'primeng/api';
 import { AssetService, Asset, Program, Color, Brand, Status, Laboratory } from '../service/asset.service';
 import { MaintenanceService, MaintenanceRequestPayload } from '../service/maintenance.service';
@@ -57,7 +58,8 @@ import { AssetUtils } from './utils/asset.utils';
         InputNumberModule,
         TextareaModule,
         FileUploadModule,
-        StepperModule
+        StepperModule,
+        AccordionModule
     ],
     providers: [MessageService, QrCodeService, AssetExportService, AssetFormService],
     styleUrls: ['./assets.component.scss'],
@@ -574,6 +576,245 @@ import { AssetUtils } from './utils/asset.utils';
                 </div>
             </ng-template>
         </p-dialog>
+
+        <!-- View Asset Dialog -->
+        <p-dialog [(visible)]="viewDialog" [style]="{ width: '900px', maxHeight: '90vh' }" header="Asset Details" [modal]="true" [closable]="true" [maximizable]="true" (onHide)="closeViewDialog()">
+            <ng-template #content>
+                <div *ngIf="viewAssetData">
+                    <!-- Basic Asset Information (Always Visible) -->
+                    <div class="grid grid-cols-12 gap-4 mb-4 pb-4 border-b">
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Asset ID</label>
+                            <p class="text-gray-900">{{ viewAssetData.assetId }}</p>
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Asset Name</label>
+                            <p class="text-gray-900">{{ viewAssetData.assetName }}</p>
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Property Number</label>
+                            <p class="text-gray-900">{{ viewAssetData.propertyNumber || 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Category</label>
+                            <p class="text-gray-900">{{ viewAssetData.category || 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                            <p-tag [value]="viewAssetData.status?.statusName || 'Unknown'" [severity]="getStatusSeverity(viewAssetData.status?.statusName)" />
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Warranty</label>
+                            <p-tag [value]="viewAssetData.warranty ? 'Active' : 'Expired'" [severity]="viewAssetData.warranty ? 'success' : 'danger'" />
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Campus</label>
+                            <p class="text-gray-900">{{ viewAssetData.campus?.campusName || 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Laboratory</label>
+                            <p class="text-gray-900">{{ viewAssetData.laboratories?.laboratoryName || 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Issued To</label>
+                            <p class="text-gray-900">{{ viewAssetData.issuedTo || 'Not assigned' }}</p>
+                        </div>
+
+                        <div class="col-span-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Purpose</label>
+                            <p class="text-gray-900">{{ viewAssetData.purpose || 'N/A' }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Accordions for Detailed Information -->
+                    <p-accordion value="0">
+                        <!-- Inventory Custodian Slip Accordion -->
+                        <p-accordion-panel value="0">
+                            <p-accordion-header>Inventory Custodian Slip (ICS) Details</p-accordion-header>
+                            <p-accordion-content>
+                                <div *ngIf="viewAssetData.inventoryCustodianSlip" class="grid grid-cols-12 gap-4">
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">ICS Number</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.icsNo || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Serial Number</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.serialNumber || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Model Number</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.modelNumber || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Brand</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.brand || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Quantity</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.quantity || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Unit of Measure</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.uoM || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Unit Cost</label>
+                                        <p class="text-gray-900">₱{{ viewAssetData.inventoryCustodianSlip.unitCost || '0.00' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Color</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.color || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-12">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.description || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-12">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Specifications</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.specifications || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6" *ngIf="viewAssetData.inventoryCustodianSlip.fundSource">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Fund Source</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.fundSource || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6" *ngIf="viewAssetData.inventoryCustodianSlip.dateAcquired">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Date Acquired</label>
+                                        <p class="text-gray-900">{{ formatDate(viewAssetData.inventoryCustodianSlip.dateAcquired) }}</p>
+                                    </div>
+
+                                    <div class="col-span-6" *ngIf="viewAssetData.inventoryCustodianSlip.estimatedUsefullLife">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Estimated Useful Life</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.estimatedUsefullLife || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6" *ngIf="viewAssetData.inventoryCustodianSlip.receivedFrom">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Received From</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.receivedFrom || 'N/A' }}</p>
+                                    </div>
+
+                                    <div class="col-span-6" *ngIf="viewAssetData.inventoryCustodianSlip.receivedBy">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Received By</label>
+                                        <p class="text-gray-900">{{ viewAssetData.inventoryCustodianSlip.receivedBy || 'N/A' }}</p>
+                                    </div>
+                                </div>
+                                <div *ngIf="!viewAssetData.inventoryCustodianSlip" class="text-center text-gray-500 py-4">No ICS information available</div>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+
+                        <!-- Maintenance History Accordion -->
+                        <p-accordion-panel value="1">
+                            <p-accordion-header>Maintenance History ({{ viewAssetMaintenanceHistory.length }})</p-accordion-header>
+                            <p-accordion-content>
+                                <div *ngIf="viewAssetMaintenanceHistory.length > 0">
+                                    <div *ngFor="let maintenance of viewAssetMaintenanceHistory; let i = index" class="mb-4 p-4 border border-gray-200 rounded-lg" [class.mb-0]="i === viewAssetMaintenanceHistory.length - 1">
+                                        <div class="grid grid-cols-12 gap-3">
+                                            <div class="col-span-12 flex justify-between items-start mb-2">
+                                                <h4 class="font-semibold text-base">{{ maintenance.maintenanceName || 'Maintenance Request' }}</h4>
+                                                <p-tag [value]="maintenance.requestStatus?.requestStatusName || 'Unknown'" [severity]="getMaintenanceStatusSeverity(maintenance.requestStatus?.requestStatusName)" />
+                                            </div>
+
+                                            <div class="col-span-6">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Type</label>
+                                                <p class="text-sm text-gray-900">{{ maintenance.maintenanceType?.maintenanceTypeName || 'N/A' }}</p>
+                                            </div>
+
+                                            <div class="col-span-6">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Service</label>
+                                                <p class="text-sm text-gray-900">{{ maintenance.serviceMaintenance?.serviceName || 'N/A' }}</p>
+                                            </div>
+
+                                            <div class="col-span-6">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Priority</label>
+                                                <p class="text-sm text-gray-900">{{ maintenance.priorityLevel?.priorityLevelName || 'N/A' }}</p>
+                                            </div>
+
+                                            <div class="col-span-6">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Requested Date</label>
+                                                <p class="text-sm text-gray-900">{{ formatDate(maintenance.createdAt) }}</p>
+                                            </div>
+
+                                            <div class="col-span-6" *ngIf="maintenance.requestedBy">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Requested By</label>
+                                                <p class="text-sm text-gray-900">{{ maintenance.requestedBy.firstName }} {{ maintenance.requestedBy.lastName }}</p>
+                                            </div>
+
+                                            <div class="col-span-6" *ngIf="maintenance.maintenanceApproval?.assignedTechnician">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Assigned Technician</label>
+                                                <p class="text-sm text-gray-900">{{ maintenance.maintenanceApproval.assignedTechnician.firstName }} {{ maintenance.maintenanceApproval.assignedTechnician.lastName }}</p>
+                                            </div>
+
+                                            <div class="col-span-12">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Reason</label>
+                                                <p class="text-sm text-gray-900">{{ maintenance.reason || 'N/A' }}</p>
+                                            </div>
+
+                                            <div class="col-span-12" *ngIf="maintenance.maintenanceApproval?.completionNotes">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Completion Notes</label>
+                                                <p class="text-sm text-gray-900">{{ maintenance.maintenanceApproval.completionNotes }}</p>
+                                            </div>
+
+                                            <div class="col-span-6" *ngIf="maintenance.maintenanceApproval?.scheduledDate">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Scheduled Date</label>
+                                                <p class="text-sm text-gray-900">{{ formatDate(maintenance.maintenanceApproval.scheduledDate) }}</p>
+                                            </div>
+
+                                            <div class="col-span-6" *ngIf="maintenance.maintenanceApproval?.completedAt">
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Completed Date</label>
+                                                <p class="text-sm text-gray-900">{{ formatDate(maintenance.maintenanceApproval.completedAt) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="viewAssetMaintenanceHistory.length === 0" class="text-center text-gray-500 py-4">No maintenance history found for this asset</div>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+
+                        <!-- QR Code Accordion -->
+                        <p-accordion-panel value="2" *ngIf="viewAssetData.qrCode">
+                            <p-accordion-header>QR Code</p-accordion-header>
+                            <p-accordion-content>
+                                <div class="flex justify-center py-4">
+                                    <img [src]="viewAssetData.qrCode" alt="QR Code" class="max-w-xs border-2 border-gray-300 rounded-lg" />
+                                </div>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+                    </p-accordion>
+                </div>
+                <div *ngIf="!viewAssetData" class="text-center text-gray-500 py-8">
+                    <i class="pi pi-spin pi-spinner text-3xl mb-3"></i>
+                    <p>Loading asset details...</p>
+                </div>
+            </ng-template>
+            <ng-template #footer>
+                <div class="flex justify-between w-full">
+                    <div>
+                        <p-button *ngIf="isLabTech" label="Edit Asset" icon="pi pi-pencil" severity="info" (onClick)="confirmUpdateFromView()" />
+                    </div>
+                    <div>
+                        <p-button label="Close" icon="pi pi-times" severity="secondary" (onClick)="closeViewDialog()" />
+                    </div>
+                </div>
+            </ng-template>
+        </p-dialog>
     `
 })
 export class AssetsComponent implements OnInit {
@@ -596,6 +837,7 @@ export class AssetsComponent implements OnInit {
     editMode: boolean = false;
     viewDialog: boolean = false;
     viewAssetData: any = null;
+    viewAssetMaintenanceHistory: any[] = [];
     currentStep: number = 0;
     newAsset: any = this.getEmptyAsset();
 
@@ -1581,11 +1823,18 @@ export class AssetsComponent implements OnInit {
             return;
         }
 
-        // Fetch full asset details from API
-        this.assetService.getAsset(item.assetId as any).subscribe({
-            next: (fullAsset: any) => {
+        // Fetch full asset details and maintenance history
+        forkJoin({
+            asset: this.assetService.getAsset(item.assetId as any),
+            maintenanceHistory: this.maintenanceService.getMaintenanceRequests().pipe(catchError(() => of([])))
+        }).subscribe({
+            next: ({ asset, maintenanceHistory }) => {
                 // Store for use in view dialog
-                this.viewAssetData = fullAsset;
+                this.viewAssetData = asset;
+
+                // Filter maintenance history for this asset
+                this.viewAssetMaintenanceHistory = maintenanceHistory.filter((m: any) => m.asset?.assetId === item.assetId);
+
                 this.viewDialog = true;
             },
             error: (error) => {
@@ -1602,8 +1851,54 @@ export class AssetsComponent implements OnInit {
     closeViewDialog() {
         this.viewDialog = false;
         this.viewAssetData = null;
+        this.viewAssetMaintenanceHistory = [];
     }
 
+    editFromView() {
+        if (!this.viewAssetData) return;
+
+        // Close view dialog
+        this.closeViewDialog();
+
+        // Open edit dialog with the asset data
+        this.edit(this.viewAssetData);
+    }
+
+    confirmUpdateFromView() {
+        Swal.fire({
+            title: 'Update Asset?',
+            text: 'Are you sure you want to update this asset?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Update',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.editFromView();
+            }
+        });
+    }
+
+    getMaintenanceStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined {
+        const statusMap: { [key: string]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' } = {
+            Pending: 'warn',
+            Approved: 'info',
+            'In Progress': 'info',
+            Completed: 'success',
+            Declined: 'danger',
+            'On Hold': 'warn',
+            Scheduled: 'info'
+        };
+        return statusMap[status] || 'secondary';
+    }
+
+    formatDate(date: string | Date): string {
+        if (!date) return 'N/A';
+        const d = new Date(date);
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
 
     edit(item: Asset) {
         if (!item || !item.assetId) {
