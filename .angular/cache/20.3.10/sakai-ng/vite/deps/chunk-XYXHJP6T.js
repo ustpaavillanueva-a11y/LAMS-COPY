@@ -31,6 +31,11 @@ import {
   BindModule
 } from "./chunk-PXYWQ7E3.js";
 import {
+  RouterLink,
+  RouterLinkActive,
+  RouterModule
+} from "./chunk-HQXWA6LS.js";
+import {
   D,
   I,
   J,
@@ -53,11 +58,6 @@ import {
   transition,
   trigger
 } from "./chunk-GGMOGVES.js";
-import {
-  RouterLink,
-  RouterLinkActive,
-  RouterModule
-} from "./chunk-2MDG7F4R.js";
 import {
   CommonModule,
   NgForOf,
@@ -2211,4 +2211,4 @@ export {
   TieredMenu,
   TieredMenuModule
 };
-//# sourceMappingURL=chunk-I27LB6SO.js.map
+//# sourceMappingURL=chunk-XYXHJP6T.js.map
