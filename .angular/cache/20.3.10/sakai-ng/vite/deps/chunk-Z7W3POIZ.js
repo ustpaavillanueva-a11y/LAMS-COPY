@@ -11,13 +11,13 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  PrimeTemplate,
-  SharedModule
-} from "./chunk-6D2SAAIV.js";
-import {
   Bind,
   BindModule
 } from "./chunk-PXYWQ7E3.js";
+import {
+  PrimeTemplate,
+  SharedModule
+} from "./chunk-6D2SAAIV.js";
 import {
   NG_VALUE_ACCESSOR
 } from "./chunk-SJUOZCFA.js";
@@ -611,4 +611,4 @@ export {
   ToggleButton,
   ToggleButtonModule
 };
-//# sourceMappingURL=chunk-VQGYDDQN.js.map
+//# sourceMappingURL=chunk-Z7W3POIZ.js.map

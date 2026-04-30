@@ -1,9 +1,9 @@
 import {
   Select
-} from "./chunk-IJX3QERM.js";
+} from "./chunk-5CNAKVNS.js";
 import {
   InputNumber
-} from "./chunk-PVRNQHDA.js";
+} from "./chunk-UVYOUENW.js";
 import {
   Ripple
 } from "./chunk-UCC4SYHQ.js";
@@ -21,12 +21,12 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
+  Bind
+} from "./chunk-PXYWQ7E3.js";
+import {
   PrimeTemplate,
   SharedModule
 } from "./chunk-6D2SAAIV.js";
-import {
-  Bind
-} from "./chunk-PXYWQ7E3.js";
 import {
   FormsModule,
   NgControlStatus,
@@ -1382,4 +1382,4 @@ export {
   Paginator,
   PaginatorModule
 };
-//# sourceMappingURL=chunk-WIZL7UWX.js.map
+//# sourceMappingURL=chunk-VGHHN3HJ.js.map

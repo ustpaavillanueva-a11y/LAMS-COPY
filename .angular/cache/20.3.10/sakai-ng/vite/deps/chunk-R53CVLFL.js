@@ -6,12 +6,12 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
+  Bind
+} from "./chunk-PXYWQ7E3.js";
+import {
   PrimeTemplate,
   SharedModule
 } from "./chunk-6D2SAAIV.js";
-import {
-  Bind
-} from "./chunk-PXYWQ7E3.js";
 import {
   CommonModule,
   NgIf,
@@ -382,4 +382,4 @@ export {
   ProgressBar,
   ProgressBarModule
 };
-//# sourceMappingURL=chunk-MF4ZT7W7.js.map
+//# sourceMappingURL=chunk-R53CVLFL.js.map

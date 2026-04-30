@@ -1,18 +1,18 @@
 import {
-  Badge,
-  BadgeModule
-} from "./chunk-EVSARLCR.js";
-import {
   Tooltip,
   TooltipModule
 } from "./chunk-LERCPKH5.js";
 import "./chunk-P6SMTJBG.js";
 import {
-  Ripple
-} from "./chunk-UCC4SYHQ.js";
+  Badge,
+  BadgeModule
+} from "./chunk-QFW25L6H.js";
 import {
   zindexutils
 } from "./chunk-3DNZLJAM.js";
+import {
+  Ripple
+} from "./chunk-UCC4SYHQ.js";
 import {
   AngleDownIcon,
   AngleRightIcon,
@@ -27,13 +27,13 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  PrimeTemplate,
-  SharedModule
-} from "./chunk-6D2SAAIV.js";
-import {
   Bind,
   BindModule
 } from "./chunk-PXYWQ7E3.js";
+import {
+  PrimeTemplate,
+  SharedModule
+} from "./chunk-6D2SAAIV.js";
 import "./chunk-OTTARZB5.js";
 import {
   J,

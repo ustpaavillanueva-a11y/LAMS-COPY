@@ -12,13 +12,13 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
+  Bind
+} from "./chunk-PXYWQ7E3.js";
+import {
   OverlayService,
   PrimeTemplate,
   SharedModule
 } from "./chunk-6D2SAAIV.js";
-import {
-  Bind
-} from "./chunk-PXYWQ7E3.js";
 import {
   rr
 } from "./chunk-OTTARZB5.js";

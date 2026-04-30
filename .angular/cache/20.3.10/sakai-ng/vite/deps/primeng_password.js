@@ -34,15 +34,15 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
+  Bind,
+  BindModule
+} from "./chunk-PXYWQ7E3.js";
+import {
   OverlayService,
   PrimeTemplate,
   SharedModule,
   TranslationKeys
 } from "./chunk-6D2SAAIV.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-PXYWQ7E3.js";
 import "./chunk-OTTARZB5.js";
 import {
   D,

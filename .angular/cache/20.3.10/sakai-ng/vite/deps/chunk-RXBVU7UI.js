@@ -11,12 +11,12 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  SharedModule
-} from "./chunk-6D2SAAIV.js";
-import {
   Bind,
   BindModule
 } from "./chunk-PXYWQ7E3.js";
+import {
+  SharedModule
+} from "./chunk-6D2SAAIV.js";
 import {
   NG_VALUE_ACCESSOR,
   NgControl
@@ -531,4 +531,4 @@ export {
   RadioButton,
   RadioButtonModule
 };
-//# sourceMappingURL=chunk-RXFZ2UOV.js.map
+//# sourceMappingURL=chunk-RXBVU7UI.js.map

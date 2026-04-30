@@ -18,13 +18,13 @@ import {
   BaseStyle
 } from "./chunk-WBKIMRVV.js";
 import {
-  PrimeTemplate,
-  SharedModule
-} from "./chunk-6D2SAAIV.js";
-import {
   Bind,
   BindModule
 } from "./chunk-PXYWQ7E3.js";
+import {
+  PrimeTemplate,
+  SharedModule
+} from "./chunk-6D2SAAIV.js";
 import "./chunk-OTTARZB5.js";
 import {
   bt,
