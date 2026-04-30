@@ -147,8 +147,7 @@ import { AssetUtils } from './utils/asset.utils';
                         <button pButton icon="pi pi-qrcode" class="p-button-rounded p-button-text" (click)="viewQrCode(asset.qrCode)" pTooltip="View QR Code"></button>
                     </td>
                     <td>
-                        <button *ngIf="isCampusAdmin() || isFaculty" pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-success" (click)="view(asset)" pTooltip="View Asset"></button>
-                        <button *ngIf="isLabTech" pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning" (click)="edit(asset)" pTooltip="Edit"></button>
+                        <button *ngIf="isCampusAdmin() || isFaculty || isLabTech" pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-success" (click)="view(asset)" pTooltip="View Asset"></button>
                         <button *ngIf="!isFaculty" pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="delete(asset)" pTooltip="Delete"></button>
                         <button pButton icon="pi pi-wrench" class="p-button-rounded p-button-text p-button-info" (click)="requestMaintenance(asset)" pTooltip="Request Maintenance"></button>
                     </td>
@@ -682,6 +681,8 @@ export class AssetsComponent implements OnInit {
     }
 
     loadReferenceData() {
+        console.log('🔄 Starting to load reference data...');
+
         // Load all reference data in parallel using forkJoin
         forkJoin({
             programs: this.assetService.getPrograms(),
@@ -692,6 +693,9 @@ export class AssetsComponent implements OnInit {
             brands: this.assetService.getBrands()
         }).subscribe({
             next: (data) => {
+                console.log('✅ forkJoin completed successfully!');
+                console.log('Raw data received:', data);
+
                 // Store all reference data
                 this.programs = data.programs || [];
                 this.suppliers = data.suppliers || [];
@@ -704,6 +708,9 @@ export class AssetsComponent implements OnInit {
                 console.log('Programs:', this.programs.length, this.programs);
                 console.log('Brands:', this.brands.length, this.brands);
                 console.log('Colors:', this.colors.length, this.colors);
+                console.log('Suppliers:', this.suppliers.length);
+                console.log('Locations:', this.locations.length);
+                console.log('Statuses:', this.statuses.length);
                 console.log('API Base URL:', 'Check network tab for actual endpoints');
                 console.log('============================');
 
@@ -711,6 +718,8 @@ export class AssetsComponent implements OnInit {
                 this.loadAssets();
             },
             error: (error) => {
+                console.error('❌ ERROR: forkJoin FAILED!');
+                console.error('This means at least one of the API calls failed.');
                 console.error('❌ ERROR loading reference data:', error);
                 console.error('Error details:', {
                     message: error.message,
@@ -718,6 +727,14 @@ export class AssetsComponent implements OnInit {
                     statusText: error.statusText,
                     url: error.url
                 });
+                console.error('Check the Network tab to see which API call failed:');
+                console.error('- GET /api/programs');
+                console.error('- GET /api/suppliers');
+                console.error('- GET /api/locations');
+                console.error('- GET /api/status');
+                console.error('- GET /api/colors');
+                console.error('- GET /api/brands');
+
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Data Load Error',
@@ -1830,7 +1847,7 @@ export class AssetsComponent implements OnInit {
                 summary: 'Loading',
                 detail: 'Loading dropdown data...'
             });
-            
+
             // Reload reference data and then open edit modal
             forkJoin({
                 programs: this.assetService.getPrograms(),
@@ -1841,12 +1858,12 @@ export class AssetsComponent implements OnInit {
                     this.programs = data.programs || [];
                     this.colors = data.colors || [];
                     this.brands = data.brands || [];
-                    
+
                     console.log('✅ Reference data reloaded:');
                     console.log('Programs:', this.programs.length);
                     console.log('Colors:', this.colors.length);
                     console.log('Brands:', this.brands.length);
-                    
+
                     // Now open the edit modal
                     this.openEditModal(item);
                 },
