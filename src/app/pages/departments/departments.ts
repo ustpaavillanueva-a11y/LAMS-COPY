@@ -115,6 +115,13 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
      * Connect to WebSocket and subscribe to real-time updates
      */
     private connectToWebSocket(): void {
+        // Check if user is authenticated before connecting
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('⚠️ Skipping WebSocket connection - user not authenticated');
+            return;
+        }
+
         try {
             this.departmentsWebSocketService.connect();
             console.log('✅ Connected to departments WebSocket');

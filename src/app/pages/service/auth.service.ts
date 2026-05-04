@@ -60,7 +60,6 @@ export class AuthService {
         return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
             map((response) => {
                 if (response.user && response.access_token) {
-
                     this.currentUser = response.user as User;
                     localStorage.setItem('currentUser', JSON.stringify(response.user));
                     localStorage.setItem('token', response.access_token);
@@ -82,6 +81,7 @@ export class AuthService {
     logout(): void {
         this.currentUser = null;
         localStorage.removeItem('currentUser');
+        localStorage.removeItem('token');
         // Clear userId from context
         this.userContextService.clearUserId();
     }

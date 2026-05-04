@@ -665,6 +665,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
      * Connect to WebSocket and subscribe to real-time updates
      */
     connectToWebSocket() {
+        // Check if user is authenticated before connecting
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('⚠️ Skipping WebSocket connection - user not authenticated');
+            return;
+        }
+
         try {
             this.assetsWebSocketService.connect();
             console.log('✅ Connected to assets WebSocket');

@@ -334,6 +334,13 @@ export class LabScheduleComponent implements OnInit, OnDestroy {
      * Connect to WebSocket and subscribe to real-time calendar/schedule updates
      */
     connectToWebSocket(): void {
+        // Check if user is authenticated before connecting
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('⚠️ Skipping WebSocket connection - user not authenticated');
+            return;
+        }
+
         try {
             this.calendarWebSocketService.connect();
             console.log('✅ Connected to calendar WebSocket');

@@ -42,9 +42,11 @@ export class WebSocketService implements OnDestroy {
         // Get JWT token from localStorage
         const token = localStorage.getItem('token');
         if (!token) {
-            console.error('No authentication token found');
+            console.warn(`⚠️ No authentication token found for ${namespace} namespace - skipping WebSocket connection`);
             throw new Error('Authentication required for WebSocket connection');
         }
+
+        console.log(`🔌 Attempting to connect to ${namespace} with authentication...`);
 
         // Create new socket connection
         const socket = io(`${this.baseUrl}${namespace}`, {
@@ -60,19 +62,27 @@ export class WebSocketService implements OnDestroy {
 
         // Setup connection handlers
         socket.on('connect', () => {
-            console.log(`Connected to ${namespace} namespace`);
+            console.log(`✅ Connected to ${namespace} namespace`);
         });
 
         socket.on('connect_error', (error) => {
-            console.error(`Connection error on ${namespace}:`, error.message);
+            console.error(`❌ Connection error on ${namespace}:`, error.message);
+            // If auth error, try to refresh token
+            if (error.message.includes('Authentication') || error.message.includes('Unauthorized')) {
+                console.warn(`🔐 Authentication failed for ${namespace} - token may be expired`);
+            }
         });
 
         socket.on('disconnect', (reason) => {
-            console.log(`Disconnected from ${namespace}:`, reason);
+            console.log(`🔌 Disconnected from ${namespace}:`, reason);
+            if (reason === 'io server disconnect') {
+                // Server disconnected, probably due to auth issues
+                console.warn(`⚠️ Server disconnected ${namespace} - possibly due to authentication`);
+            }
         });
 
         socket.on('exception', (error) => {
-            console.error(`Server exception on ${namespace}:`, error);
+            console.error(`⚠️ Server exception on ${namespace}:`, error);
         });
 
         // Store socket
