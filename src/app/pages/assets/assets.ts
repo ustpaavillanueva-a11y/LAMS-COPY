@@ -496,7 +496,7 @@ import { AssetsWebSocketService } from './services/assets-websocket.service';
                                 </p-autoComplete>
                             </div>
                             <div style="grid-column: 1 / -1;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">QR Code Image *</label>
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #1a1a1a; font-size: 13px;">QR Code Image</label>
                                 <p-fileUpload
                                     name="qrCodeImage"
                                     [auto]="false"
@@ -1441,11 +1441,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
         if (!this.newAsset.inventoryCustodianSlip.uoM?.trim()) {
             this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'Unit of Measure is required in ICS details' });
-            return;
-        }
-
-        if (!this.newAsset.qrCodeImage) {
-            this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'QR Code file must be uploaded' });
             return;
         }
 
