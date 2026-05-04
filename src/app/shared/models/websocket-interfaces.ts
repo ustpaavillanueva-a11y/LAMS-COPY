@@ -181,12 +181,34 @@ export interface Schedule {
 
 export interface Activity {
     activityId: string;
+    actionType: string;
+    entityType: string;
+    targetName: string;
+    targetId: string | null;
+    description: string;
+    apiEndpoint: string | null;
+    httpMethod: string | null;
+    status: string;
+    userRole: string;
+    userAgent: string | null;
+    ipAddress: string | null;
+    timestamp: string;
+    actor: {
+        userId: string;
+        userName: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        role: string;
+    };
+    actorId: string;
+    campus: any | null;
+    campusId: string | null;
+    // Legacy fields for backward compatibility
     user?: User | string;
-    action: string;
-    entity: string;
-    entityId: string;
+    action?: string;
+    entity?: string;
+    entityId?: string;
     details?: string;
-    campus?: Campus | string;
-    timestamp: Date;
     createdAt?: Date;
 }

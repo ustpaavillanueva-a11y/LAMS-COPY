@@ -9,7 +9,7 @@ import {
   NgIf,
   NgStyle,
   NgTemplateOutlet
-} from "./chunk-RH3RUHL2.js";
+} from "./chunk-7RCU5MHB.js";
 import "./chunk-APPCZKFW.js";
 import {
   ChangeDetectorRef,
@@ -41,13 +41,13 @@ import {
   ɵɵqueryRefresh,
   ɵɵtemplate,
   ɵɵviewQuery
-} from "./chunk-FKRSZNWR.js";
+} from "./chunk-QFF4CQQI.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-JRFR6BLO.js";
 import "./chunk-MARUHEWW.js";
 import {
   __spreadValues
-} from "./chunk-V4F5PRXT.js";
+} from "./chunk-NJ4VOZBH.js";
 
 // node_modules/@fullcalendar/angular/fesm2020/fullcalendar-angular.mjs
 var _c0 = ["*"];

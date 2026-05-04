@@ -1,40 +1,40 @@
 import {
   Tooltip,
   TooltipModule
-} from "./chunk-LERCPKH5.js";
+} from "./chunk-7VOXV35W.js";
+import {
+  Badge,
+  BadgeModule
+} from "./chunk-7LJ6CF6F.js";
+import {
+  zindexutils
+} from "./chunk-OLJED6AA.js";
+import {
+  Ripple
+} from "./chunk-7V5GWXVN.js";
 import {
   DomHandler
 } from "./chunk-P6SMTJBG.js";
 import {
-  Badge,
-  BadgeModule
-} from "./chunk-QFW25L6H.js";
-import {
-  zindexutils
-} from "./chunk-3DNZLJAM.js";
-import {
-  Ripple
-} from "./chunk-UCC4SYHQ.js";
-import {
   AngleRightIcon
-} from "./chunk-G3KLILSY.js";
-import "./chunk-GGKQQQY2.js";
+} from "./chunk-XJ4CG35O.js";
+import "./chunk-GJXHKTVI.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
-} from "./chunk-M2NELYC7.js";
+} from "./chunk-32HJBRZT.js";
 import {
   BaseStyle
-} from "./chunk-WBKIMRVV.js";
+} from "./chunk-7FDDY7DG.js";
 import {
   Bind,
   BindModule
-} from "./chunk-PXYWQ7E3.js";
+} from "./chunk-75JTQVRY.js";
 import {
   OverlayService,
   PrimeTemplate,
   SharedModule
-} from "./chunk-6D2SAAIV.js";
+} from "./chunk-HVVMUKCH.js";
 import "./chunk-OTTARZB5.js";
 import {
   $t,
@@ -54,20 +54,20 @@ import {
   v,
   z2 as z
 } from "./chunk-U4LT4ZJN.js";
-import "./chunk-CMHWE5XI.js";
+import {
+  RouterLink,
+  RouterModule
+} from "./chunk-UOVNMUXR.js";
+import "./chunk-GAL5RSMX.js";
 import {
   animate,
   style,
   transition,
   trigger
 } from "./chunk-GGMOGVES.js";
-import {
-  RouterLink,
-  RouterModule
-} from "./chunk-2MDG7F4R.js";
-import "./chunk-QGCRAMSP.js";
-import "./chunk-P5A6SZJJ.js";
-import "./chunk-YRBEEYOM.js";
+import "./chunk-ZLAPKAAG.js";
+import "./chunk-AS6KI2MM.js";
+import "./chunk-4BOPXW5F.js";
 import {
   CommonModule,
   NgForOf,
@@ -75,7 +75,7 @@ import {
   NgStyle,
   NgTemplateOutlet,
   isPlatformBrowser
-} from "./chunk-RH3RUHL2.js";
+} from "./chunk-7RCU5MHB.js";
 import "./chunk-APPCZKFW.js";
 import {
   ChangeDetectionStrategy,
@@ -141,14 +141,14 @@ import {
   ɵɵtext,
   ɵɵtextInterpolate1,
   ɵɵviewQuery
-} from "./chunk-FKRSZNWR.js";
+} from "./chunk-QFF4CQQI.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-JRFR6BLO.js";
 import "./chunk-MARUHEWW.js";
 import {
   __spreadProps,
   __spreadValues
-} from "./chunk-V4F5PRXT.js";
+} from "./chunk-NJ4VOZBH.js";
 
 // node_modules/@primeuix/styles/dist/contextmenu/index.mjs
 var style2 = "\n    .p-contextmenu {\n        background: dt('contextmenu.background');\n        color: dt('contextmenu.color');\n        border: 1px solid dt('contextmenu.border.color');\n        border-radius: dt('contextmenu.border.radius');\n        box-shadow: dt('contextmenu.shadow');\n        min-width: 12.5rem;\n    }\n\n    .p-contextmenu-root-list,\n    .p-contextmenu-submenu {\n        margin: 0;\n        padding: dt('contextmenu.list.padding');\n        list-style: none;\n        outline: 0 none;\n        display: flex;\n        flex-direction: column;\n        gap: dt('contextmenu.list.gap');\n    }\n\n    .p-contextmenu-submenu {\n        position: absolute;\n        display: flex;\n        flex-direction: column;\n        min-width: 100%;\n        z-index: 1;\n        background: dt('contextmenu.background');\n        color: dt('contextmenu.color');\n        border: 1px solid dt('contextmenu.border.color');\n        border-radius: dt('contextmenu.border.radius');\n        box-shadow: dt('contextmenu.shadow');\n    }\n\n    .p-contextmenu-item {\n        position: relative;\n    }\n\n    .p-contextmenu-item-content {\n        transition:\n            background dt('contextmenu.transition.duration'),\n            color dt('contextmenu.transition.duration');\n        border-radius: dt('contextmenu.item.border.radius');\n        color: dt('contextmenu.item.color');\n    }\n\n    .p-contextmenu-item-link {\n        cursor: pointer;\n        display: flex;\n        align-items: center;\n        text-decoration: none;\n        overflow: hidden;\n        position: relative;\n        color: inherit;\n        padding: dt('contextmenu.item.padding');\n        gap: dt('contextmenu.item.gap');\n        user-select: none;\n    }\n\n    .p-contextmenu-item-label {\n        line-height: 1;\n    }\n\n    .p-contextmenu-item-icon {\n        color: dt('contextmenu.item.icon.color');\n    }\n\n    .p-contextmenu-submenu-icon {\n        color: dt('contextmenu.submenu.icon.color');\n        margin-left: auto;\n        font-size: dt('contextmenu.submenu.icon.size');\n        width: dt('contextmenu.submenu.icon.size');\n        height: dt('contextmenu.submenu.icon.size');\n    }\n\n    .p-contextmenu-submenu-icon:dir(rtl) {\n        margin-left: 0;\n        margin-right: auto;\n    }\n\n    .p-contextmenu-item.p-focus > .p-contextmenu-item-content {\n        color: dt('contextmenu.item.focus.color');\n        background: dt('contextmenu.item.focus.background');\n    }\n\n    .p-contextmenu-item.p-focus > .p-contextmenu-item-content .p-contextmenu-item-icon {\n        color: dt('contextmenu.item.icon.focus.color');\n    }\n\n    .p-contextmenu-item.p-focus > .p-contextmenu-item-content .p-contextmenu-submenu-icon {\n        color: dt('contextmenu.submenu.icon.focus.color');\n    }\n\n    .p-contextmenu-item:not(.p-disabled) > .p-contextmenu-item-content:hover {\n        color: dt('contextmenu.item.focus.color');\n        background: dt('contextmenu.item.focus.background');\n    }\n\n    .p-contextmenu-item:not(.p-disabled) > .p-contextmenu-item-content:hover .p-contextmenu-item-icon {\n        color: dt('contextmenu.item.icon.focus.color');\n    }\n\n    .p-contextmenu-item:not(.p-disabled) > .p-contextmenu-item-content:hover .p-contextmenu-submenu-icon {\n        color: dt('contextmenu.submenu.icon.focus.color');\n    }\n\n    .p-contextmenu-item-active > .p-contextmenu-item-content {\n        color: dt('contextmenu.item.active.color');\n        background: dt('contextmenu.item.active.background');\n    }\n\n    .p-contextmenu-item-active > .p-contextmenu-item-content .p-contextmenu-item-icon {\n        color: dt('contextmenu.item.icon.active.color');\n    }\n\n    .p-contextmenu-item-active > .p-contextmenu-item-content .p-contextmenu-submenu-icon {\n        color: dt('contextmenu.submenu.icon.active.color');\n    }\n\n    .p-contextmenu-separator {\n        border-block-start: 1px solid dt('contextmenu.separator.border.color');\n    }\n\n    .p-contextmenu-enter-from,\n    .p-contextmenu-leave-active {\n        opacity: 0;\n    }\n\n    .p-contextmenu-enter-active {\n        transition: opacity 250ms;\n    }\n\n    .p-contextmenu-mobile .p-contextmenu-submenu {\n        position: static;\n        box-shadow: none;\n        border: 0 none;\n        padding-inline-start: dt('tieredmenu.submenu.mobile.indent');\n        padding-inline-end: 0;\n    }\n\n    .p-contextmenu-mobile .p-contextmenu-submenu-icon {\n        transition: transform 0.2s;\n        transform: rotate(90deg);\n    }\n\n    .p-contextmenu-mobile .p-contextmenu-item-active > .p-contextmenu-item-content .p-contextmenu-submenu-icon {\n        transform: rotate(-90deg);\n    }\n";

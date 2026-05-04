@@ -1,6 +1,6 @@
 import {
   __commonJS
-} from "./chunk-V4F5PRXT.js";
+} from "./chunk-NJ4VOZBH.js";
 
 // node_modules/jsqr/dist/jsQR.js
 var require_jsQR = __commonJS({
