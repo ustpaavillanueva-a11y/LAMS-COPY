@@ -1,17 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { ActivitiesService, Activity, ActivitiesResponse } from '../service/activities.service';
+import { ActivitiesWebSocketService } from './activities-websocket.service';
 
 @Component({
     selector: 'app-activities',
     standalone: true,
-    imports: [CommonModule, FormsModule, TableModule, ButtonModule, CardModule, ProgressSpinnerModule],
+    imports: [CommonModule, FormsModule, TableModule, ButtonModule, CardModule, ProgressSpinnerModule, ToastModule],
+    providers: [MessageService],
     template: `
+        <p-toast />
         <div class="card">
             <div class="flex justify-between items-center mb-4">
                 <div>
@@ -138,7 +143,7 @@ import { ActivitiesService, Activity, ActivitiesResponse } from '../service/acti
         </div>
     `
 })
-export class ActivitiesComponent implements OnInit {
+export class ActivitiesComponent implements OnInit, OnDestroy {
     myLogs: Activity[] = [];
     systemLogs: Activity[] = [];
     isLoadingMyLogs = false;
@@ -146,7 +151,11 @@ export class ActivitiesComponent implements OnInit {
     isSuperAdmin = false;
     activeView: 'my-logs' | 'system-logs' = 'my-logs';
 
-    constructor(private activitiesService: ActivitiesService) {}
+    constructor(
+        private activitiesService: ActivitiesService,
+        private activitiesWebSocketService: ActivitiesWebSocketService,
+        private messageService: MessageService
+    ) {}
 
     ngOnInit(): void {
         this.checkUserRole();
@@ -154,6 +163,60 @@ export class ActivitiesComponent implements OnInit {
         if (this.isSuperAdmin) {
             this.loadSystemLogs();
         }
+        this.connectToWebSocket();
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time activity updates
+     */
+    connectToWebSocket(): void {
+        try {
+            this.activitiesWebSocketService.connect();
+            console.log('✅ Connected to activities WebSocket');
+
+            // Listen for new activity logs
+            this.activitiesWebSocketService.onActivityLogged().subscribe({
+                next: (event) => {
+                    console.log('📝 Activity logged:', event.data);
+                    if (event.success) {
+                        // Add the new activity to the appropriate list
+                        const currentUser = localStorage.getItem('currentUser');
+                        if (currentUser) {
+                            const user = JSON.parse(currentUser);
+                            if (event.data.user === user.userId || (event.data as any).actor?.userId === user.userId) {
+                                this.myLogs.unshift(event.data);
+                            }
+                        }
+
+                        // If SuperAdmin, also add to system logs
+                        if (this.isSuperAdmin) {
+                            this.systemLogs.unshift(event.data);
+                        }
+
+                        // Show notification
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'New Activity',
+                            detail: 'New activity has been logged',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving activity-logged event:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Disconnect from WebSocket when component is destroyed
+     */
+    ngOnDestroy(): void {
+        this.activitiesWebSocketService.disconnect();
+        console.log('🔌 Disconnected from activities WebSocket');
     }
 
     checkUserRole(): void {

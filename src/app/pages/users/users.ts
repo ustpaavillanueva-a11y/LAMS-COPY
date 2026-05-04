@@ -21,6 +21,7 @@ import { BaseComponent } from '../../core/base/base.component';
 import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import { debounceInput } from '../../shared/utils/rxjs-operators';
+import { UsersWebSocketService } from './users-websocket.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -143,7 +144,8 @@ export class UsersComponent extends BaseComponent implements OnInit {
         private userService: UserService,
         private messageService: MessageService,
         private userContextService: UserContextService,
-        private errorHandler: ErrorHandlerService
+        private errorHandler: ErrorHandlerService,
+        private usersWebSocketService: UsersWebSocketService
     ) {
         super();
     }
@@ -159,6 +161,151 @@ export class UsersComponent extends BaseComponent implements OnInit {
         this.loadCurrentUserRole();
         this.loadCampuses();
         this.loadDepartments();
+        this.connectToWebSocket();
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time updates
+     */
+    private connectToWebSocket(): void {
+        try {
+            this.usersWebSocketService.connect();
+            console.log('✅ Connected to users WebSocket');
+
+            // Listen for user creation
+            this.usersWebSocketService
+                .onUserCreated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🆕 User created:', event.data);
+                        if (event.success) {
+                            this.loadUsers();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'User Created',
+                                detail: `${event.data.firstName} ${event.data.lastName} was created`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-created event:', error);
+                    }
+                });
+
+            // Listen for user updates
+            this.usersWebSocketService
+                .onUserUpdated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('✏️ User updated:', event.data);
+                        if (event.success) {
+                            const index = this.users.findIndex((u) => u.userId === event.data.userId);
+                            if (index !== -1) {
+                                this.users[index] = event.data;
+                                this.filterUsers();
+                            }
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'User Updated',
+                                detail: `${event.data.firstName} ${event.data.lastName} was updated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-updated event:', error);
+                    }
+                });
+
+            // Listen for user activations
+            this.usersWebSocketService
+                .onUserActivated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('✅ User activated:', event.data);
+                        if (event.success) {
+                            const index = this.users.findIndex((u) => u.userId === event.data.userId);
+                            if (index !== -1) {
+                                this.users[index].isActive = true;
+                                this.filterUsers();
+                            }
+                            this.messageService.add({
+                                severity: 'success',
+                                summary: 'User Activated',
+                                detail: `${event.data.firstName} ${event.data.lastName} was activated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-activated event:', error);
+                    }
+                });
+
+            // Listen for user deactivations
+            this.usersWebSocketService
+                .onUserDeactivated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('❌ User deactivated:', event.data);
+                        if (event.success) {
+                            const index = this.users.findIndex((u) => u.userId === event.data.userId);
+                            if (index !== -1) {
+                                this.users[index].isActive = false;
+                                this.filterUsers();
+                            }
+                            this.messageService.add({
+                                severity: 'warning',
+                                summary: 'User Deactivated',
+                                detail: `${event.data.firstName} ${event.data.lastName} was deactivated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-deactivated event:', error);
+                    }
+                });
+
+            // Listen for user deletions
+            this.usersWebSocketService
+                .onUserDeleted()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🗑️ User deleted:', event.data);
+                        if (event.success) {
+                            this.users = this.users.filter((u) => u.userId !== event.data.userId);
+                            this.filterUsers();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'User Deleted',
+                                detail: 'A user was deleted',
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-deleted event:', error);
+                    }
+                });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Override ngOnDestroy to disconnect from WebSocket
+     */
+    override ngOnDestroy(): void {
+        this.usersWebSocketService.disconnect();
+        console.log('🔌 Disconnected from users WebSocket');
+        super.ngOnDestroy();
     }
 
     /**

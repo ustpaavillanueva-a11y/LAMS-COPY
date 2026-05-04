@@ -27,6 +27,7 @@ import { debounceInput } from '../../shared/utils/rxjs-operators';
 // Services
 import { UserService } from '../service/user.service';
 import { AuthService } from '../service/auth.service';
+import { DepartmentsWebSocketService } from './departments-websocket.service';
 
 @Component({
     selector: 'app-departments',
@@ -96,7 +97,8 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
         private authService: AuthService,
         private dialogService: DialogService,
         private exportService: ExportService,
-        private errorHandler: ErrorHandlerService
+        private errorHandler: ErrorHandlerService,
+        private departmentsWebSocketService: DepartmentsWebSocketService
     ) {
         super();
     }
@@ -106,6 +108,99 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
         this.setupSearchDebounce();
         this.loadDepartments();
         this.loadCampuses();
+        this.connectToWebSocket();
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time updates
+     */
+    private connectToWebSocket(): void {
+        try {
+            this.departmentsWebSocketService.connect();
+            console.log('✅ Connected to departments WebSocket');
+
+            // Listen for department creation
+            this.departmentsWebSocketService
+                .onDepartmentCreated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🆕 Department created:', event.data);
+                        if (event.success) {
+                            this.loadDepartments();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Department Created',
+                                detail: `${event.data.departmentName} was created`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving department-created event:', error);
+                    }
+                });
+
+            // Listen for department updates
+            this.departmentsWebSocketService
+                .onDepartmentUpdated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('✏️ Department updated:', event.data);
+                        if (event.success) {
+                            const index = this.departments.findIndex((d) => d.departmentId === event.data.departmentId);
+                            if (index !== -1) {
+                                this.departments[index] = event.data;
+                                this.filterDepartments();
+                            }
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Department Updated',
+                                detail: `${event.data.departmentName} was updated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving department-updated event:', error);
+                    }
+                });
+
+            // Listen for department deletions
+            this.departmentsWebSocketService
+                .onDepartmentDeleted()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🗑️ Department deleted:', event.data);
+                        if (event.success) {
+                            this.departments = this.departments.filter((d) => d.departmentId !== event.data.departmentId);
+                            this.filterDepartments();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Department Deleted',
+                                detail: 'A department was deleted',
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving department-deleted event:', error);
+                    }
+                });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Override ngOnDestroy to disconnect from WebSocket
+     */
+    override ngOnDestroy(): void {
+        this.departmentsWebSocketService.disconnect();
+        console.log('🔌 Disconnected from departments WebSocket');
+        super.ngOnDestroy();
     }
 
     /**

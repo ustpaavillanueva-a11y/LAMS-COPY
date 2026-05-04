@@ -32,6 +32,7 @@ import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import { DialogService } from '../../shared/services/dialog.service';
 import { ExportService, ExportColumn } from '../../shared/services/export.service';
 import { debounceInput } from '../../shared/utils/rxjs-operators';
+import { LaboratoriesWebSocketService } from './laboratories-websocket.service';
 
 import { environment } from '../../../environments/environment';
 
@@ -394,13 +395,15 @@ export class LaboratoriesComponent extends BaseComponent implements OnInit {
         private cdr: ChangeDetectorRef,
         private dialogService: DialogService,
         private exportService: ExportService,
-        private errorHandler: ErrorHandlerService
+        private errorHandler: ErrorHandlerService,
+        private laboratoriesWebSocketService: LaboratoriesWebSocketService
     ) {
         super();
     }
 
     ngOnInit() {
         this.setupSearchDebounce();
+        this.connectToWebSocket();
 
         // Check if navigated with a specific laboratory ID
         this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
@@ -412,6 +415,98 @@ export class LaboratoriesComponent extends BaseComponent implements OnInit {
                 this.loadLaboratories();
             }
         });
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time updates
+     */
+    private connectToWebSocket(): void {
+        try {
+            this.laboratoriesWebSocketService.connect();
+            console.log('✅ Connected to laboratories WebSocket');
+
+            // Listen for laboratory creation
+            this.laboratoriesWebSocketService
+                .onLaboratoryCreated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🆕 Laboratory created:', event.data);
+                        if (event.success) {
+                            this.loadLaboratories();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Laboratory Created',
+                                detail: `${event.data.laboratoryName} was created`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving laboratory-created event:', error);
+                    }
+                });
+
+            // Listen for laboratory updates
+            this.laboratoriesWebSocketService
+                .onLaboratoryUpdated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('✏️ Laboratory updated:', event.data);
+                        if (event.success) {
+                            const index = this.laboratories.findIndex((l) => l.laboratoryId === event.data.laboratoryId);
+                            if (index !== -1) {
+                                this.laboratories[index] = event.data;
+                                this.filter();
+                            }
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Laboratory Updated',
+                                detail: `${event.data.laboratoryName} was updated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving laboratory-updated event:', error);
+                    }
+                });
+
+            // Listen for laboratory deletions
+            this.laboratoriesWebSocketService
+                .onLaboratoryDeleted()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🗑️ Laboratory deleted:', event.data);
+                        if (event.success) {
+                            this.laboratories = this.laboratories.filter((l) => l.laboratoryId !== event.data.laboratoryId);
+                            this.filter();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Laboratory Deleted',
+                                detail: 'A laboratory was deleted',
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving laboratory-deleted event:', error);
+                    }
+                });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Override ngOnDestroy to disconnect from WebSocket
+     */
+    override ngOnDestroy(): void {
+        this.laboratoriesWebSocketService.disconnect();
+        console.log('🔌 Disconnected from laboratories WebSocket');
+        super.ngOnDestroy();
     }
 
     /**

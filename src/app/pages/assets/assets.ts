@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -34,6 +34,7 @@ import { QrCodeService } from './services/qr-code.service';
 import { AssetExportService } from './services/asset-export.service';
 import { AssetFormService } from './services/asset-form.service';
 import { AssetUtils } from './utils/asset.utils';
+import { AssetsWebSocketService } from './services/assets-websocket.service';
 
 @Component({
     selector: 'app-assets',
@@ -576,7 +577,7 @@ import { AssetUtils } from './utils/asset.utils';
         </p-dialog>
     `
 })
-export class AssetsComponent implements OnInit {
+export class AssetsComponent implements OnInit, OnDestroy {
     @ViewChild('dt') dt: Table | undefined;
 
     assets: Asset[] = [];
@@ -645,7 +646,8 @@ export class AssetsComponent implements OnInit {
         private router: Router,
         private qrCodeService: QrCodeService,
         private assetExportService: AssetExportService,
-        private assetFormService: AssetFormService
+        private assetFormService: AssetFormService,
+        private assetsWebSocketService: AssetsWebSocketService
     ) {}
 
     getEmptyAsset() {
@@ -656,6 +658,122 @@ export class AssetsComponent implements OnInit {
         this.checkUserRole();
         this.loadReferenceData();
         this.loadMaintenanceDialogOptions();
+        this.connectToWebSocket();
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time updates
+     */
+    connectToWebSocket() {
+        try {
+            this.assetsWebSocketService.connect();
+            console.log('✅ Connected to assets WebSocket');
+
+            // Listen for asset creation
+            this.assetsWebSocketService.onAssetCreated().subscribe({
+                next: (event) => {
+                    console.log('🆕 Asset created:', event.data);
+                    if (event.success) {
+                        // Reload assets to get the latest data
+                        this.loadAssets();
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Asset Created',
+                            detail: `${event.data.assetName} was created`,
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving asset-created event:', error);
+                }
+            });
+
+            // Listen for asset updates
+            this.assetsWebSocketService.onAssetUpdated().subscribe({
+                next: (event) => {
+                    console.log('✏️ Asset updated:', event.data);
+                    if (event.success) {
+                        // Find and update the asset in the list
+                        const index = this.assets.findIndex((a) => a.assetId === event.data.assetId);
+                        if (index !== -1) {
+                            // Expand assets in case serial numbers changed
+                            const expandedAssets = AssetUtils.expandAssetsForDisplay([event.data as any]);
+                            this.assets.splice(index, 1, ...expandedAssets);
+                            this.enrichAssetsWithNames();
+                            this.filteredAssets = [...this.assets];
+                            this.filter();
+                        }
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Asset Updated',
+                            detail: `${event.data.assetName} was updated`,
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving asset-updated event:', error);
+                }
+            });
+
+            // Listen for asset status changes
+            this.assetsWebSocketService.onAssetStatusChanged().subscribe({
+                next: (event) => {
+                    console.log('🔄 Asset status changed:', event.data);
+                    if (event.success) {
+                        // Find and update the asset status
+                        const asset = this.assets.find((a) => a.assetId === event.data.assetId);
+                        if (asset) {
+                            asset['status'] = event.data.status;
+                            this.filteredAssets = [...this.assets];
+                            this.filter();
+                        }
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Status Changed',
+                            detail: `${event.data.assetName} status updated`,
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving asset-status-changed event:', error);
+                }
+            });
+
+            // Listen for asset deletions
+            this.assetsWebSocketService.onAssetDeleted().subscribe({
+                next: (event) => {
+                    console.log('🗑️ Asset deleted:', event.data);
+                    if (event.success) {
+                        // Remove the asset from the list
+                        this.assets = this.assets.filter((a) => a.assetId !== event.data.assetId);
+                        this.filteredAssets = [...this.assets];
+                        this.filter();
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Asset Deleted',
+                            detail: 'An asset was deleted',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving asset-deleted event:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Disconnect from WebSocket when component is destroyed
+     */
+    ngOnDestroy() {
+        this.assetsWebSocketService.disconnect();
+        console.log('🔌 Disconnected from assets WebSocket');
     }
 
     checkUserRole() {

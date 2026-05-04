@@ -1,9 +1,10 @@
-import { Component, OnInit, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { MaintenanceService } from '../../service/maintenance.service';
 import { AuthService } from '../../service/auth.service';
+import { MaintenanceWebSocketService } from '../../maintenance/maintenance-websocket.service';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -682,7 +683,7 @@ import Swal from 'sweetalert2';
     `,
     providers: [MessageService]
 })
-export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
+export class RequestmaintenanceComponent implements OnInit, AfterViewInit, OnDestroy {
     items: any[] = [];
     pendingItems: any[] = [];
     scheduledItems: any[] = [];
@@ -716,11 +717,166 @@ export class RequestmaintenanceComponent implements OnInit, AfterViewInit {
     constructor(
         private maintenanceService: MaintenanceService,
         private messageService: MessageService,
-        private authService: AuthService
+        private authService: AuthService,
+        private maintenanceWebSocketService: MaintenanceWebSocketService
     ) {}
 
     ngOnInit() {
         this.loadItems();
+        this.connectToWebSocket();
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time maintenance updates
+     */
+    connectToWebSocket(): void {
+        try {
+            this.maintenanceWebSocketService.connect();
+            console.log('✅ Connected to maintenance WebSocket');
+
+            // Listen for new maintenance requests
+            this.maintenanceWebSocketService.onMaintenanceRequestCreated().subscribe({
+                next: (event) => {
+                    console.log('🆕 Maintenance request created:', event.data);
+                    if (event.success) {
+                        this.loadItems();
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'New Maintenance Request',
+                            detail: 'A new maintenance request has been created',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving maintenance-request-created event:', error);
+                }
+            });
+
+            // Listen for maintenance request updates
+            this.maintenanceWebSocketService.onMaintenanceRequestUpdated().subscribe({
+                next: (event) => {
+                    console.log('✏️ Maintenance request updated:', event.data);
+                    if (event.success) {
+                        this.loadItems();
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Maintenance Updated',
+                            detail: 'A maintenance request has been updated',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving maintenance-request-updated event:', error);
+                }
+            });
+
+            // Listen for maintenance approvals
+            this.maintenanceWebSocketService.onMaintenanceApproved().subscribe({
+                next: (event) => {
+                    console.log('✅ Maintenance approved:', event.data);
+                    if (event.success) {
+                        this.loadItems();
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Maintenance Approved',
+                            detail: event.message || 'Maintenance request has been approved',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving maintenance-approved event:', error);
+                }
+            });
+
+            // Listen for maintenance disapprovals
+            this.maintenanceWebSocketService.onMaintenanceDisapproved().subscribe({
+                next: (event) => {
+                    console.log('❌ Maintenance disapproved:', event.data);
+                    if (event.success) {
+                        this.loadItems();
+                        this.messageService.add({
+                            severity: 'warning',
+                            summary: 'Maintenance Disapproved',
+                            detail: event.message || 'Maintenance request has been disapproved',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving maintenance-disapproved event:', error);
+                }
+            });
+
+            // Listen for maintenance scheduling
+            this.maintenanceWebSocketService.onMaintenanceScheduled().subscribe({
+                next: (event) => {
+                    console.log('📅 Maintenance scheduled:', event.data);
+                    if (event.success) {
+                        this.loadItems();
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Maintenance Scheduled',
+                            detail: event.message || 'Maintenance has been scheduled',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving maintenance-scheduled event:', error);
+                }
+            });
+
+            // Listen for maintenance completion
+            this.maintenanceWebSocketService.onMaintenanceCompleted().subscribe({
+                next: (event) => {
+                    console.log('✔️ Maintenance completed:', event.data);
+                    if (event.success) {
+                        this.loadItems();
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Maintenance Completed',
+                            detail: event.message || 'Maintenance has been completed',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving maintenance-completed event:', error);
+                }
+            });
+
+            // Listen for maintenance on hold
+            this.maintenanceWebSocketService.onMaintenanceOnHold().subscribe({
+                next: (event) => {
+                    console.log('⏸️ Maintenance on hold:', event.data);
+                    if (event.success) {
+                        this.loadItems();
+                        this.messageService.add({
+                            severity: 'warning',
+                            summary: 'Maintenance On Hold',
+                            detail: event.message || 'Maintenance has been put on hold',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving maintenance-on-hold event:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Disconnect from WebSocket when component is destroyed
+     */
+    ngOnDestroy(): void {
+        this.maintenanceWebSocketService.disconnect();
+        console.log('🔌 Disconnected from maintenance WebSocket');
     }
 
     ngAfterViewInit() {
