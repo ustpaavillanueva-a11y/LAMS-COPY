@@ -65,7 +65,7 @@ export class WebSocketService implements OnDestroy {
             console.log(`✅ Connected to ${namespace} namespace`);
         });
 
-        socket.on('connect_error', (error) => {
+        socket.on('connect_error', (error: any) => {
             console.error(`❌ Connection error on ${namespace}:`, error.message);
             // If auth error, try to refresh token
             if (error.message.includes('Authentication') || error.message.includes('Unauthorized')) {
@@ -73,7 +73,7 @@ export class WebSocketService implements OnDestroy {
             }
         });
 
-        socket.on('disconnect', (reason) => {
+        socket.on('disconnect', (reason: any) => {
             console.log(`🔌 Disconnected from ${namespace}:`, reason);
             if (reason === 'io server disconnect') {
                 // Server disconnected, probably due to auth issues
@@ -81,7 +81,7 @@ export class WebSocketService implements OnDestroy {
             }
         });
 
-        socket.on('exception', (error) => {
+        socket.on('exception', (error: any) => {
             console.error(`⚠️ Server exception on ${namespace}:`, error);
         });
 

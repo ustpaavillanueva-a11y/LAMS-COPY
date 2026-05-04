@@ -1,44 +1,30 @@
 import {
   Paginator,
   PaginatorModule
-<<<<<<< HEAD
-} from "./chunk-WIZL7UWX.js";
-import "./chunk-IJX3QERM.js";
-import "./chunk-HR6BBVSY.js";
-import "./chunk-Y62XZCUQ.js";
-import "./chunk-PVRNQHDA.js";
-import "./chunk-N7IT2AO2.js";
-import "./chunk-GDCM7YMP.js";
-import "./chunk-5BBA45FO.js";
-import "./chunk-KJPWV6WR.js";
-import "./chunk-4ZJYHXVI.js";
-import "./chunk-2NXK4IZZ.js";
-import "./chunk-QV5SN4WD.js";
-import "./chunk-IOM7T3UX.js";
-import "./chunk-LERCPKH5.js";
-=======
-} from "./chunk-BXQVETLP.js";
-import "./chunk-5VTTPTWN.js";
-import "./chunk-STNSDEB4.js";
-import "./chunk-WP6DTCHK.js";
-import "./chunk-S6V2FEHM.js";
-import "./chunk-7VOXV35W.js";
-import "./chunk-RZFRA6O3.js";
-import "./chunk-3ZR2ZU3P.js";
-import "./chunk-IK6FD4DG.js";
-import "./chunk-BZM5KJBS.js";
+} from "./chunk-OK6MUBX5.js";
+import "./chunk-MEVSHOSY.js";
+import "./chunk-HP2PZ3UC.js";
+import "./chunk-43FMKR7C.js";
+import "./chunk-KBGVLM3C.js";
+import "./chunk-6TWFFU4Y.js";
+import "./chunk-DHWJSMRU.js";
+import "./chunk-DSC4R3G5.js";
+import "./chunk-B2MEXSVG.js";
 import "./chunk-A7H3FXNJ.js";
 import "./chunk-XXGW2ZKJ.js";
-import "./chunk-OLJED6AA.js";
-import "./chunk-5KG75P36.js";
+import "./chunk-4EIVXG34.js";
 import "./chunk-7QHXTJMK.js";
-import "./chunk-7V5GWXVN.js";
->>>>>>> final-refractor
+import "./chunk-BIFJ4FDJ.js";
 import "./chunk-P6SMTJBG.js";
+import "./chunk-7V5GWXVN.js";
+import "./chunk-OLJED6AA.js";
 import {
   SpinnerIcon
 } from "./chunk-XJ4CG35O.js";
 import "./chunk-GJXHKTVI.js";
+import {
+  Bind
+} from "./chunk-75JTQVRY.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -46,9 +32,6 @@ import {
 import {
   BaseStyle
 } from "./chunk-7FDDY7DG.js";
-import {
-  Bind
-} from "./chunk-75JTQVRY.js";
 import {
   FilterService,
   Footer,
@@ -60,15 +43,9 @@ import "./chunk-OTTARZB5.js";
 import {
   p
 } from "./chunk-U4LT4ZJN.js";
-<<<<<<< HEAD
-import "./chunk-SJUOZCFA.js";
-import "./chunk-CMHWE5XI.js";
-import "./chunk-GGMOGVES.js";
-=======
+import "./chunk-SLWC4WYB.js";
 import "./chunk-GAL5RSMX.js";
 import "./chunk-GGMOGVES.js";
-import "./chunk-SLWC4WYB.js";
->>>>>>> final-refractor
 import {
   CommonModule,
   NgIf,
@@ -128,12 +105,7 @@ import {
   ɵɵtemplate,
   ɵɵtext,
   ɵɵtextInterpolate1
-<<<<<<< HEAD
-} from "./chunk-FKRSZNWR.js";
-=======
 } from "./chunk-QFF4CQQI.js";
-import "./chunk-HWYXSU2G.js";
->>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";

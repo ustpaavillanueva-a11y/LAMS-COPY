@@ -1,62 +1,36 @@
 import {
+  Checkbox
+} from "./chunk-5EAYJJDT.js";
+import {
   Paginator,
   PaginatorModule
-<<<<<<< HEAD
-} from "./chunk-WIZL7UWX.js";
-import "./chunk-IJX3QERM.js";
-import "./chunk-HR6BBVSY.js";
-import "./chunk-Y62XZCUQ.js";
-import "./chunk-PVRNQHDA.js";
-import {
-  Checkbox
-} from "./chunk-YSKLZYDS.js";
-import {
-  Badge,
-  BadgeModule
-} from "./chunk-EVSARLCR.js";
-import "./chunk-N7IT2AO2.js";
+} from "./chunk-OK6MUBX5.js";
+import "./chunk-MEVSHOSY.js";
+import "./chunk-HP2PZ3UC.js";
+import "./chunk-43FMKR7C.js";
+import "./chunk-KBGVLM3C.js";
+import "./chunk-6TWFFU4Y.js";
 import {
   Scroller
-} from "./chunk-GDCM7YMP.js";
-import "./chunk-5BBA45FO.js";
-import "./chunk-KJPWV6WR.js";
-import "./chunk-4ZJYHXVI.js";
-import "./chunk-2NXK4IZZ.js";
-import "./chunk-QV5SN4WD.js";
-import "./chunk-IOM7T3UX.js";
-import "./chunk-LERCPKH5.js";
-=======
-} from "./chunk-BXQVETLP.js";
-import "./chunk-5VTTPTWN.js";
-import "./chunk-STNSDEB4.js";
-import "./chunk-WP6DTCHK.js";
-import "./chunk-S6V2FEHM.js";
-import {
-  Checkbox
-} from "./chunk-JBL5TBT2.js";
-import "./chunk-7VOXV35W.js";
-import {
-  Badge,
-  BadgeModule
-} from "./chunk-7LJ6CF6F.js";
-import "./chunk-RZFRA6O3.js";
-import {
-  Scroller
-} from "./chunk-3ZR2ZU3P.js";
-import "./chunk-IK6FD4DG.js";
-import "./chunk-BZM5KJBS.js";
+} from "./chunk-DHWJSMRU.js";
+import "./chunk-DSC4R3G5.js";
+import "./chunk-B2MEXSVG.js";
 import "./chunk-A7H3FXNJ.js";
 import "./chunk-XXGW2ZKJ.js";
-import "./chunk-OLJED6AA.js";
-import "./chunk-5KG75P36.js";
+import "./chunk-4EIVXG34.js";
 import "./chunk-7QHXTJMK.js";
 import {
-  Ripple
-} from "./chunk-7V5GWXVN.js";
->>>>>>> final-refractor
+  Badge,
+  BadgeModule
+} from "./chunk-GIUYGYUT.js";
+import "./chunk-BIFJ4FDJ.js";
 import {
   DomHandler
 } from "./chunk-P6SMTJBG.js";
+import {
+  Ripple
+} from "./chunk-7V5GWXVN.js";
+import "./chunk-OLJED6AA.js";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -71,16 +45,16 @@ import {
   CheckIcon
 } from "./chunk-GJXHKTVI.js";
 import {
+  Bind,
+  BindModule
+} from "./chunk-75JTQVRY.js";
+import {
   BaseComponent,
   PARENT_INSTANCE
 } from "./chunk-32HJBRZT.js";
 import {
   BaseStyle
 } from "./chunk-7FDDY7DG.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-75JTQVRY.js";
 import {
   FilterService,
   PrimeTemplate,
@@ -109,22 +83,13 @@ import {
   s,
   z2 as z
 } from "./chunk-U4LT4ZJN.js";
-<<<<<<< HEAD
-=======
-import "./chunk-GAL5RSMX.js";
-import "./chunk-GGMOGVES.js";
->>>>>>> final-refractor
 import {
   FormsModule,
   NgControlStatus,
   NgModel
-<<<<<<< HEAD
-} from "./chunk-SJUOZCFA.js";
-import "./chunk-CMHWE5XI.js";
-import "./chunk-GGMOGVES.js";
-=======
 } from "./chunk-SLWC4WYB.js";
->>>>>>> final-refractor
+import "./chunk-GAL5RSMX.js";
+import "./chunk-GGMOGVES.js";
 import {
   CommonModule,
   NgClass,
@@ -197,12 +162,7 @@ import {
   ɵɵtemplate,
   ɵɵtemplateRefExtractor,
   ɵɵviewQuery
-<<<<<<< HEAD
-} from "./chunk-FKRSZNWR.js";
-=======
 } from "./chunk-QFF4CQQI.js";
-import "./chunk-HWYXSU2G.js";
->>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import {

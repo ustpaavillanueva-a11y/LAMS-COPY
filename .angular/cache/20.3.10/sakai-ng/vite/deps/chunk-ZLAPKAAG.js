@@ -1,10 +1,7 @@
 import {
-<<<<<<<< HEAD:.angular/cache/20.3.10/sakai-ng/vite/deps/chunk-LUIL3F5I.js
-========
   withHttpTransferCache
 } from "./chunk-AS6KI2MM.js";
 import {
->>>>>>>> final-refractor:.angular/cache/20.3.10/sakai-ng/vite/deps/chunk-ZLAPKAAG.js
   DomEventsPlugin,
   DomRendererFactory2,
   EVENT_MANAGER_PLUGINS,
@@ -19,9 +16,6 @@ import {
   getDOM,
   setRootDomAdapter
 } from "./chunk-7RCU5MHB.js";
-import {
-  withHttpTransferCache
-} from "./chunk-P5A6SZJJ.js";
 import {
   XhrFactory,
   parseCookieValue
@@ -1294,8 +1288,4 @@ export {
    * License: MIT
    *)
 */
-<<<<<<<< HEAD:.angular/cache/20.3.10/sakai-ng/vite/deps/chunk-LUIL3F5I.js
-//# sourceMappingURL=chunk-LUIL3F5I.js.map
-========
 //# sourceMappingURL=chunk-ZLAPKAAG.js.map
->>>>>>>> final-refractor:.angular/cache/20.3.10/sakai-ng/vite/deps/chunk-ZLAPKAAG.js

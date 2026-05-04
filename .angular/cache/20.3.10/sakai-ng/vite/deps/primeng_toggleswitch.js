@@ -7,15 +7,15 @@ import {
 } from "./chunk-7QHXTJMK.js";
 import "./chunk-P6SMTJBG.js";
 import {
+  Bind,
+  BindModule
+} from "./chunk-75JTQVRY.js";
+import {
   PARENT_INSTANCE
 } from "./chunk-32HJBRZT.js";
 import {
   BaseStyle
 } from "./chunk-7FDDY7DG.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-75JTQVRY.js";
 import {
   PrimeTemplate,
   SharedModule
@@ -79,12 +79,7 @@ import {
   ɵɵstyleMap,
   ɵɵtemplate,
   ɵɵviewQuery
-<<<<<<< HEAD
-} from "./chunk-FKRSZNWR.js";
-=======
 } from "./chunk-QFF4CQQI.js";
-import "./chunk-HWYXSU2G.js";
->>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";

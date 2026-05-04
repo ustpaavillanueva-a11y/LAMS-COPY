@@ -1,14 +1,18 @@
 import {
-  transformToBoolean
-} from "./chunk-OLJED6AA.js";
-import {
   Ripple
 } from "./chunk-7V5GWXVN.js";
+import {
+  transformToBoolean
+} from "./chunk-OLJED6AA.js";
 import {
   ChevronDownIcon,
   ChevronUpIcon
 } from "./chunk-XJ4CG35O.js";
 import "./chunk-GJXHKTVI.js";
+import {
+  Bind,
+  BindModule
+} from "./chunk-75JTQVRY.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -16,10 +20,6 @@ import {
 import {
   BaseStyle
 } from "./chunk-7FDDY7DG.js";
-import {
-  Bind,
-  BindModule
-} from "./chunk-75JTQVRY.js";
 import {
   SharedModule
 } from "./chunk-HVVMUKCH.js";
@@ -93,12 +93,7 @@ import {
   ɵɵqueryRefresh,
   ɵɵstyleProp,
   ɵɵtemplate
-<<<<<<< HEAD
-} from "./chunk-FKRSZNWR.js";
-=======
 } from "./chunk-QFF4CQQI.js";
-import "./chunk-HWYXSU2G.js";
->>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";

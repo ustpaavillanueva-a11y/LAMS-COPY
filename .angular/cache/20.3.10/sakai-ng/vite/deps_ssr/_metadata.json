@@ -1,15 +1,8 @@
 {
-<<<<<<< HEAD
-  "hash": "c5c8a2b7",
+  "hash": "14d661eb",
   "configHash": "6cb7dcda",
-  "lockfileHash": "d812f5bd",
-  "browserHash": "3db887f2",
-=======
-  "hash": "0d36323a",
-  "configHash": "99dbb9f8",
   "lockfileHash": "692a04c5",
-  "browserHash": "1f270d0f",
->>>>>>> final-refractor
+  "browserHash": "a39c40da",
   "optimized": {},
   "chunks": {}
 }

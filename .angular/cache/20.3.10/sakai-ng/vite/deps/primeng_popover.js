@@ -1,9 +1,12 @@
 import {
+  ConnectedOverlayScrollHandler
+} from "./chunk-P6SMTJBG.js";
+import {
   zindexutils
 } from "./chunk-OLJED6AA.js";
 import {
-  ConnectedOverlayScrollHandler
-} from "./chunk-P6SMTJBG.js";
+  Bind
+} from "./chunk-75JTQVRY.js";
 import {
   BaseComponent,
   PARENT_INSTANCE
@@ -11,9 +14,6 @@ import {
 import {
   BaseStyle
 } from "./chunk-7FDDY7DG.js";
-import {
-  Bind
-} from "./chunk-75JTQVRY.js";
 import {
   OverlayService,
   PrimeTemplate,
@@ -93,12 +93,7 @@ import {
   ɵɵresolveDocument,
   ɵɵrestoreView,
   ɵɵtemplate
-<<<<<<< HEAD
-} from "./chunk-FKRSZNWR.js";
-=======
 } from "./chunk-QFF4CQQI.js";
-import "./chunk-HWYXSU2G.js";
->>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";

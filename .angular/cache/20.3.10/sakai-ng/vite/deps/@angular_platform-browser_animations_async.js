@@ -19,12 +19,7 @@ import {
   setClassMetadata,
   ɵɵdefineInjectable,
   ɵɵinvalidFactory
-<<<<<<< HEAD
-} from "./chunk-FKRSZNWR.js";
-=======
 } from "./chunk-QFF4CQQI.js";
-import "./chunk-HWYXSU2G.js";
->>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";
@@ -64,11 +59,7 @@ var AsyncAnimationRendererFactory = class _AsyncAnimationRendererFactory {
    * @internal
    */
   loadImpl() {
-<<<<<<< HEAD
-    const loadFn = () => this.moduleImpl ?? import("./browser-R6D4T65X.js").then((m) => m);
-=======
-    const loadFn = () => this.moduleImpl ?? import("./browser-HTG7YUMP.js").then((m) => m);
->>>>>>> final-refractor
+    const loadFn = () => this.moduleImpl ?? import("./browser-ZYB53TQY.js").then((m) => m);
     let moduleImplPromise;
     if (this.loadingSchedulerFn) {
       moduleImplPromise = this.loadingSchedulerFn(loadFn);
