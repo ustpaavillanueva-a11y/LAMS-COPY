@@ -1,4 +1,4 @@
-import "./chunk-V4F5PRXT.js";
+import "./chunk-NJ4VOZBH.js";
 
 // node_modules/@primeuix/themes/dist/lara/accordion/index.mjs
 var o = { transitionDuration: "{transition.duration}" };

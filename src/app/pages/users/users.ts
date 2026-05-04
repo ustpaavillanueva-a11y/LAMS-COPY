@@ -13,8 +13,15 @@ import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
 import { UserService } from '../service/user.service';
 import { UserContextService } from '../service/user-context.service';
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { debounceInput } from '../../shared/utils/rxjs-operators';
+import { UsersWebSocketService } from './users-websocket.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -49,7 +56,7 @@ import Swal from 'sweetalert2';
                     />
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="filterUsers()" placeholder="Search users..." />
+                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="onSearchInput($event)" placeholder="Search users..." />
                     </p-iconfield>
                     <p-button icon="pi pi-file-excel" severity="success" pTooltip="Export to Excel" (onClick)="exportToExcel()" [rounded]="true" [text]="true" />
                     <p-button icon="pi pi-file-pdf" severity="danger" pTooltip="Export to PDF" (onClick)="exportToPdf()" [rounded]="true" [text]="true" />
@@ -112,7 +119,7 @@ import Swal from 'sweetalert2';
         </p-table>
     `
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent extends BaseComponent implements OnInit {
     @ViewChild('dt') table!: Table;
 
     users: any[] = [];
@@ -120,93 +127,293 @@ export class UsersComponent implements OnInit {
     selectedUsers: any[] = [];
     searchValue: string = '';
     selectedCampus: string | null = null;
-    loading: boolean = false;
+
+    // State management
+    loadingState: LoadingState = LoadingState.IDLE;
+    isUpdating: boolean = false;
+    isDeleting: boolean = false;
+
     currentUserRole: string = '';
     campuses: any[] = [];
     departments: any[] = [];
 
+    // Search debouncing
+    private searchSubject$ = new Subject<string>();
+
     constructor(
         private userService: UserService,
         private messageService: MessageService,
-        private userContextService: UserContextService
-    ) {}
+        private userContextService: UserContextService,
+        private errorHandler: ErrorHandlerService,
+        private usersWebSocketService: UsersWebSocketService
+    ) {
+        super();
+    }
+
+    // Getter for template
+    get loading(): boolean {
+        return isLoading(this.loadingState);
+    }
 
     ngOnInit() {
+        this.setupSearchDebounce();
         this.loadUsers();
         this.loadCurrentUserRole();
         this.loadCampuses();
         this.loadDepartments();
+        this.connectToWebSocket();
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time updates
+     */
+    private connectToWebSocket(): void {
+        // Check if user is authenticated before connecting
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('⚠️ Skipping WebSocket connection - user not authenticated');
+            return;
+        }
+
+        try {
+            this.usersWebSocketService.connect();
+            console.log('✅ Connected to users WebSocket');
+
+            // Listen for user creation
+            this.usersWebSocketService
+                .onUserCreated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🆕 User created:', event.data);
+                        if (event.success) {
+                            this.loadUsers();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'User Created',
+                                detail: `${event.data.firstName} ${event.data.lastName} was created`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-created event:', error);
+                    }
+                });
+
+            // Listen for user updates
+            this.usersWebSocketService
+                .onUserUpdated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('✏️ User updated:', event.data);
+                        if (event.success) {
+                            const index = this.users.findIndex((u) => u.userId === event.data.userId);
+                            if (index !== -1) {
+                                this.users[index] = event.data;
+                                this.filterUsers();
+                            }
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'User Updated',
+                                detail: `${event.data.firstName} ${event.data.lastName} was updated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-updated event:', error);
+                    }
+                });
+
+            // Listen for user activations
+            this.usersWebSocketService
+                .onUserActivated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('✅ User activated:', event.data);
+                        if (event.success) {
+                            const index = this.users.findIndex((u) => u.userId === event.data.userId);
+                            if (index !== -1) {
+                                this.users[index].isActive = true;
+                                this.filterUsers();
+                            }
+                            this.messageService.add({
+                                severity: 'success',
+                                summary: 'User Activated',
+                                detail: `${event.data.firstName} ${event.data.lastName} was activated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-activated event:', error);
+                    }
+                });
+
+            // Listen for user deactivations
+            this.usersWebSocketService
+                .onUserDeactivated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('❌ User deactivated:', event.data);
+                        if (event.success) {
+                            const index = this.users.findIndex((u) => u.userId === event.data.userId);
+                            if (index !== -1) {
+                                this.users[index].isActive = false;
+                                this.filterUsers();
+                            }
+                            this.messageService.add({
+                                severity: 'warning',
+                                summary: 'User Deactivated',
+                                detail: `${event.data.firstName} ${event.data.lastName} was deactivated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-deactivated event:', error);
+                    }
+                });
+
+            // Listen for user deletions
+            this.usersWebSocketService
+                .onUserDeleted()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🗑️ User deleted:', event.data);
+                        if (event.success) {
+                            this.users = this.users.filter((u) => u.userId !== event.data.userId);
+                            this.filterUsers();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'User Deleted',
+                                detail: 'A user was deleted',
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving user-deleted event:', error);
+                    }
+                });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Override ngOnDestroy to disconnect from WebSocket
+     */
+    override ngOnDestroy(): void {
+        this.usersWebSocketService.disconnect();
+        console.log('🔌 Disconnected from users WebSocket');
+        super.ngOnDestroy();
+    }
+
+    /**
+     * Set up debounced search to prevent excessive API calls
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe(() => {
+            this.filterUsers();
+        });
+    }
+
+    /**
+     * Handle search input with debouncing
+     */
+    onSearchInput(event: any): void {
+        this.searchValue = event.target?.value || '';
+        this.searchSubject$.next(this.searchValue);
     }
 
     loadDepartments() {
-        this.userService.getDepartments().subscribe({
-            next: (response: any) => {
-                this.departments = Array.isArray(response) ? response : response.data || [];
-            },
-            error: (error) => {
-                console.error('Error loading departments:', error);
-            }
-        });
+        this.userService
+            .getDepartments()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (response: any) => {
+                    this.departments = Array.isArray(response) ? response : response.data || [];
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'Loading departments');
+                }
+            });
     }
 
     loadCampuses() {
-        this.userService.getCampuses().subscribe({
-            next: (response: any) => {
-                this.campuses = Array.isArray(response) ? response : response.data || [];
-            },
-            error: (error) => {
-                console.error('Error loading campuses:', error);
-            }
-        });
+        this.userService
+            .getCampuses()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (response: any) => {
+                    this.campuses = Array.isArray(response) ? response : response.data || [];
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'Loading campuses');
+                }
+            });
     }
 
     loadCurrentUserRole() {
-        // First try to get role from localStorage (faster, synchronous)
         const currentUser = localStorage.getItem('currentUser');
         if (currentUser) {
             try {
                 const user = JSON.parse(currentUser);
                 this.currentUserRole = user.role || '';
                 if (this.currentUserRole) {
-                    return; // Role found, no need for API call
+                    return;
                 }
             } catch (error) {
                 console.error('Error parsing currentUser:', error);
             }
         }
 
-        // Fallback: fetch from API if not in localStorage
         const userId = this.userContextService.getUserId();
         if (userId) {
-            this.userService.getUserById(userId).subscribe({
-                next: (user: any) => {
-                    this.currentUserRole = user.role || '';
-                },
-                error: (error) => {
-                    console.error('Error loading current user:', error);
-                }
-            });
+            this.userService
+                .getUserById(userId)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (user: any) => {
+                        this.currentUserRole = user.role || '';
+                    },
+                    error: (error) => {
+                        this.errorHandler.handleError(error, 'Loading current user role');
+                    }
+                });
         }
     }
 
     loadUsers() {
-        this.loading = true;
-        this.userService.getAllUsers().subscribe({
-            next: (response: any) => {
-                this.users = Array.isArray(response) ? response : response.data || [];
-                this.filteredUsers = [...this.users];
-                this.loading = false;
-            },
-            error: (error) => {
-                console.error('Error loading users:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Failed to load users: ' + (error.error?.message || error.message),
-                    icon: 'error'
-                });
-                this.loading = false;
-            }
-        });
+        this.loadingState = LoadingState.LOADING;
+
+        this.userService
+            .getAllUsers()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
+                    }
+                })
+            )
+            .subscribe({
+                next: (response: any) => {
+                    this.users = Array.isArray(response) ? response : response.data || [];
+                    this.filteredUsers = [...this.users];
+                    this.loadingState = LoadingState.SUCCESS;
+                },
+                error: (error) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'Loading users', 'Failed to load users. Please try again.');
+                }
+            });
     }
 
     isSuperAdmin(): boolean {
@@ -232,30 +439,35 @@ export class UsersComponent implements OnInit {
                     <p style="margin: 8px 0 0 0; color: #888; font-size: 13px;">${user.email}</p>
                 </div>
             `,
-            width: '400px',
+            icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, Reset Password',
+            confirmButtonText: 'Yes, reset it!',
             cancelButtonText: 'Cancel',
             confirmButtonColor: '#f59e0b',
-            cancelButtonColor: '#6b7280'
+            cancelButtonColor: '#64748b'
         }).then((result) => {
             if (result.isConfirmed) {
-                this.userService.resetPassword(user.userId).subscribe({
-                    next: () => {
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: `Password reset successfully for ${user.firstName} ${user.lastName}`
-                        });
-                    },
-                    error: (error) => {
-                        this.messageService.add({
-                            severity: 'error',
-                            summary: 'Error',
-                            detail: 'Failed to reset password: ' + (error.error?.message || error.message)
-                        });
-                    }
-                });
+                if (this.isUpdating) return;
+
+                this.isUpdating = true;
+                this.userService
+                    .resetPassword(user.userId)
+                    .pipe(
+                        takeUntil(this.destroy$),
+                        finalize(() => (this.isUpdating = false))
+                    )
+                    .subscribe({
+                        next: () => {
+                            this.messageService.add({
+                                severity: 'success',
+                                summary: 'Success',
+                                detail: `Password reset successfully for ${user.firstName} ${user.lastName}`
+                            });
+                        },
+                        error: (error) => {
+                            this.errorHandler.handleError(error, 'Resetting password');
+                        }
+                    });
             }
         });
     }
@@ -344,6 +556,7 @@ export class UsersComponent implements OnInit {
                             <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">First Name</label>
                             <input id="firstName" type="text" value="${editData.firstName || ''}" placeholder="First" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #e0e0e0; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent; transition: border-color 0.2s;" onmouseover="this.style.borderBottomColor='#667eea'" onmouseout="this.style.borderBottomColor='#e0e0e0'" onfocus="this.style.borderBottomColor='#667eea'" onblur="this.style.borderBottomColor='#e0e0e0'" />
                         </div>
+                        </div>
                         <div>
                             <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Middle Name</label>
                             <input id="middleName" type="text" value="${editData.middleName || ''}" placeholder="Middle" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #e0e0e0; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent; transition: border-color 0.2s;" onmouseover="this.style.borderBottomColor='#667eea'" onmouseout="this.style.borderBottomColor='#e0e0e0'" onfocus="this.style.borderBottomColor='#667eea'" onblur="this.style.borderBottomColor='#e0e0e0'" />
@@ -377,7 +590,7 @@ export class UsersComponent implements OnInit {
                             <div style="position: relative; display: inline-block; width: 48px; height: 24px;">
                                 <input id="isActive" type="checkbox" ${editData.isActive ? 'checked' : ''} style="opacity: 0; width: 0; height: 0; cursor: pointer;" />
                                 <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${editData.isActive ? '#667eea' : '#ddd'}; transition: 0.3s; border-radius: 24px;"></span>
-                                <span style="position: absolute; content: ''; height: 20px; width: 20px; left: ${editData.isActive ? '24px' : '2px'}; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%;"></span>
+                                <span style="position: absolute; content: ''; height: 20px; width: 20px; left: ${editData.isActive ? '26px' : '2px'}; bottom: 2px; background-color: white; transition: 0.3s; border-radius: 50%;"></span>
                             </div>
                             <span id="statusText" style="font-size: 12px; color: ${editData.isActive ? '#22c55e' : '#ef4444'}; font-weight: 500;">${editData.isActive ? 'Active' : 'Inactive'}</span>
                         </div>
@@ -403,10 +616,9 @@ export class UsersComponent implements OnInit {
                 const statusText = document.getElementById('statusText') as HTMLElement;
 
                 if (checkbox && toggleSpan && toggleCircle && toggleDiv) {
-                    // Toggle on checkbox change
                     checkbox.addEventListener('change', () => {
                         toggleSpan.style.backgroundColor = checkbox.checked ? '#667eea' : '#ddd';
-                        toggleCircle.style.left = checkbox.checked ? '24px' : '2px';
+                        toggleCircle.style.left = checkbox.checked ? '26px' : '2px';
                         if (statusText) {
                             statusText.textContent = checkbox.checked ? 'Active' : 'Inactive';
                             statusText.style.color = checkbox.checked ? '#22c55e' : '#ef4444';
@@ -461,26 +673,27 @@ export class UsersComponent implements OnInit {
                     email: email || user.email,
                     contactNumber: contactNumber || user.contactNumber,
                     role: role || user.role,
-                    isActive
+                    isActive: isActive
                 };
 
-                this.userService.updateUser(user.userId, updatedData).subscribe({
-                    next: () => {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'User updated successfully',
-                            icon: 'success'
-                        });
-                        this.loadUsers();
-                    },
-                    error: (error) => {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to update user: ' + (error.error?.message || error.message),
-                            icon: 'error'
-                        });
-                    }
-                });
+                if (this.isUpdating) return;
+
+                this.isUpdating = true;
+                this.userService
+                    .updateUser(user.userId, updatedData)
+                    .pipe(
+                        takeUntil(this.destroy$),
+                        finalize(() => (this.isUpdating = false))
+                    )
+                    .subscribe({
+                        next: () => {
+                            this.errorHandler.showSuccess('User updated successfully');
+                            this.loadUsers();
+                        },
+                        error: (error) => {
+                            this.errorHandler.handleError(error, 'Updating user');
+                        }
+                    });
             }
         });
     }
@@ -492,30 +705,30 @@ export class UsersComponent implements OnInit {
             text: 'Are you sure you want to delete this user?',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, Delete',
+            confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel',
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d'
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b'
         }).then((result) => {
             if (result.isConfirmed) {
-                this.userService.deleteUser(userId).subscribe({
-                    next: () => {
-                        Swal.fire({
-                            title: 'Deleted!',
-                            text: 'User has been deleted successfully.',
-                            icon: 'success'
-                        });
-                        this.loadUsers();
-                    },
-                    error: (error) => {
-                        console.error('Error deleting user:', userId, error);
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to delete user: ' + (error.error?.message || error.message),
-                            icon: 'error'
-                        });
-                    }
-                });
+                if (this.isDeleting) return;
+
+                this.isDeleting = true;
+                this.userService
+                    .deleteUser(userId)
+                    .pipe(
+                        takeUntil(this.destroy$),
+                        finalize(() => (this.isDeleting = false))
+                    )
+                    .subscribe({
+                        next: () => {
+                            this.errorHandler.showSuccess('User has been deleted successfully');
+                            this.loadUsers();
+                        },
+                        error: (error) => {
+                            this.errorHandler.handleError(error, 'Deleting user');
+                        }
+                    });
             }
         });
     }
@@ -542,20 +755,21 @@ export class UsersComponent implements OnInit {
             return;
         }
 
-        // Fetch full user data from backend
-        this.userService.getUserById(userId).subscribe({
-            next: (loggedInUser: any) => {
-                // Store logged-in user data in sessionStorage for use in dialog
-                sessionStorage.setItem('loggedInUserData', JSON.stringify(loggedInUser));
-
-                this.showNewUserDialog();
-            },
-            error: (error) => {
-                console.error('Error fetching user data:', error);
-                this.showNewUserDialog();
-            }
-        });
+        this.userService
+            .getUserById(userId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (loggedInUser: any) => {
+                    sessionStorage.setItem('loggedInUserData', JSON.stringify(loggedInUser));
+                    this.showNewUserDialog();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'Fetching user data');
+                    this.showNewUserDialog();
+                }
+            });
     }
+
     private showNewUserDialog() {
         const newUserData = {
             userName: '',

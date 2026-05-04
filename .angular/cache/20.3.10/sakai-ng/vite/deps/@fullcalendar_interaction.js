@@ -54,7 +54,7 @@ import {
   triggerDateSelect,
   whenTransitionDone
 } from "./chunk-RFTQKC7U.js";
-import "./chunk-V4F5PRXT.js";
+import "./chunk-NJ4VOZBH.js";
 
 // node_modules/@fullcalendar/interaction/index.js
 config.touchMouseIgnoreWait = 500;

@@ -1,178 +1,61 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Table, TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DialogModule } from 'primeng/dialog';
-import { SelectModule } from 'primeng/select';
-import { DatePickerModule } from 'primeng/datepicker';
-import { TagModule } from 'primeng/tag';
-import { FileUploadModule } from 'primeng/fileupload';
-import { InputIconModule } from 'primeng/inputicon';
-import { IconFieldModule } from 'primeng/iconfield';
 import { FormsModule } from '@angular/forms';
-import { MessageService, ConfirmationService } from 'primeng/api';
-import { AssetService, InvCustlip, Color, Brand, Asset, Program, Status, Supplier, Location } from '../service/asset.service';
-import Swal from 'sweetalert2';
-import { TooltipModule } from 'primeng/tooltip';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
 
-interface Column {
-    field: string;
-    header: string;
-    customExportHeader?: string;
-}
+// PrimeNG
+import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
+import { TextareaModule } from 'primeng/textarea';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { MessageService } from 'primeng/api';
 
-interface ExportColumn {
-    title: string;
-    dataKey: string;
-}
+// Core
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+
+// Shared
+import { DialogService } from '../../shared/services/dialog.service';
+import { ExportService, ExportColumn } from '../../shared/services/export.service';
+import { debounceInput } from '../../shared/utils/rxjs-operators';
+import { DataTableComponent, TableColumn } from '../../shared/components/data-table/data-table.component';
+import { ToolbarComponent } from '../../shared/components/toolbar/toolbar.component';
+import { ActionButtonsComponent } from '../../shared/components/action-buttons/action-buttons.component';
+
+// Services
+import { AssetService, InvCustlip, Color, Brand } from '../service/asset.service';
 
 @Component({
     selector: 'app-custodian',
     standalone: true,
-    imports: [
-        CommonModule,
-        TableModule,
-        FormsModule,
-        ButtonModule,
-        RippleModule,
-        ToastModule,
-        ToolbarModule,
-        InputTextModule,
-        TextareaModule,
-        SelectModule,
-        DialogModule,
-        TagModule,
-        InputIconModule,
-        IconFieldModule,
-        ConfirmDialogModule,
-        FileUploadModule,
-        TooltipModule
-    ],
+    imports: [CommonModule, FormsModule, ToastModule, DialogModule, TextareaModule, InputTextModule, SelectModule, DataTableComponent, ToolbarComponent, ActionButtonsComponent],
     template: `
         <p-toast />
 
-        <p-toolbar styleClass="mb-6">
-            <ng-template #start>
-                <p-button label="New Asset" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" label="Delete Selected" icon="pi pi-trash" outlined (onClick)="deleteSelectedInvCustlips()" [disabled]="!selectedInvCustlips || !selectedInvCustlips.length" />
-            </ng-template>
+        <app-toolbar [showNew]="true" [showDelete]="true" [selectedCount]="selectedInvCustlips.length" (newClick)="openNew()" (deleteClick)="deleteSelectedInvCustlips()" />
 
-            <ng-template #end>
-                <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
-            </ng-template>
-        </p-toolbar>
-
-        <p-table
-            #dt
-            [value]="invCustlips()"
-            [rows]="10"
-            [columns]="cols"
+        <app-data-table
+            [data]="invCustlips()"
+            [columns]="columns"
+            [loading]="loading"
+            [searchable]="true"
+            [exportable]="true"
+            [selectable]="true"
             [paginator]="true"
-            [globalFilterFields]="['Description', 'InvNo', 'UoM']"
-            responsiveLayout="stack"
-            breakpoint="960px"
+            [rows]="10"
+            title="Custodian Inventory"
+            searchPlaceholder="Search assets..."
             [(selection)]="selectedInvCustlips"
-            [rowHover]="true"
-            dataKey="id"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} assets"
-            [showCurrentPageReport]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
-            styleClass="p-datatable-customers"
+            (search)="onSearch($event)"
+            (exportExcel)="exportData()"
         >
-            <ng-template #caption>
-                <div class="flex items-center justify-between">
-                    <h5 class="m-0">Custodian</h5>
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search assets..." />
-                    </p-iconfield>
-                </div>
+            <ng-template #actionButtons let-rowData="rowData">
+                <app-action-buttons [data]="rowData" [showView]="false" [showEdit]="true" [showDelete]="true" [editDisabled]="isUpdating" [deleteDisabled]="isDeleting" (edit)="editInvCustlip($event)" (delete)="deleteInvCustlip($event)" />
             </ng-template>
-            <ng-template #header>
-                <tr>
-                    <th style="width: 3rem">
-                        <p-tableHeaderCheckbox />
-                    </th>
-                    <th pSortableColumn="InvNo" style="min-width: 10rem">
-                        Inventory No
-                        <p-sortIcon field="InvNo" />
-                    </th>
-                    <th pSortableColumn="Description" style="min-width: 15rem">
-                        Description
-                        <p-sortIcon field="Description" />
-                    </th>
-                    <th pSortableColumn="Quantity" style="min-width: 10rem">
-                        Quantity
-                        <p-sortIcon field="Quantity" />
-                    </th>
-                    <th pSortableColumn="UoM" style="min-width: 8rem">
-                        UoM
-                        <p-sortIcon field="UoM" />
-                    </th>
-                    <th pSortableColumn="brand_id" style="min-width: 10rem">
-                        Brand
-                        <p-sortIcon field="brand_id" />
-                    </th>
-                    <th pSortableColumn="color_id" style="min-width: 10rem">
-                        Color
-                        <p-sortIcon field="color_id" />
-                    </th>
-                    <th pSortableColumn="DateAcquired" style="min-width: 10rem">
-                        Date Acquired
-                        <p-sortIcon field="DateAcquired" />
-                    </th>
-                    <th style="min-width: 10rem">Actions</th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-invCustlip>
-                <tr>
-                    <td style="width: 3rem">
-                        <p-tableCheckbox [value]="invCustlip" />
-                    </td>
-                    <td style="width:12%; min-width:10rem;">
-                        <span class="p-column-title"></span>
-                        {{ invCustlip.InvNo }}
-                    </td>
-                    <td style="width:14%; min-width:15rem;">
-                        <span class="p-column-title"></span>
-                        {{ invCustlip.Description }}
-                    </td>
-                    <td style="width:12%; min-width:8rem;">
-                        <span class="p-column-title"></span>
-                        {{ invCustlip.Quantity }}
-                    </td>
-                    <td style="width:10%; min-width:8rem;">
-                        <span class="p-column-title"></span>
-                        {{ invCustlip.UoM }}
-                    </td>
-                    <td style="width:12%; min-width:10rem;">
-                        <span class="p-column-title"></span>
-                        {{ getBrandName(invCustlip.brand_id) }}
-                    </td>
-                    <td style="width:12%; min-width:10rem;">
-                        <span class="p-column-title"></span>
-                        {{ getColorName(invCustlip.color_id) }}
-                    </td>
-                    <td style="width:14%; min-width:10rem;">
-                        <span class="p-column-title"></span>
-                        {{ invCustlip.DateAcquired }}
-                    </td>
-                    <td>
-                        <div class="flex align-items-center gap-2">
-                            <p-button icon="pi pi-pencil" [rounded]="true" [outlined]="true" (click)="editInvCustlip(invCustlip)" pTooltip="Edit InvCustlip" />
-                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteInvCustlip(invCustlip)" pTooltip="Delete InvCustlip" />
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+        </app-data-table>
 
         <p-dialog [(visible)]="invCustlipDialog" [style]="{ width: '800px' }" header="InvCustlip Details" [modal]="true">
             <ng-template #content>
@@ -229,144 +112,162 @@ interface ExportColumn {
 
             <ng-template #footer>
                 <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-                <p-button label="Save" icon="pi pi-check" (click)="saveInvCustlip()" />
+                <p-button label="Save" icon="pi pi-check" (click)="saveInvCustlip()" [disabled]="isUpdating" />
             </ng-template>
         </p-dialog>
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, AssetService, ConfirmationService]
+    providers: [MessageService]
 })
-export class CustodianComponent implements OnInit {
+export class CustodianComponent extends BaseComponent implements OnInit {
+    // State management
+    loadingState: LoadingState = LoadingState.IDLE;
+    isUpdating: boolean = false;
+    isDeleting: boolean = false;
+
     invCustlipDialog: boolean = false;
-
     invCustlips = signal<InvCustlip[]>([]);
-
     invCustlip: InvCustlip = {};
-
-    selectedInvCustlips: InvCustlip[] | null = null;
-
+    selectedInvCustlips: InvCustlip[] = [];
     submitted: boolean = false;
-
-    statuses: any[] = [];
-    categories: any[] = [];
-    activeOptions: any[] = [];
 
     // Reference data for dropdowns
     colors: Color[] = [];
     brands: Brand[] = [];
 
-    @ViewChild('dt') dt!: Table;
+    // Table columns
+    columns: TableColumn[] = [
+        { field: 'InvNo', header: 'Inventory No', sortable: true },
+        { field: 'Description', header: 'Description', sortable: true },
+        { field: 'Quantity', header: 'Quantity', sortable: true },
+        { field: 'UoM', header: 'Unit', sortable: true },
+        { field: 'brand_id', header: 'Brand', sortable: true },
+        { field: 'color_id', header: 'Color', sortable: true },
+        { field: 'DateAcquired', header: 'Date Acquired', sortable: true }
+    ];
 
-    exportColumns!: ExportColumn[];
+    private searchSubject$ = new Subject<string>();
+    private allItems: InvCustlip[] = [];
 
-    cols!: Column[];
+    // Computed properties
+    get loading(): boolean {
+        return isLoading(this.loadingState);
+    }
 
     constructor(
         private assetService: AssetService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
-    ) {}
-
-    exportCSV() {
-        this.dt.exportCSV();
+        private dialogService: DialogService,
+        private exportService: ExportService,
+        private errorHandler: ErrorHandlerService
+    ) {
+        super();
     }
 
     ngOnInit() {
         this.loadInvCustlips();
         this.loadReferenceData();
-
-        this.cols = [
-            { field: 'InvNo', header: 'Invoice No' },
-            { field: 'Description', header: 'Description' },
-            { field: 'Quantity', header: 'Quantity' },
-            { field: 'UoM', header: 'Unit' },
-            { field: 'brand_id', header: 'Brand' },
-            { field: 'color_id', header: 'Color' },
-            { field: 'DateAcquired', header: 'Date Acquired' }
-        ];
-
-        this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
+        this.setupSearchDebounce();
     }
 
-    loadInvCustlips() {
-        this.assetService.getInvCustlips().subscribe({
-            next: (data) => {
-                this.invCustlips.set(data);
-            },
-            error: (error) => {
-                console.error('Error loading InvCustlips:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to load InvCustlips. Please try again.',
-                    confirmButtonColor: '#EF4444'
-                });
-            }
+    /**
+     * Setup search debouncing
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.filterData(searchTerm);
         });
     }
 
-    initializeDropdowns() {
-        this.statuses = [
-            { label: 'ACTIVE', value: 'ACTIVE' },
-            { label: 'MAINTENANCE', value: 'MAINTENANCE' },
-            { label: 'DISPOSED', value: 'DISPOSED' },
-            { label: 'LOST', value: 'LOST' }
-        ];
-
-        this.categories = [
-            { label: 'IT Equipment', value: 'IT Equipment' },
-            { label: 'Furniture', value: 'Furniture' },
-            { label: 'Vehicle', value: 'Vehicle' },
-            { label: 'Office Supplies', value: 'Office Supplies' },
-            { label: 'Tools', value: 'Tools' }
-        ];
-
-        this.activeOptions = [
-            { label: 'Yes', value: 'Y' },
-            { label: 'No', value: 'N' }
-        ];
-
-        // Load reference data from API
-        this.loadReferenceData();
-
-        this.cols = [
-            { field: 'InvNo', header: 'Invoice No' },
-            { field: 'Description', header: 'Description' },
-            { field: 'Quantity', header: 'Quantity' },
-            { field: 'UoM', header: 'Unit' },
-            { field: 'brand_id', header: 'Brand' },
-            { field: 'color_id', header: 'Color' },
-            { field: 'DateAcquired', header: 'Date Acquired' }
-        ];
-
-        this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
+    /**
+     * Handle search input
+     */
+    onSearch(searchTerm: string): void {
+        this.searchSubject$.next(searchTerm);
     }
 
-    loadReferenceData() {
+    /**
+     * Filter data based on search term
+     */
+    private filterData(searchTerm: string): void {
+        if (!searchTerm) {
+            this.invCustlips.set(this.allItems);
+            return;
+        }
+
+        const term = searchTerm.toLowerCase();
+        const filtered = this.allItems.filter(
+            (item) =>
+                item.Description?.toLowerCase().includes(term) ||
+                item.InvNo?.toLowerCase().includes(term) ||
+                item.UoM?.toLowerCase().includes(term) ||
+                this.getBrandName(item.brand_id)?.toLowerCase().includes(term) ||
+                this.getColorName(item.color_id)?.toLowerCase().includes(term)
+        );
+        this.invCustlips.set(filtered);
+    }
+
+    /**
+     * Load InvCustlips
+     */
+    loadInvCustlips(): void {
+        if (this.loading) return;
+
+        this.loadingState = LoadingState.LOADING;
+
+        this.assetService
+            .getInvCustlips()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
+                    }
+                })
+            )
+            .subscribe({
+                next: (data) => {
+                    this.allItems = data;
+                    this.invCustlips.set(data);
+                    this.loadingState = LoadingState.SUCCESS;
+                },
+                error: (error) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'loading inventory items');
+                }
+            });
+    }
+
+    /**
+     * Load reference data (colors, brands)
+     */
+    loadReferenceData(): void {
         // Load colors
-        this.assetService.getColors().subscribe({
-            next: (data) => {
-                this.colors = data;
-            },
-            error: (error) => {
-                console.error('Error loading colors:', error);
-            }
-        });
+        this.assetService
+            .getColors()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (data) => {
+                    this.colors = data;
+                },
+                error: (error) => {
+                    console.error('Error loading colors:', error);
+                }
+            });
 
         // Load brands
-        this.assetService.getBrands().subscribe({
-            next: (data) => {
-                this.brands = data;
-            },
-            error: (error) => {
-                console.error('Error loading brands:', error);
-            }
-        });
-    }
-
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+        this.assetService
+            .getBrands()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (data) => {
+                    this.brands = data;
+                },
+                error: (error) => {
+                    console.error('Error loading brands:', error);
+                }
+            });
     }
 
     openNew() {
@@ -385,39 +286,63 @@ export class CustodianComponent implements OnInit {
         this.invCustlipDialog = true;
     }
 
-    deleteSelectedInvCustlips() {
-        if (!this.selectedInvCustlips || this.selectedInvCustlips.length === 0) return;
+    /**
+     * Delete selected InvCustlips
+     */
+    async deleteSelectedInvCustlips(): Promise<void> {
+        if (!this.selectedInvCustlips || this.selectedInvCustlips.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Please select items to delete'
+            });
+            return;
+        }
 
-        this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected InvCustlips?',
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                const deletePromises = this.selectedInvCustlips!.map((item) => this.assetService.deleteInvCustlip(item.inv_custlip_id!).toPromise());
+        if (this.isDeleting) return;
 
-                Promise.all(deletePromises)
-                    .then(() => {
-                        this.loadInvCustlips();
-                        this.selectedInvCustlips = null;
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: 'InvCustlips deleted successfully',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    })
-                    .catch((error) => {
-                        console.error('Error deleting InvCustlips:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Failed to delete InvCustlips. Please try again.',
-                            confirmButtonColor: '#EF4444'
-                        });
-                    });
-            }
+        const confirmed = await this.dialogService.confirm('Confirm Delete', `Are you sure you want to delete ${this.selectedInvCustlips.length} item(s)?`);
+
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+        let deletedCount = 0;
+        let failedCount = 0;
+        const totalCount = this.selectedInvCustlips.length;
+
+        this.selectedInvCustlips.forEach((item) => {
+            this.assetService
+                .deleteInvCustlip(item.inv_custlip_id!)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: () => {
+                        deletedCount++;
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    },
+                    error: (error) => {
+                        failedCount++;
+                        console.error(`Failed to delete item ${item.inv_custlip_id}:`, error);
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    }
+                });
         });
+    }
+
+    /**
+     * Check if bulk delete operation is complete
+     */
+    private checkBulkDeleteComplete(deleted: number, failed: number, total: number): void {
+        if (deleted + failed === total) {
+            this.isDeleting = false;
+            this.selectedInvCustlips = [];
+            this.loadInvCustlips();
+
+            if (failed === 0) {
+                this.dialogService.showSuccess(`${deleted} item(s) deleted successfully`);
+            } else {
+                this.dialogService.showWarning(`${deleted} item(s) deleted, ${failed} failed`, 'Partial Delete');
+            }
+        }
     }
 
     hideDialog() {
@@ -425,116 +350,112 @@ export class CustodianComponent implements OnInit {
         this.submitted = false;
     }
 
-    deleteInvCustlip(invCustlip: InvCustlip) {
-        this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + invCustlip.Description + '?',
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                this.assetService.deleteInvCustlip(invCustlip.inv_custlip_id!).subscribe({
-                    next: () => {
-                        this.loadInvCustlips();
-                        this.invCustlip = { specs: {} };
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: 'InvCustlip deleted successfully',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    },
-                    error: (error) => {
-                        console.error('Error deleting InvCustlip:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Failed to delete InvCustlip. Please try again.',
-                            confirmButtonColor: '#EF4444'
-                        });
-                    }
-                });
-            }
-        });
-    }
+    /**
+     * Delete single InvCustlip
+     */
+    async deleteInvCustlip(invCustlip: InvCustlip): Promise<void> {
+        if (this.isDeleting) return;
 
-    generatePropertyNo(): string {
-        const prefix = 'PROP';
-        const timestamp = new Date().getTime().toString().slice(-6);
-        return prefix + timestamp;
+        const confirmed = await this.dialogService.confirmDelete(`item "${invCustlip.Description}"`);
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+
+        this.assetService
+            .deleteInvCustlip(invCustlip.inv_custlip_id!)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isDeleting = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.loadInvCustlips();
+                    this.invCustlip = { specs: {} };
+                    this.dialogService.showSuccess('Item deleted successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'deleting item');
+                }
+            });
     }
 
     getBrandName(brandId?: string | number): string {
         if (!brandId) return '';
-        const brand = this.brands.find((b: Brand) => b.brand_id === String(brandId));
-        return brand?.BrandName || '';
+        const brand = this.brands.find((b: Brand) => b.brandId === String(brandId));
+        return brand?.brandName || '';
     }
 
     getColorName(colorId?: string | number): string {
         if (!colorId) return '';
-        const color = this.colors.find((c: Color) => c.color_id === String(colorId));
-        return color?.Description || '';
+        const color = this.colors.find((c: Color) => c.colorId === String(colorId));
+        return color?.colorName || '';
     }
 
-    generateQrCode(): string {
-        const timestamp = new Date().getTime().toString();
-        const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-        return 'QR' + random + timestamp.slice(-4);
-    }
-
-    getStatusSeverity(status: string) {
-        switch (status) {
-            case 'ACTIVE':
-                return 'success';
-            case 'MAINTENANCE':
-                return 'warn';
-            case 'DISPOSED':
-                return 'danger';
-            case 'LOST':
-                return 'danger';
-            default:
-                return 'info';
-        }
-    }
-
-    saveInvCustlip() {
+    /**
+     * Save InvCustlip
+     */
+    saveInvCustlip(): void {
         this.submitted = true;
 
         if (!this.invCustlip.Description?.trim()) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Missing Information',
-                text: 'Description is required.',
-                confirmButtonColor: '#3B82F6'
+            this.dialogService.showWarning('Description is required', 'Missing Information');
+            return;
+        }
+
+        if (this.isUpdating) return;
+        this.isUpdating = true;
+
+        const saveOperation = this.invCustlip.inv_custlip_id ? this.assetService.updateInvCustlip(this.invCustlip.inv_custlip_id, this.invCustlip) : this.assetService.createInvCustlip(this.invCustlip);
+
+        saveOperation
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.loadInvCustlips();
+                    this.invCustlipDialog = false;
+                    this.invCustlip = { specs: {} };
+                    this.submitted = false;
+
+                    const message = this.invCustlip.inv_custlip_id ? 'Item updated successfully' : 'Item created successfully';
+                    this.dialogService.showSuccess(message);
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'saving item');
+                }
+            });
+    }
+
+    /**
+     * Export data to CSV
+     */
+    exportData(): void {
+        const items = this.invCustlips();
+        if (items.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'No data to export'
             });
             return;
         }
 
-        const saveOperation = this.invCustlip.inv_custlip_id ? this.assetService.updateInvCustlip(this.invCustlip.inv_custlip_id, this.invCustlip) : this.assetService.createInvCustlip(this.invCustlip);
+        const exportColumns: ExportColumn[] = [
+            { field: 'InvNo', header: 'Invoice No' },
+            { field: 'Description', header: 'Description' },
+            { field: 'Quantity', header: 'Quantity' },
+            { field: 'UoM', header: 'Unit' },
+            { field: 'DateAcquired', header: 'Date Acquired' }
+        ];
 
-        saveOperation.subscribe({
-            next: () => {
-                this.loadInvCustlips();
-                this.invCustlipDialog = false;
-                this.invCustlip = { specs: {} };
-                this.submitted = false;
+        this.exportService.exportToCsv(items, 'custodian_inventory', exportColumns);
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: this.invCustlip.inv_custlip_id ? 'InvCustlip updated successfully' : 'InvCustlip created successfully',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            },
-            error: (error) => {
-                console.error('Error saving InvCustlip:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to save InvCustlip. Please try again.',
-                    confirmButtonColor: '#EF4444'
-                });
-            }
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Data exported to CSV'
         });
     }
 }

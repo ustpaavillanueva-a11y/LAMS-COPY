@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -20,6 +20,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../service/auth.service';
+import { CalendarWebSocketService } from '../service/calendar-websocket.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -276,7 +277,7 @@ import Swal from 'sweetalert2';
         </p-dialog>
     `
 })
-export class LabScheduleComponent implements OnInit {
+export class LabScheduleComponent implements OnInit, OnDestroy {
     @ViewChild('dt') dt: Table | undefined;
 
     // Schedule data
@@ -309,7 +310,8 @@ export class LabScheduleComponent implements OnInit {
     constructor(
         private messageService: MessageService,
         private http: HttpClient,
-        private authService: AuthService
+        private authService: AuthService,
+        private calendarWebSocketService: CalendarWebSocketService
     ) {}
 
     ngOnInit() {
@@ -319,12 +321,117 @@ export class LabScheduleComponent implements OnInit {
         this.loadLaboratories();
         this.loadUsers();
         this.loadSubjects();
+        this.connectToWebSocket();
 
         // Auto-load schedules for Faculty users
         if (this.isFaculty) {
             this.loadSchedules();
         }
         // Note: For other roles, loadSchedules is called after selecting a laboratory
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time calendar/schedule updates
+     */
+    connectToWebSocket(): void {
+        // Check if user is authenticated before connecting
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('⚠️ Skipping WebSocket connection - user not authenticated');
+            return;
+        }
+
+        try {
+            this.calendarWebSocketService.connect();
+            console.log('✅ Connected to calendar WebSocket');
+
+            // Listen for schedule creation
+            this.calendarWebSocketService.onScheduleCreated().subscribe({
+                next: (event) => {
+                    console.log('🆕 Schedule created:', event.data);
+                    if (event.success) {
+                        // Reload schedules to get the latest data
+                        if (this.selectedLaboratory || this.isFaculty) {
+                            this.loadSchedules();
+                        }
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Schedule Created',
+                            detail: 'A new schedule has been created',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving schedule-created event:', error);
+                }
+            });
+
+            // Listen for schedule updates
+            this.calendarWebSocketService.onScheduleUpdated().subscribe({
+                next: (event) => {
+                    console.log('✏️ Schedule updated:', event.data);
+                    if (event.success) {
+                        // Reload schedules to reflect the changes
+                        if (this.selectedLaboratory || this.isFaculty) {
+                            this.loadSchedules();
+                        }
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Schedule Updated',
+                            detail: 'A schedule has been updated',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving schedule-updated event:', error);
+                }
+            });
+
+            // Listen for schedule deletions
+            this.calendarWebSocketService.onScheduleDeleted().subscribe({
+                next: (event) => {
+                    console.log('🗑️ Schedule deleted:', event.data);
+                    if (event.success) {
+                        // Remove the schedule from the list
+                        this.schedules = this.schedules.filter((s) => s.scheduleId !== event.data.scheduleId);
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Schedule Deleted',
+                            detail: 'A schedule has been deleted',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving schedule-deleted event:', error);
+                }
+            });
+
+            // Listen for generic schedule changes
+            this.calendarWebSocketService.onScheduleChanged().subscribe({
+                next: (event) => {
+                    console.log('🔄 Schedule changed:', event.data);
+                    if (event.success && (this.selectedLaboratory || this.isFaculty)) {
+                        this.loadSchedules();
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving schedule-changed event:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Disconnect from WebSocket when component is destroyed
+     */
+    ngOnDestroy(): void {
+        this.calendarWebSocketService.disconnect();
+        console.log('🔌 Disconnected from calendar WebSocket');
     }
 
     checkUserRole() {

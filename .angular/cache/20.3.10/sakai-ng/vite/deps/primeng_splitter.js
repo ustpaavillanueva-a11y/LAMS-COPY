@@ -1,18 +1,18 @@
 import {
   BaseComponent,
   PARENT_INSTANCE
-} from "./chunk-M2NELYC7.js";
+} from "./chunk-32HJBRZT.js";
 import {
   BaseStyle
-} from "./chunk-WBKIMRVV.js";
-import {
-  PrimeTemplate,
-  SharedModule
-} from "./chunk-6D2SAAIV.js";
+} from "./chunk-7FDDY7DG.js";
 import {
   Bind,
   BindModule
-} from "./chunk-PXYWQ7E3.js";
+} from "./chunk-75JTQVRY.js";
+import {
+  PrimeTemplate,
+  SharedModule
+} from "./chunk-HVVMUKCH.js";
 import "./chunk-OTTARZB5.js";
 import {
   C2 as C,
@@ -31,7 +31,7 @@ import {
   NgStyle,
   NgTemplateOutlet,
   isPlatformBrowser
-} from "./chunk-RH3RUHL2.js";
+} from "./chunk-7RCU5MHB.js";
 import "./chunk-APPCZKFW.js";
 import {
   ChangeDetectionStrategy,
@@ -76,11 +76,16 @@ import {
   ɵɵresetView,
   ɵɵrestoreView,
   ɵɵtemplate
+<<<<<<< HEAD
 } from "./chunk-FKRSZNWR.js";
+=======
+} from "./chunk-QFF4CQQI.js";
+import "./chunk-HWYXSU2G.js";
+>>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";
-import "./chunk-V4F5PRXT.js";
+import "./chunk-NJ4VOZBH.js";
 
 // node_modules/@primeuix/styles/dist/splitter/index.mjs
 var style = "\n    .p-splitter {\n        display: flex;\n        flex-wrap: nowrap;\n        border: 1px solid dt('splitter.border.color');\n        background: dt('splitter.background');\n        border-radius: dt('border.radius.md');\n        color: dt('splitter.color');\n    }\n\n    .p-splitter-vertical {\n        flex-direction: column;\n    }\n\n    .p-splitter-gutter {\n        flex-grow: 0;\n        flex-shrink: 0;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        z-index: 1;\n        background: dt('splitter.gutter.background');\n    }\n\n    .p-splitter-gutter-handle {\n        border-radius: dt('splitter.handle.border.radius');\n        background: dt('splitter.handle.background');\n        transition:\n            outline-color dt('splitter.transition.duration'),\n            box-shadow dt('splitter.transition.duration');\n        outline-color: transparent;\n    }\n\n    .p-splitter-gutter-handle:focus-visible {\n        box-shadow: dt('splitter.handle.focus.ring.shadow');\n        outline: dt('splitter.handle.focus.ring.width') dt('splitter.handle.focus.ring.style') dt('splitter.handle.focus.ring.color');\n        outline-offset: dt('splitter.handle.focus.ring.offset');\n    }\n\n    .p-splitter-horizontal.p-splitter-resizing {\n        cursor: col-resize;\n        user-select: none;\n    }\n\n    .p-splitter-vertical.p-splitter-resizing {\n        cursor: row-resize;\n        user-select: none;\n    }\n\n    .p-splitter-horizontal > .p-splitter-gutter > .p-splitter-gutter-handle {\n        height: dt('splitter.handle.size');\n        width: 100%;\n    }\n\n    .p-splitter-vertical > .p-splitter-gutter > .p-splitter-gutter-handle {\n        width: dt('splitter.handle.size');\n        height: 100%;\n    }\n\n    .p-splitter-horizontal > .p-splitter-gutter {\n        cursor: col-resize;\n    }\n\n    .p-splitter-vertical > .p-splitter-gutter {\n        cursor: row-resize;\n    }\n\n    .p-splitterpanel {\n        flex-grow: 1;\n        overflow: hidden;\n    }\n\n    .p-splitterpanel-nested {\n        display: flex;\n    }\n\n    .p-splitterpanel .p-splitter {\n        flex-grow: 1;\n        border: 0 none;\n    }\n";

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,12 +20,13 @@ import { TextareaModule } from 'primeng/textarea';
 import { FileUploadModule } from 'primeng/fileupload';
 import { StepperModule } from 'primeng/stepper';
 import { MessageService } from 'primeng/api';
-import { AssetService, Asset, Program, Supplier, Location, Color, Brand, Status, Laboratory } from '../service/asset.service';
+import { AssetService, Asset, Program, Color, Brand, Status, Laboratory } from '../service/asset.service';
 import { MaintenanceService, MaintenanceRequestPayload } from '../service/maintenance.service';
 import { AuthService } from '../service/auth.service';
 import { UserService } from '../service/user.service';
 import Swal from 'sweetalert2';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 // Refactored imports
 import { AssetConstants } from './constants/asset.constants';
@@ -33,6 +34,7 @@ import { QrCodeService } from './services/qr-code.service';
 import { AssetExportService } from './services/asset-export.service';
 import { AssetFormService } from './services/asset-form.service';
 import { AssetUtils } from './utils/asset.utils';
+import { AssetsWebSocketService } from './services/assets-websocket.service';
 
 @Component({
     selector: 'app-assets',
@@ -155,7 +157,7 @@ import { AssetUtils } from './utils/asset.utils';
             </ng-template>
         </p-table>
 
-        <p-dialog [(visible)]="assetDialog" [style]="{ width: '550px', maxHeight: '80vh' }" header="Create New Asset" [modal]="true" [closable]="true" [maximizable]="true">
+        <p-dialog [(visible)]="assetDialog" [style]="{ width: '550px', maxHeight: '80vh' }" [header]="editMode ? 'Edit Asset' : 'Create New Asset'" [modal]="true" [closable]="true" [maximizable]="true">
             <ng-template #content>
                 <!-- Professional Stepper -->
                 <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 24px; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid #e5e5e5;">
@@ -525,9 +527,9 @@ import { AssetUtils } from './utils/asset.utils';
                         <p-button *ngIf="currentStep < 1" label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextStep()" [disabled]="isSubmitting" />
                         <p-button
                             *ngIf="currentStep === 1"
-                            [label]="isSubmitting ? 'Saving...' : 'Save Asset'"
+                            [label]="isSubmitting ? 'Saving...' : editMode ? 'Update Asset' : 'Save Asset'"
                             [icon]="isSubmitting ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
-                            (onClick)="saveNewAsset()"
+                            (onClick)="editMode ? updateAsset() : saveNewAsset()"
                             [disabled]="isSubmitting"
                             [loading]="isSubmitting"
                         />
@@ -575,7 +577,7 @@ import { AssetUtils } from './utils/asset.utils';
         </p-dialog>
     `
 })
-export class AssetsComponent implements OnInit {
+export class AssetsComponent implements OnInit, OnDestroy {
     @ViewChild('dt') dt: Table | undefined;
 
     assets: Asset[] = [];
@@ -592,6 +594,7 @@ export class AssetsComponent implements OnInit {
 
     // Dialog and form
     assetDialog: boolean = false;
+    editMode: boolean = false;
     currentStep: number = 0;
     newAsset: any = this.getEmptyAsset();
 
@@ -620,8 +623,6 @@ export class AssetsComponent implements OnInit {
 
     // Reference data
     programs: Program[] = [];
-    suppliers: Supplier[] = [];
-    locations: Location[] = [];
     laboratories: Laboratory[] = [];
     statuses: Status[] = [];
     colors: Color[] = [];
@@ -645,7 +646,8 @@ export class AssetsComponent implements OnInit {
         private router: Router,
         private qrCodeService: QrCodeService,
         private assetExportService: AssetExportService,
-        private assetFormService: AssetFormService
+        private assetFormService: AssetFormService,
+        private assetsWebSocketService: AssetsWebSocketService
     ) {}
 
     getEmptyAsset() {
@@ -656,6 +658,129 @@ export class AssetsComponent implements OnInit {
         this.checkUserRole();
         this.loadReferenceData();
         this.loadMaintenanceDialogOptions();
+        this.connectToWebSocket();
+    }
+
+    /**
+     * Connect to WebSocket and subscribe to real-time updates
+     */
+    connectToWebSocket() {
+        // Check if user is authenticated before connecting
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('⚠️ Skipping WebSocket connection - user not authenticated');
+            return;
+        }
+
+        try {
+            this.assetsWebSocketService.connect();
+            console.log('✅ Connected to assets WebSocket');
+
+            // Listen for asset creation
+            this.assetsWebSocketService.onAssetCreated().subscribe({
+                next: (event) => {
+                    console.log('🆕 Asset created:', event.data);
+                    if (event.success) {
+                        // Reload assets to get the latest data
+                        this.loadAssets();
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Asset Created',
+                            detail: `${event.data.assetName} was created`,
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving asset-created event:', error);
+                }
+            });
+
+            // Listen for asset updates
+            this.assetsWebSocketService.onAssetUpdated().subscribe({
+                next: (event) => {
+                    console.log('✏️ Asset updated:', event.data);
+                    if (event.success) {
+                        // Find and update the asset in the list
+                        const index = this.assets.findIndex((a) => a.assetId === event.data.assetId);
+                        if (index !== -1) {
+                            // Expand assets in case serial numbers changed
+                            const expandedAssets = AssetUtils.expandAssetsForDisplay([event.data as any]);
+                            this.assets.splice(index, 1, ...expandedAssets);
+                            this.enrichAssetsWithNames();
+                            this.filteredAssets = [...this.assets];
+                            this.filter();
+                        }
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Asset Updated',
+                            detail: `${event.data.assetName} was updated`,
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving asset-updated event:', error);
+                }
+            });
+
+            // Listen for asset status changes
+            this.assetsWebSocketService.onAssetStatusChanged().subscribe({
+                next: (event) => {
+                    console.log('🔄 Asset status changed:', event.data);
+                    if (event.success) {
+                        // Find and update the asset status
+                        const asset = this.assets.find((a) => a.assetId === event.data.assetId);
+                        if (asset) {
+                            asset['status'] = event.data.status;
+                            this.filteredAssets = [...this.assets];
+                            this.filter();
+                        }
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Status Changed',
+                            detail: `${event.data.assetName} status updated`,
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving asset-status-changed event:', error);
+                }
+            });
+
+            // Listen for asset deletions
+            this.assetsWebSocketService.onAssetDeleted().subscribe({
+                next: (event) => {
+                    console.log('🗑️ Asset deleted:', event.data);
+                    if (event.success) {
+                        // Remove the asset from the list
+                        this.assets = this.assets.filter((a) => a.assetId !== event.data.assetId);
+                        this.filteredAssets = [...this.assets];
+                        this.filter();
+                        this.messageService.add({
+                            severity: 'info',
+                            summary: 'Asset Deleted',
+                            detail: 'An asset was deleted',
+                            life: 3000
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error receiving asset-deleted event:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Disconnect from WebSocket when component is destroyed
+     */
+    ngOnDestroy() {
+        this.assetsWebSocketService.disconnect();
+        console.log('🔌 Disconnected from assets WebSocket');
     }
 
     checkUserRole() {
@@ -684,13 +809,32 @@ export class AssetsComponent implements OnInit {
         console.log('🔄 Starting to load reference data...');
 
         // Load all reference data in parallel using forkJoin
+        // Each observable has error handling to return empty array if it fails
         forkJoin({
-            programs: this.assetService.getPrograms(),
-            suppliers: this.assetService.getSuppliers(),
-            locations: this.assetService.getLocations(),
-            statuses: this.assetService.getStatuses(),
-            colors: this.assetService.getColors(),
-            brands: this.assetService.getBrands()
+            programs: this.assetService.getPrograms().pipe(
+                catchError((err) => {
+                    console.warn('⚠️ Programs API failed:', err.message);
+                    return of([]);
+                })
+            ),
+            statuses: this.assetService.getStatuses().pipe(
+                catchError((err) => {
+                    console.warn('⚠️ Statuses API failed:', err.message);
+                    return of([]);
+                })
+            ),
+            colors: this.assetService.getColors().pipe(
+                catchError((err) => {
+                    console.warn('⚠️ Colors API failed:', err.message);
+                    return of([]);
+                })
+            ),
+            brands: this.assetService.getBrands().pipe(
+                catchError((err) => {
+                    console.warn('⚠️ Brands API failed:', err.message);
+                    return of([]);
+                })
+            )
         }).subscribe({
             next: (data) => {
                 console.log('✅ forkJoin completed successfully!');
@@ -698,8 +842,6 @@ export class AssetsComponent implements OnInit {
 
                 // Store all reference data
                 this.programs = data.programs || [];
-                this.suppliers = data.suppliers || [];
-                this.locations = data.locations || [];
                 this.statuses = data.statuses || [];
                 this.colors = data.colors || [];
                 this.brands = data.brands || [];
@@ -708,33 +850,14 @@ export class AssetsComponent implements OnInit {
                 console.log('Programs:', this.programs.length, this.programs);
                 console.log('Brands:', this.brands.length, this.brands);
                 console.log('Colors:', this.colors.length, this.colors);
-                console.log('Suppliers:', this.suppliers.length);
-                console.log('Locations:', this.locations.length);
                 console.log('Statuses:', this.statuses.length);
-                console.log('API Base URL:', 'Check network tab for actual endpoints');
                 console.log('============================');
 
                 // Now that reference data is loaded, load and enrich assets
                 this.loadAssets();
             },
             error: (error) => {
-                console.error('❌ ERROR: forkJoin FAILED!');
-                console.error('This means at least one of the API calls failed.');
                 console.error('❌ ERROR loading reference data:', error);
-                console.error('Error details:', {
-                    message: error.message,
-                    status: error.status,
-                    statusText: error.statusText,
-                    url: error.url
-                });
-                console.error('Check the Network tab to see which API call failed:');
-                console.error('- GET /api/programs');
-                console.error('- GET /api/suppliers');
-                console.error('- GET /api/locations');
-                console.error('- GET /api/status');
-                console.error('- GET /api/colors');
-                console.error('- GET /api/brands');
-
                 // Still try to load assets even if reference data fails
                 this.loadAssets();
             }
@@ -750,9 +873,11 @@ export class AssetsComponent implements OnInit {
 
         this.userService.getCampuses().subscribe({
             next: (data) => {
-                if (data && data.length > 0) {
-                }
                 this.campuses = data || [];
+            },
+            error: (err) => {
+                console.warn('⚠️ Campuses API failed (403 Forbidden - check LabTech permissions):', err.message);
+                this.campuses = [];
             }
         });
 
@@ -984,6 +1109,7 @@ export class AssetsComponent implements OnInit {
     }
 
     openNew() {
+        this.editMode = false;
         this.assetDialog = true;
         this.currentStep = 0;
         this.newAsset = this.getEmptyAsset();
@@ -1578,13 +1704,18 @@ export class AssetsComponent implements OnInit {
             return;
         }
 
-        // Fetch full asset details from API
-        this.assetService.getAsset(item.assetId as any).subscribe({
-            next: (fullAsset: any) => {
+        // Fetch full asset details and maintenance history
+        forkJoin({
+            asset: this.assetService.getAsset(item.assetId as any),
+            maintenanceHistory: this.maintenanceService.getMaintenanceRequests().pipe(catchError(() => of([])))
+        }).subscribe({
+            next: ({ asset: fullAsset, maintenanceHistory }) => {
                 const assetName = fullAsset.assetName || 'Unknown Asset';
                 const icsData = fullAsset.inventoryCustodianSlip || {};
                 const icsTableData = this.getIcsTableData(icsData);
-                const maintenanceHistory = fullAsset.maintenance_history || [];
+
+                // Filter maintenance history for this asset
+                const assetMaintenanceHistory = maintenanceHistory.filter((m: any) => m.asset?.assetId === item.assetId);
 
                 let icsHtml = '';
                 if (icsTableData.length > 0) {
@@ -1622,41 +1753,41 @@ export class AssetsComponent implements OnInit {
                 }
 
                 let maintenanceHtml = '';
-                if (maintenanceHistory.length > 0) {
+                if (assetMaintenanceHistory.length > 0) {
                     maintenanceHtml = `
                         <!-- Maintenance History Accordion -->
                         <div class="accordion-section">
                             <div class="accordion-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active'); this.querySelector('.accordion-icon').classList.toggle('active');">
-                                <span>🔧 Maintenance History (${maintenanceHistory.length})</span>
+                                <span>🔧 Maintenance History (${assetMaintenanceHistory.length})</span>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead>
-                                        <tr style="background-color: #f3f4f6;">
-                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Date</th>
-                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Type</th>
-                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Status</th>
-                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Service</th>
-                                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-weight: 600; font-size: 13px;">Remarks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${maintenanceHistory
-                                            .map(
-                                                (maint: any, idx: number) => `
-                                            <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'};">
-                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${new Date(maint.maintenance_date).toLocaleDateString()}</td>
-                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${maint.maintenance_type || 'N/A'}</td>
-                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${maint.maintenance_status || 'N/A'}</td>
-                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${maint.service || 'N/A'}</td>
-                                                <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${maint.remarks || 'N/A'}</td>
-                                            </tr>
-                                        `
-                                            )
-                                            .join('')}
-                                    </tbody>
-                                </table>
+                                ${assetMaintenanceHistory
+                                    .map(
+                                        (maint: any, idx: number) => `
+                                    <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; margin-bottom: 8px; background-color: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'};">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                            <strong style="font-size: 13px;">${maint.maintenanceName || 'Maintenance Request'}</strong>
+                                            <span style="background: ${this.getMaintenanceStatusColor(maint.requestStatus?.requestStatusName)}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                                                ${maint.requestStatus?.requestStatusName || 'Unknown'}
+                                            </span>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+                                            <div><strong>Type:</strong> ${maint.maintenanceType?.maintenanceTypeName || 'N/A'}</div>
+                                            <div><strong>Service:</strong> ${maint.serviceMaintenance?.serviceName || 'N/A'}</div>
+                                            <div><strong>Priority:</strong> ${maint.priorityLevel?.priorityLevelName || 'N/A'}</div>
+                                            <div><strong>Requested:</strong> ${this.formatDate(maint.createdAt)}</div>
+                                            ${maint.requestedBy ? `<div><strong>Requested By:</strong> ${maint.requestedBy.firstName} ${maint.requestedBy.lastName}</div>` : ''}
+                                            ${maint.maintenanceApproval?.assignedTechnician ? `<div><strong>Technician:</strong> ${maint.maintenanceApproval.assignedTechnician.firstName} ${maint.maintenanceApproval.assignedTechnician.lastName}</div>` : ''}
+                                            ${maint.maintenanceApproval?.scheduledDate ? `<div><strong>Scheduled:</strong> ${this.formatDate(maint.maintenanceApproval.scheduledDate)}</div>` : ''}
+                                            ${maint.maintenanceApproval?.completedAt ? `<div><strong>Completed:</strong> ${this.formatDate(maint.maintenanceApproval.completedAt)}</div>` : ''}
+                                        </div>
+                                        ${maint.reason ? `<div style="margin-top: 8px; padding: 8px; background: #f3f4f6; border-radius: 4px; font-size: 11px;"><strong>Reason:</strong> ${maint.reason}</div>` : ''}
+                                        ${maint.maintenanceApproval?.completionNotes ? `<div style="margin-top: 8px; padding: 8px; background: #f0fdf4; border-radius: 4px; font-size: 11px;"><strong>Notes:</strong> ${maint.maintenanceApproval.completionNotes}</div>` : ''}
+                                    </div>
+                                `
+                                    )
+                                    .join('')}
                             </div>
                         </div>
                     `;
@@ -1670,6 +1801,25 @@ export class AssetsComponent implements OnInit {
                             </div>
                             <div class="accordion-content">
                                 <p style="color: #6b7280; font-size: 13px; font-style: italic; margin: 0;">No maintenance history available</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // QR Code section
+                let qrCodeHtml = '';
+                if (fullAsset.qrCode) {
+                    qrCodeHtml = `
+                        <!-- QR Code Accordion -->
+                        <div class="accordion-section">
+                            <div class="accordion-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active'); this.querySelector('.accordion-icon').classList.toggle('active');">
+                                <span>📷 QR Code</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div style="display: flex; justify-content: center; padding: 20px;">
+                                    <img src="${fullAsset.qrCode}" alt="QR Code" style="max-width: 300px; border: 2px solid #d1d5db; border-radius: 8px;" />
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1749,40 +1899,28 @@ export class AssetsComponent implements OnInit {
                                             <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.category || 'N/A'}</td>
                                         </tr>
                                         <tr style="background-color: #ffffff;">
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Found Cluster</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.foundCluster || 'N/A'}</td>
-                                        </tr>
-                                        <tr style="background-color: #f9fafb;">
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Issued To</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.issuedTo || 'N/A'}</td>
-                                        </tr>
-                                        <tr style="background-color: #ffffff;">
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Purpose</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.purpose || 'N/A'}</td>
-                                        </tr>
-                                        <tr style="background-color: #f9fafb;">
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Program</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.program?.programName || 'N/A'}</td>
-                                        </tr>
-                                        <tr style="background-color: #ffffff;">
                                             <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Status</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.status?.statusName || 'N/A'}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset['status']?.statusName || 'N/A'}</td>
                                         </tr>
                                         <tr style="background-color: #f9fafb;">
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Laboratory</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.laboratories?.laboratoryName || 'N/A'} ${fullAsset.laboratories?.laboratoryLocation ? '(' + fullAsset.laboratories.laboratoryLocation + ')' : ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Warranty</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset['warranty'] ? 'Active' : 'Expired'}</td>
                                         </tr>
                                         <tr style="background-color: #ffffff;">
                                             <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Campus</td>
                                             <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.campus?.campusName || 'N/A'}</td>
                                         </tr>
                                         <tr style="background-color: #f9fafb;">
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Supplier</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.supplier || 'N/A'}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Laboratory</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.laboratories?.laboratoryName || 'N/A'}</td>
                                         </tr>
                                         <tr style="background-color: #ffffff;">
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Date Created</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.assetCreated ? new Date(fullAsset.assetCreated).toLocaleDateString() : 'N/A'}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Issued To</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.issuedTo || 'Not assigned'}</td>
+                                        </tr>
+                                        <tr style="background-color: #f9fafb;">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px; font-weight: 500;">Purpose</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${fullAsset.purpose || 'N/A'}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1790,6 +1928,7 @@ export class AssetsComponent implements OnInit {
                         </div>
                         ${icsHtml}
                         ${maintenanceHtml}
+                        ${qrCodeHtml}
                     </div>
                 `;
 
@@ -1812,8 +1951,21 @@ export class AssetsComponent implements OnInit {
                     ...buttons
                 }).then((result) => {
                     if (result.isDenied && this.isLabTech) {
-                        // Open edit modal
-                        this.edit(fullAsset);
+                        // Show confirmation before editing
+                        Swal.fire({
+                            title: 'Update Asset?',
+                            text: 'Are you sure you want to update this asset?',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Update',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#6c757d'
+                        }).then((confirmResult) => {
+                            if (confirmResult.isConfirmed) {
+                                this.edit(fullAsset);
+                            }
+                        });
                     }
                 });
             },
@@ -1828,328 +1980,174 @@ export class AssetsComponent implements OnInit {
         });
     }
 
+    getMaintenanceStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | null | undefined {
+        const statusMap: { [key: string]: 'success' | 'info' | 'warn' | 'danger' | 'secondary' } = {
+            Pending: 'warn',
+            Approved: 'info',
+            'In Progress': 'info',
+            Completed: 'success',
+            Declined: 'danger',
+            'On Hold': 'warn',
+            Scheduled: 'info'
+        };
+        return statusMap[status] || 'secondary';
+    }
+
+    formatDate(date: string | Date): string {
+        if (!date) return 'N/A';
+        const d = new Date(date);
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    getMaintenanceStatusColor(status: string): string {
+        const colorMap: { [key: string]: string } = {
+            Pending: '#f59e0b',
+            Approved: '#3b82f6',
+            'In Progress': '#3b82f6',
+            Completed: '#10b981',
+            Declined: '#ef4444',
+            'On Hold': '#f59e0b',
+            Scheduled: '#3b82f6'
+        };
+        return colorMap[status] || '#6b7280';
+    }
+
     edit(item: Asset) {
         if (!item || !item.assetId) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Asset data is missing' });
             return;
         }
 
-        // Check if reference data is loaded, if not reload it
-        if (this.programs.length === 0 || this.brands.length === 0 || this.colors.length === 0) {
-            console.warn('⚠️ Reference data not loaded. Reloading...');
-            this.messageService.add({
-                severity: 'info',
-                summary: 'Loading',
-                detail: 'Loading dropdown data...'
-            });
+        // Fetch full asset details to get ICS data
+        this.assetService.getAsset(item.assetId as any).subscribe({
+            next: (fullAsset: any) => {
+                // Extract ICS data
+                const ics = fullAsset.inventoryCustodianSlip || {};
 
-            // Reload reference data and then open edit modal
-            forkJoin({
-                programs: this.assetService.getPrograms(),
-                colors: this.assetService.getColors(),
-                brands: this.assetService.getBrands()
-            }).subscribe({
-                next: (data) => {
-                    this.programs = data.programs || [];
-                    this.colors = data.colors || [];
-                    this.brands = data.brands || [];
+                // Find matching reference objects for dropdowns
+                const programMatch = this.programs.find((p) => p.programId === (fullAsset.program?.programId || fullAsset.Program_id));
+                const brandMatch = this.brands.find((b) => b.brandId === (ics.brand?.brandId || ics.brand));
+                const colorMatch = this.colors.find((c) => c.colorId === (ics.color?.colorId || ics.color));
 
-                    console.log('✅ Reference data reloaded:');
-                    console.log('Programs:', this.programs.length);
-                    console.log('Colors:', this.colors.length);
-                    console.log('Brands:', this.brands.length);
+                // Populate the form with asset data
+                this.newAsset = {
+                    assetId: fullAsset.assetId,
+                    assetName: fullAsset.assetName || '',
+                    propertyNumber: fullAsset.propertyNumber || '',
+                    category: fullAsset.category || '',
+                    foundCluster: fullAsset.foundCluster || '',
+                    purpose: fullAsset.purpose || '',
+                    issuedTo: fullAsset.issuedTo || '',
+                    program: programMatch || '',
+                    supplier: fullAsset.supplier || '',
+                    laboratories: fullAsset.laboratories?.laboratoryId || '',
+                    inventoryCustodianSlip: {
+                        icsNo: ics.icsNo || '',
+                        quantity: ics.quantity || 1,
+                        uoM: ics.uoM || '',
+                        unitCost: ics.unitCost || 0,
+                        description: ics.description || '',
+                        specifications: ics.specifications || '',
+                        height: ics.height || null,
+                        width: ics.width || null,
+                        length: ics.length || null,
+                        package: ics.package || '',
+                        material: ics.material || '',
+                        serialNumber: ics.serialNumber || '',
+                        modelNumber: ics.modelNumber || '',
+                        estimatedUsefullLife: ics.estimatedUsefullLife || '',
+                        brand: brandMatch || '',
+                        color: colorMatch || ''
+                    },
+                    qrCode: fullAsset.qrCode || '',
+                    qrCodeImage: null
+                };
 
-                    // Now open the edit modal
-                    this.openEditModal(item);
-                },
-                error: (error) => {
-                    console.error('❌ Failed to reload reference data:', error);
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Failed to load dropdown data. Please try again or refresh the page.'
-                    });
-                }
-            });
-        } else {
-            // Reference data is already loaded, proceed with edit
-            this.openEditModal(item);
-        }
+                // Set serial number for display
+                this.serialNumbersRaw = ics.serialNumber || '';
+                this.serialNumbersParsed = this.serialNumbersRaw ? [this.serialNumbersRaw] : [];
+
+                // Open dialog in edit mode
+                this.editMode = true;
+                this.assetDialog = true;
+                this.currentStep = 0;
+            },
+            error: (error) => {
+                console.error('Error fetching asset details:', error);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to load asset details'
+                });
+            }
+        });
     }
 
-    openEditModal(item: Asset) {
-        if (!item || !item.assetId) {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Asset data is missing' });
+    updateAsset() {
+        if (this.isSubmitting) {
             return;
         }
 
-        // Console log all asset data
-        console.table(item);
-
-        const assetId = item.assetId;
-        const assetName = item.assetName || item.AssetName || '';
-        const propertyNumber = item.propertyNumber || item.PropertyNo || '';
-        const category = item.category || item.Category || '';
-        const foundCluster = item.foundCluster || item.FoundCluster || '';
-        const purpose = item.purpose || item.Purpose || '';
-        const issuedTo = item.issuedTo || item.IssuedTo || '';
-        const program = (item as any).program?.programId || (item as any).Program_id || '';
-        const supplier = (item as any).supplier?.supplierId || (item as any).Supplier_id || '';
-        const laboratories = (item as any).laboratories?.laboratoryId || (item as any).Laboratory_id || '';
-
-        // ICS data
-        const ics = (item as any).inventoryCustodianSlip || {};
-        const icsNo = ics.icsNo || '';
-        const quantity = ics.quantity || 0;
-        const uoM = ics.uoM || '';
-        const unitCost = ics.unitCost || 0;
-        const description = ics.description || '';
-        const specifications = ics.specifications || '';
-        const height = ics.height || 0;
-        const width = ics.width || 0;
-        const length = ics.length || 0;
-        const packageVal = ics.package || '';
-        const material = ics.material || '';
-        const serialNumber = ics.serialNumber || '';
-        const modelNumber = ics.modelNumber || '';
-        const estimatedUsefullLife = ics.estimatedUsefullLife || '';
-        const brand = ics.brand?.brandId || ics.brand || '';
-        const color = ics.color?.colorId || ics.color || '';
-
-        // Debug logging
-        console.log('🔍 Edit Asset - Dropdown Data:');
-        console.log('Programs available:', this.programs.length, this.programs);
-        console.log('Brands available:', this.brands.length, this.brands);
-        console.log('Colors available:', this.colors.length, this.colors);
-        console.log('Selected program:', program);
-        console.log('Selected brand:', brand);
-        console.log('Selected color:', color);
-
-        if (this.programs.length === 0 || this.brands.length === 0 || this.colors.length === 0) {
-            console.error('❌ ERROR: Dropdown arrays are still empty after reload!');
-            console.error('Check the Network tab in DevTools to see if these API calls succeeded:');
-            console.error('- GET /api/programs');
-            console.error('- GET /api/colors');
-            console.error('- GET /api/brands');
+        // Basic validation
+        if (!this.newAsset.assetName?.trim()) {
+            this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'Asset Name is required' });
+            return;
         }
 
-        // Build program dropdown options
-        const programOptions = this.programs.map((p) => `<option value="${p.programId}" ${p.programId === program ? 'selected' : ''}>${p.programName}</option>`).join('');
+        if (!this.newAsset.propertyNumber?.trim()) {
+            this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'Property Number is required' });
+            return;
+        }
 
-        // Build brand dropdown options
-        const brandOptions = this.brands.map((b) => `<option value="${b.brandId}" ${b.brandId === brand ? 'selected' : ''}>${b.brandName}</option>`).join('');
+        this.isSubmitting = true;
 
-        // Build color dropdown options
-        const colorOptions = this.colors.map((c) => `<option value="${c.colorId}" ${c.colorId === color ? 'selected' : ''}>${c.colorName}</option>`).join('');
-
-        const html = `
-            <div style="text-align: left; max-width: 750px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; max-height: 70vh; overflow-y: auto; padding-right: 10px;">
-                <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 0 0 16px 0; margin-bottom: 20px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 10;">
-                    <div>
-                        <h2 style="margin: 0; font-size: 18px; font-weight: 600; color: #1a1a1a;">Edit Asset</h2>
-                        <p style="margin: 6px 0 0 0; font-size: 12px; color: #999;">ID: ${assetId}</p>
-                    </div>
-                </div>
-                
-                <!-- Basic Info Section -->
-                <div style="margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 12px 0; font-size: 13px; font-weight: 600; color: #667eea; text-transform: uppercase; letter-spacing: 0.5px;">Basic Information</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Asset Name</label>
-                            <input type="text" id="assetName" value="${assetName}" placeholder="Asset name" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Property Number</label>
-                            <input type="text" id="propertyNumber" value="${propertyNumber}" placeholder="Property number" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Category</label>
-                            <input type="text" id="category" value="${category}" placeholder="Hardware / Software" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Found Cluster</label>
-                            <input type="text" id="foundCluster" value="${foundCluster}" placeholder="Cluster" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div style="grid-column: span 2;">
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Purpose</label>
-                            <input type="text" id="purpose" value="${purpose}" placeholder="Purpose" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Issued To</label>
-                            <input type="text" id="issuedTo" value="${issuedTo}" placeholder="Person/Department" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Program</label>
-                            <select id="program" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;">
-                                <option value="">Select Program</option>
-                                ${programOptions}
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Supplier</label>
-                            <input type="text" id="supplier" value="${supplier}" placeholder="Supplier ID" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Laboratory</label>
-                            <input type="text" id="laboratories" value="${laboratories}" placeholder="Laboratory ID" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ICS Section -->
-                <div style="margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 12px 0; font-size: 13px; font-weight: 600; color: #667eea; text-transform: uppercase; letter-spacing: 0.5px;">Inventory Custodian Slip</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">ICS No</label>
-                            <input type="text" id="icsNo" value="${icsNo}" placeholder="ICS No" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Quantity</label>
-                            <input type="number" id="quantity" value="${quantity}" placeholder="0" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Unit of Measure</label>
-                            <input type="text" id="uoM" value="${uoM}" placeholder="UoM" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Unit Cost</label>
-                            <input type="number" id="unitCost" value="${unitCost}" placeholder="0" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Serial Number</label>
-                            <input type="text" id="serialNumber" value="${serialNumber}" placeholder="Serial No" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Model Number</label>
-                            <input type="text" id="modelNumber" value="${modelNumber}" placeholder="Model No" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div style="grid-column: span 3;">
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Description</label>
-                            <input type="text" id="description" value="${description}" placeholder="Description" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div style="grid-column: span 3;">
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Specifications</label>
-                            <input type="text" id="specifications" value="${specifications}" placeholder="Specifications" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Height</label>
-                            <input type="number" id="height" value="${height}" placeholder="0" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Width</label>
-                            <input type="number" id="width" value="${width}" placeholder="0" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Length</label>
-                            <input type="number" id="length" value="${length}" placeholder="0" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Package</label>
-                            <input type="text" id="package" value="${packageVal}" placeholder="Package" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Material</label>
-                            <input type="text" id="material" value="${material}" placeholder="Material" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Est. Useful Life</label>
-                            <input type="text" id="estimatedUsefullLife" value="${estimatedUsefullLife}" placeholder="e.g. 5 years" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Brand</label>
-                            <select id="brand" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;">
-                                <option value="">Select Brand</option>
-                                ${brandOptions}
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 12px;">Color</label>
-                            <select id="color" style="width: 100%; padding: 8px 10px; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; box-sizing: border-box;">
-                                <option value="">Select Color</option>
-                                ${colorOptions}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        Swal.fire({
-            title: '',
-            html,
-            width: '800px',
-            confirmButtonText: 'Save Changes',
-            cancelButtonText: 'Cancel',
-            showCancelButton: true,
-            confirmButtonColor: '#667eea',
-            cancelButtonColor: '#6c757d',
-            didOpen: () => {
-                (document.getElementById('assetName') as HTMLInputElement)?.focus();
-            },
-            preConfirm: () => {
-                return {
-                    assetName: (document.getElementById('assetName') as HTMLInputElement)?.value.trim() || '',
-                    propertyNumber: (document.getElementById('propertyNumber') as HTMLInputElement)?.value.trim() || '',
-                    category: (document.getElementById('category') as HTMLInputElement)?.value.trim() || '',
-                    foundCluster: (document.getElementById('foundCluster') as HTMLInputElement)?.value.trim() || '',
-                    purpose: (document.getElementById('purpose') as HTMLInputElement)?.value.trim() || '',
-                    issuedTo: (document.getElementById('issuedTo') as HTMLInputElement)?.value.trim() || '',
-                    program: (document.getElementById('program') as HTMLSelectElement)?.value.trim() || '',
-                    supplier: (document.getElementById('supplier') as HTMLInputElement)?.value.trim() || '',
-                    laboratories: (document.getElementById('laboratories') as HTMLInputElement)?.value.trim() || '',
-                    inventoryCustodianSlip: {
-                        icsNo: (document.getElementById('icsNo') as HTMLInputElement)?.value.trim() || '',
-                        quantity: Number((document.getElementById('quantity') as HTMLInputElement)?.value) || 0,
-                        uoM: (document.getElementById('uoM') as HTMLInputElement)?.value.trim() || '',
-                        unitCost: Number((document.getElementById('unitCost') as HTMLInputElement)?.value) || 0,
-                        description: (document.getElementById('description') as HTMLInputElement)?.value.trim() || '',
-                        specifications: (document.getElementById('specifications') as HTMLInputElement)?.value.trim() || '',
-                        height: Number((document.getElementById('height') as HTMLInputElement)?.value) || 0,
-                        width: Number((document.getElementById('width') as HTMLInputElement)?.value) || 0,
-                        length: Number((document.getElementById('length') as HTMLInputElement)?.value) || 0,
-                        package: (document.getElementById('package') as HTMLInputElement)?.value.trim() || '',
-                        material: (document.getElementById('material') as HTMLInputElement)?.value.trim() || '',
-                        serialNumber: (document.getElementById('serialNumber') as HTMLInputElement)?.value.trim() || '',
-                        modelNumber: (document.getElementById('modelNumber') as HTMLInputElement)?.value.trim() || '',
-                        estimatedUsefullLife: (document.getElementById('estimatedUsefullLife') as HTMLInputElement)?.value.trim() || '',
-                        brand: (document.getElementById('brand') as HTMLSelectElement)?.value.trim() || '',
-                        color: (document.getElementById('color') as HTMLSelectElement)?.value.trim() || ''
-                    }
-                };
+        // Prepare the update payload
+        const updatePayload: any = {
+            assetName: this.newAsset.assetName,
+            propertyNumber: this.newAsset.propertyNumber,
+            category: this.newAsset.category,
+            foundCluster: this.newAsset.foundCluster,
+            purpose: this.newAsset.purpose,
+            issuedTo: this.newAsset.issuedTo,
+            supplier: this.newAsset.supplier,
+            laboratories: this.newAsset.laboratories,
+            inventoryCustodianSlip: {
+                ...this.newAsset.inventoryCustodianSlip,
+                // Convert objects to IDs for API
+                brand: typeof this.newAsset.inventoryCustodianSlip.brand === 'object' ? this.newAsset.inventoryCustodianSlip.brand.brandId : this.newAsset.inventoryCustodianSlip.brand,
+                color: typeof this.newAsset.inventoryCustodianSlip.color === 'object' ? this.newAsset.inventoryCustodianSlip.color.colorId : this.newAsset.inventoryCustodianSlip.color,
+                serialNumber: this.serialNumbersRaw || this.newAsset.inventoryCustodianSlip.serialNumber
             }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                // Show confirmation modal before saving
-                Swal.fire({
-                    title: 'Confirm Update?',
-                    text: 'Are you sure you want to save these changes to the asset?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#667eea',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, Save Changes',
-                    cancelButtonText: 'Cancel'
-                }).then((confirmResult) => {
-                    if (confirmResult.isConfirmed) {
-                        this.assetService.patchAsset(assetId as any, result.value).subscribe({
-                            next: () => {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: 'Asset updated successfully',
-                                    confirmButtonColor: '#667eea'
-                                });
-                                this.loadAssets();
-                            },
-                            error: (err) => {
-                                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update asset' });
-                            }
-                        });
-                    }
+        };
+
+        // Add program ID if it's an object
+        if (typeof this.newAsset.program === 'object' && this.newAsset.program.programId) {
+            updatePayload.program = this.newAsset.program.programId;
+        } else if (this.newAsset.program) {
+            updatePayload.program = this.newAsset.program;
+        }
+
+        // Call the update API
+        this.assetService.patchAsset(this.newAsset.assetId, updatePayload).subscribe({
+            next: () => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Asset updated successfully'
                 });
+                this.assetDialog = false;
+                this.editMode = false;
+                this.isSubmitting = false;
+                this.loadAssets();
+            },
+            error: (error) => {
+                console.error('Error updating asset:', error);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to update asset'
+                });
+                this.isSubmitting = false;
             }
         });
     }

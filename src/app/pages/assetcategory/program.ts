@@ -1,250 +1,354 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TableModule, Table } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { TooltipModule } from 'primeng/tooltip';
-import { ToolbarModule } from 'primeng/toolbar';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
+
+// PrimeNG
 import { ToastModule } from 'primeng/toast';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
 import { MessageService } from 'primeng/api';
-import { FormsModule } from '@angular/forms';
-import { UserService } from '../service/user.service';
+import { TableModule } from 'primeng/table';
+
+// Core
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+
+// Shared
+import { DialogService } from '../../shared/services/dialog.service';
+import { ExportService, ExportColumn } from '../../shared/services/export.service';
+import { debounceInput } from '../../shared/utils/rxjs-operators';
+import { DataTableComponent, TableColumn } from '../../shared/components/data-table/data-table.component';
+import { ToolbarComponent } from '../../shared/components/toolbar/toolbar.component';
+import { ActionButtonsComponent } from '../../shared/components/action-buttons/action-buttons.component';
+
+// Services
 import { AssetService } from '../service/asset.service';
-import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-program',
     standalone: true,
-    imports: [CommonModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, FormsModule],
+    imports: [CommonModule, ToastModule, TableModule, DataTableComponent, ToolbarComponent, ActionButtonsComponent],
     styleUrls: ['../../../assets/pages/_assetcategory.scss'],
     providers: [MessageService],
     template: `
         <p-toast />
-        <p-toolbar styleClass="mb-4">
-            <ng-template #start>
-                <div class="flex items-center gap-2">
-                    <p-button label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNewDialog()" />
-                    <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelected()" [disabled]="!selectedItems.length" />
-                </div>
-            </ng-template>
-            <ng-template #end>
-                <div class="flex items-center gap-2">
-                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="filter()" placeholder="Search programs..." />
-                    </p-iconfield>
-                </div>
-            </ng-template>
-        </p-toolbar>
-        <p-table
-            [value]="filteredItems"
-            [rows]="10"
-            [paginator]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
+
+        <app-toolbar [showNew]="true" [showDelete]="true" [selectedCount]="selectedItems.length" (newClick)="openNewDialog()" (deleteClick)="deleteSelected()" />
+
+        <app-data-table
+            [data]="filteredItems"
+            [columns]="columns"
             [loading]="loading"
-            [rowHover]="true"
-            dataKey="programId"
+            [searchable]="true"
+            [exportable]="true"
+            [selectable]="true"
+            [paginator]="true"
+            [rows]="10"
+            title="Programs"
+            searchPlaceholder="Search programs..."
             [(selection)]="selectedItems"
-            (selectionChange)="onSelectionChange($event)"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} programs"
-            [showCurrentPageReport]="true"
-            [tableStyle]="{ 'min-width': '70rem' }"
+            (search)="onSearchInput($event)"
+            (exportExcel)="exportData()"
         >
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width:3rem"><p-tableHeaderCheckbox /></th>
-                    <th style="min-width:25rem">ID</th>
-                    <th pSortableColumn="programName" style="min-width:20rem">Program <p-sortIcon field="programName" /></th>
-                    <th style="min-width:12rem">Actions</th>
-                </tr>
+            <ng-template #body let-item>
+                <td><p-tableCheckbox [value]="item" /></td>
+                <td>{{ item.programId }}</td>
+                <td>{{ item.programName }}</td>
+                <td>
+                    <app-action-buttons [data]="item" [showView]="false" [showEdit]="true" [showDelete]="true" [editDisabled]="isUpdating" [deleteDisabled]="isDeleting" (edit)="edit($event)" (delete)="delete($event)" />
+                </td>
             </ng-template>
-            <ng-template pTemplate="body" let-row>
-                <tr>
-                    <td><p-tableCheckbox [value]="row" /></td>
-                    <td>{{ row.programId }}</td>
-                    <td>{{ row.programName }}</td>
-                    <td>
-                        <div class="flex gap-2">
-                            <p-button icon="pi pi-eye" severity="info" [rounded]="true" [text]="true" (onClick)="view(row)" />
-                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="edit(row)" />
-                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="delete(row)" />
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="4" class="text-center py-5">No programs found</td>
-                </tr>
-            </ng-template>
-        </p-table>
+        </app-data-table>
     `
 })
-export class ProgramComponent implements OnInit {
+export class ProgramComponent extends BaseComponent implements OnInit {
+    // State management
+    loadingState: LoadingState = LoadingState.IDLE;
+    isUpdating: boolean = false;
+    isDeleting: boolean = false;
+
     items: any[] = [];
     filteredItems: any[] = [];
     selectedItems: any[] = [];
-    searchValue: string = '';
-    loading: boolean = true;
+
+    // Table columns
+    columns: TableColumn[] = [
+        { field: 'programId', header: 'ID', sortable: true },
+        { field: 'programName', header: 'Program', sortable: true }
+    ];
+
+    private searchSubject$ = new Subject<string>();
+
+    // Computed properties
+    get loading(): boolean {
+        return isLoading(this.loadingState);
+    }
 
     constructor(
-        private userService: UserService,
+        private assetService: AssetService,
         private messageService: MessageService,
-        private assetService: AssetService
-    ) {}
+        private dialogService: DialogService,
+        private exportService: ExportService,
+        private errorHandler: ErrorHandlerService
+    ) {
+        super();
+    }
 
     ngOnInit() {
         this.loadItems();
+        this.setupSearchDebounce();
     }
 
-    loadItems() {
-        this.loading = true;
-        this.assetService.getPrograms().subscribe({
-            next: (data) => {
-                this.items = data || [];
-                this.filteredItems = [...this.items];
-                this.loading = false;
-            },
-            error: (error) => {
-                console.error('Error loading programs:', error);
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load programs' });
-                this.loading = false;
-            }
+    /**
+     * Setup search debouncing
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.filterData(searchTerm);
         });
     }
 
-    filter() {
-        this.filteredItems = this.items.filter((item) => item.programName?.toLowerCase().includes(this.searchValue.toLowerCase()));
+    /**
+     * Handle search input
+     */
+    onSearchInput(searchTerm: string): void {
+        this.searchSubject$.next(searchTerm);
+    }
+
+    /**
+     * Filter data based on search term
+     */
+    private filterData(searchTerm: string): void {
+        if (!searchTerm) {
+            this.filteredItems = [...this.items];
+            return;
+        }
+
+        const term = searchTerm.toLowerCase();
+        this.filteredItems = this.items.filter((item) => item.programName?.toLowerCase().includes(term) || item.programId?.toString().toLowerCase().includes(term));
+    }
+
+    /**
+     * Load programs
+     */
+    loadItems(): void {
+        if (this.loading) return;
+
+        this.loadingState = LoadingState.LOADING;
+
+        this.assetService
+            .getPrograms()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
+                    }
+                })
+            )
+            .subscribe({
+                next: (data) => {
+                    this.items = data || [];
+                    this.filteredItems = [...this.items];
+                    this.loadingState = LoadingState.SUCCESS;
+                },
+                error: (error) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'loading programs');
+                }
+            });
     }
 
     onSelectionChange(event: any) {}
 
-    openNewDialog() {
-        Swal.fire({
+    /**
+     * Open dialog to create new program
+     */
+    async openNewDialog(): Promise<void> {
+        if (this.isUpdating) return;
+
+        const result = await this.dialogService.showForm({
             title: 'New Program',
-            html: `<input type="text" id="programName" class="swal2-input" placeholder="Program Name" />`,
-            confirmButtonText: 'Create',
-            cancelButtonText: 'Cancel',
-            showCancelButton: true,
-            preConfirm: () => {
-                const programName = (document.getElementById('programName') as HTMLInputElement)?.value.trim();
-                if (!programName) {
-                    Swal.showValidationMessage('Program name is required');
-                    return false;
+            fields: [
+                {
+                    name: 'programName',
+                    label: 'Program Name',
+                    type: 'text',
+                    required: true,
+                    placeholder: 'Enter program name'
                 }
-                return { programName };
-            }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                this.assetService.createProgram(result.value).subscribe({
-                    next: (created) => {
-                        this.items.push(created);
-                        this.filteredItems = [...this.items];
-                        Swal.fire({
-                            title: 'Good job!',
-                            text: 'Brand created successfully!',
-                            icon: 'success'
-                        });
-                    },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Create failed' })
-                });
-            }
+            ]
         });
+
+        if (!result.isConfirmed) return;
+
+        this.isUpdating = true;
+
+        this.assetService
+            .createProgram(result.value)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: (created) => {
+                    this.items.push(created);
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Program created successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'creating program');
+                }
+            });
     }
 
-    view(item: any) {
-        Swal.fire({ title: 'Program', html: `<strong>Name:</strong> ${item.programName}`, icon: 'info' });
-    }
+    /**
+     * Edit program
+     */
+    async edit(item: any): Promise<void> {
+        if (this.isUpdating) return;
 
-    edit(item: any) {
-        Swal.fire({
+        const result = await this.dialogService.showForm({
             title: 'Edit Program',
-            html: `<input type="text" id="programName" class="swal2-input" value="${item.programName}" />`,
-            confirmButtonText: 'Update',
-            cancelButtonText: 'Cancel',
-            showCancelButton: true,
-            preConfirm: () => {
-                const programName = (document.getElementById('programName') as HTMLInputElement)?.value.trim();
-                if (!programName) {
-                    Swal.showValidationMessage('Program name is required');
-                    return false;
+            fields: [
+                {
+                    name: 'programName',
+                    label: 'Program Name',
+                    type: 'text',
+                    required: true,
+                    value: item.programName
                 }
-                return { programName };
-            }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                this.assetService.updateProgram(item.programId, result.value).subscribe({
-                    next: (updated) => {
-                        const idx = this.items.findIndex((p) => p.programId === updated.programId);
-                        if (idx > -1) this.items[idx] = updated;
-                        this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Updated', detail: 'Program updated' });
-                    },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Update failed' })
-                });
-            }
+            ]
         });
+
+        if (!result.isConfirmed) return;
+
+        this.isUpdating = true;
+
+        this.assetService
+            .updateProgram(item.programId, result.value)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: (updated) => {
+                    const idx = this.items.findIndex((p) => p.programId === updated.programId);
+                    if (idx > -1) this.items[idx] = updated;
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Program updated successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'updating program');
+                }
+            });
     }
 
-    delete(item: any) {
-        Swal.fire({
-            title: 'Delete Program',
-            text: `Delete "${item.programName}"?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Delete'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.assetService.deleteProgram(item.programId).subscribe({
+    /**
+     * Delete program
+     */
+    async delete(item: any): Promise<void> {
+        if (this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirmDelete(`program "${item.programName}"`);
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+
+        this.assetService
+            .deleteProgram(item.programId)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isDeleting = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.items = this.items.filter((p) => p.programId !== item.programId);
+                    this.filteredItems = [...this.items];
+                    this.dialogService.showSuccess('Program deleted successfully');
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'deleting program');
+                }
+            });
+    }
+
+    /**
+     * Delete selected programs
+     */
+    async deleteSelected(): Promise<void> {
+        if (!this.selectedItems?.length || this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirm('Delete Selected', `Are you sure you want to delete ${this.selectedItems.length} program(s)?`);
+
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+        let deletedCount = 0;
+        let failedCount = 0;
+        const totalCount = this.selectedItems.length;
+
+        this.selectedItems.forEach((item) => {
+            this.assetService
+                .deleteProgram(item.programId)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
                     next: () => {
-                        this.items = this.items.filter((p) => p.programId !== item.programId);
-                        this.filteredItems = [...this.items];
-                        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Program deleted' });
+                        deletedCount++;
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
                     },
-                    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Delete failed' })
+                    error: (error) => {
+                        failedCount++;
+                        console.error(`Failed to delete program ${item.programId}:`, error);
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    }
                 });
-            }
         });
     }
 
-    deleteSelected() {
-        if (!this.selectedItems?.length) return;
-        Swal.fire({
-            title: 'Delete Selected',
-            text: `Delete ${this.selectedItems.length} program(s)?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Delete'
-        }).then((res) => {
-            if (res.isConfirmed) {
-                const ids = this.selectedItems.map((p) => p.programId);
-                Promise.all(ids.map((id) => this.assetService.deleteProgram(id).toPromise()))
-                    .then(() => {
-                        this.items = this.items.filter((p) => !ids.includes(p.programId));
-                        this.filteredItems = [...this.items];
-                        this.selectedItems = [];
-                        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Selected programs deleted' });
-                    })
-                    .catch(() => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Bulk delete failed' }));
+    /**
+     * Check if bulk delete operation is complete
+     */
+    private checkBulkDeleteComplete(deleted: number, failed: number, total: number): void {
+        if (deleted + failed === total) {
+            this.isDeleting = false;
+
+            // Reload items to get fresh state
+            this.loadItems();
+            this.selectedItems = [];
+
+            if (failed === 0) {
+                this.dialogService.showSuccess(`${deleted} program(s) deleted successfully`);
+            } else {
+                this.dialogService.showWarning(`${deleted} program(s) deleted, ${failed} failed`, 'Partial Delete');
             }
-        });
+        }
     }
 
-    exportCSV() {
-        let csv = 'Program Name,ID\n';
-        this.items.forEach((item) => {
-            csv += `${(item.programName || '').replace(/,/g, ';')},${item.programId}\n`;
+    /**
+     * Export data to CSV
+     */
+    exportData(): void {
+        if (this.items.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'No data to export'
+            });
+            return;
+        }
+
+        const exportColumns: ExportColumn[] = [
+            { field: 'programName', header: 'Program Name' },
+            { field: 'programId', header: 'ID' }
+        ];
+
+        this.exportService.exportToCsv(this.items, 'programs', exportColumns);
+
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Data exported to CSV'
         });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'programs.csv';
-        a.click();
-        URL.revokeObjectURL(url);
     }
 }

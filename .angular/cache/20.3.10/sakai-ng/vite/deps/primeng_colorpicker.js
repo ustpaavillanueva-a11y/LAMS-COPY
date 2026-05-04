@@ -1,42 +1,46 @@
 import {
   BaseEditableHolder
-} from "./chunk-4ZJYHXVI.js";
-import "./chunk-2NXK4IZZ.js";
+} from "./chunk-A7H3FXNJ.js";
+import "./chunk-XXGW2ZKJ.js";
+import {
+  zindexutils
+} from "./chunk-OLJED6AA.js";
 import {
   AutoFocus,
   AutoFocusModule
-} from "./chunk-IOM7T3UX.js";
+} from "./chunk-7QHXTJMK.js";
 import {
   ConnectedOverlayScrollHandler,
   DomHandler
 } from "./chunk-P6SMTJBG.js";
 import {
-  zindexutils
-} from "./chunk-3DNZLJAM.js";
-import {
   PARENT_INSTANCE
-} from "./chunk-M2NELYC7.js";
+} from "./chunk-32HJBRZT.js";
 import {
   BaseStyle
-} from "./chunk-WBKIMRVV.js";
+} from "./chunk-7FDDY7DG.js";
+import {
+  Bind
+} from "./chunk-75JTQVRY.js";
 import {
   OverlayService,
   SharedModule,
   TranslationKeys
-} from "./chunk-6D2SAAIV.js";
-import {
-  Bind
-} from "./chunk-PXYWQ7E3.js";
+} from "./chunk-HVVMUKCH.js";
 import "./chunk-OTTARZB5.js";
 import {
   D,
   I,
   Yt
 } from "./chunk-U4LT4ZJN.js";
+<<<<<<< HEAD
 import {
   NG_VALUE_ACCESSOR
 } from "./chunk-SJUOZCFA.js";
 import "./chunk-CMHWE5XI.js";
+=======
+import "./chunk-GAL5RSMX.js";
+>>>>>>> final-refractor
 import {
   animate,
   style,
@@ -44,10 +48,16 @@ import {
   trigger
 } from "./chunk-GGMOGVES.js";
 import {
+<<<<<<< HEAD
+=======
+  NG_VALUE_ACCESSOR
+} from "./chunk-SLWC4WYB.js";
+import {
+>>>>>>> final-refractor
   CommonModule,
   NgIf,
   isPlatformBrowser
-} from "./chunk-RH3RUHL2.js";
+} from "./chunk-7RCU5MHB.js";
 import "./chunk-APPCZKFW.js";
 import {
   ChangeDetectionStrategy,
@@ -94,11 +104,16 @@ import {
   ɵɵstyleProp,
   ɵɵtemplate,
   ɵɵviewQuery
+<<<<<<< HEAD
 } from "./chunk-FKRSZNWR.js";
+=======
+} from "./chunk-QFF4CQQI.js";
+import "./chunk-HWYXSU2G.js";
+>>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";
-import "./chunk-V4F5PRXT.js";
+import "./chunk-NJ4VOZBH.js";
 
 // node_modules/@primeuix/styles/dist/colorpicker/index.mjs
 var style2 = "\n    .p-colorpicker {\n        display: inline-block;\n        position: relative;\n    }\n\n    .p-colorpicker-dragging {\n        cursor: pointer;\n    }\n\n    .p-colorpicker-preview {\n        width: dt('colorpicker.preview.width');\n        height: dt('colorpicker.preview.height');\n        padding: 0;\n        border: 0 none;\n        border-radius: dt('colorpicker.preview.border.radius');\n        transition:\n            background dt('colorpicker.transition.duration'),\n            color dt('colorpicker.transition.duration'),\n            border-color dt('colorpicker.transition.duration'),\n            outline-color dt('colorpicker.transition.duration'),\n            box-shadow dt('colorpicker.transition.duration');\n        outline-color: transparent;\n        cursor: pointer;\n    }\n\n    .p-colorpicker-preview:enabled:focus-visible {\n        border-color: dt('colorpicker.preview.focus.border.color');\n        box-shadow: dt('colorpicker.preview.focus.ring.shadow');\n        outline: dt('colorpicker.preview.focus.ring.width') dt('colorpicker.preview.focus.ring.style') dt('colorpicker.preview.focus.ring.color');\n        outline-offset: dt('colorpicker.preview.focus.ring.offset');\n    }\n\n    .p-colorpicker-panel {\n        background: dt('colorpicker.panel.background');\n        border: 1px solid dt('colorpicker.panel.border.color');\n        border-radius: dt('colorpicker.panel.border.radius');\n        box-shadow: dt('colorpicker.panel.shadow');\n        width: 193px;\n        height: 166px;\n        position: absolute;\n        top: 0;\n        left: 0;\n    }\n\n    .p-colorpicker-panel-inline {\n        box-shadow: none;\n        position: static;\n    }\n\n    .p-colorpicker-content {\n        position: relative;\n    }\n\n    .p-colorpicker-color-selector {\n        width: 150px;\n        height: 150px;\n        inset-block-start: 8px;\n        inset-inline-start: 8px;\n        position: absolute;\n    }\n\n    .p-colorpicker-color-background {\n        width: 100%;\n        height: 100%;\n        background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0) 100%), linear-gradient(to right, #fff 0%, rgba(255, 255, 255, 0) 100%);\n    }\n\n    .p-colorpicker-color-handle {\n        position: absolute;\n        inset-block-start: 0px;\n        inset-inline-start: 150px;\n        border-radius: 100%;\n        width: 10px;\n        height: 10px;\n        border-width: 1px;\n        border-style: solid;\n        margin: -5px 0 0 -5px;\n        cursor: pointer;\n        opacity: 0.85;\n        border-color: dt('colorpicker.handle.color');\n    }\n\n    .p-colorpicker-hue {\n        width: 17px;\n        height: 150px;\n        inset-block-start: 8px;\n        inset-inline-start: 167px;\n        position: absolute;\n        opacity: 0.85;\n        background: linear-gradient(0deg, red 0, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, red);\n    }\n\n    .p-colorpicker-hue-handle {\n        position: absolute;\n        inset-block-start: 150px;\n        inset-inline-start: 0px;\n        width: 21px;\n        margin-inline-start: -2px;\n        margin-block-start: -5px;\n        height: 10px;\n        border-width: 2px;\n        border-style: solid;\n        opacity: 0.85;\n        cursor: pointer;\n        border-color: dt('colorpicker.handle.color');\n    }\n";

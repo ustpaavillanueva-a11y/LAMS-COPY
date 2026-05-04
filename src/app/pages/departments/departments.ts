@@ -1,116 +1,219 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TableModule, Table } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { TooltipModule } from 'primeng/tooltip';
-import { ToolbarModule } from 'primeng/toolbar';
-import { ToastModule } from 'primeng/toast';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
+
+// PrimeNG
+import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+
+// Core
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+
+// Shared
+import { DataTableComponent, TableColumn } from '../../shared/components/data-table/data-table.component';
+import { ToolbarComponent } from '../../shared/components/toolbar/toolbar.component';
+import { ActionButtonsComponent } from '../../shared/components/action-buttons/action-buttons.component';
+import { DialogService } from '../../shared/services/dialog.service';
+import { ExportService, ExportColumn } from '../../shared/services/export.service';
+import { debounceInput } from '../../shared/utils/rxjs-operators';
+
+// Services
 import { UserService } from '../service/user.service';
 import { AuthService } from '../service/auth.service';
-import Swal from 'sweetalert2';
+import { DepartmentsWebSocketService } from './departments-websocket.service';
 
 @Component({
     selector: 'app-departments',
     standalone: true,
-    imports: [CommonModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, FormsModule],
+    imports: [CommonModule, FormsModule, CardModule, TableModule, ToastModule, ButtonModule, DataTableComponent, ToolbarComponent, ActionButtonsComponent],
     styleUrls: ['../../../assets/pages/_departments.scss'],
     providers: [MessageService],
     template: `
         <p-toast />
 
-        <p-toolbar styleClass="mb-4">
-            <ng-template #start>
-                <div class="flex items-center gap-2">
-                    <p-button *ngIf="!isSuperAdmin" label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNewDepartmentDialog()" />
-                    <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelectedDepartments()" [disabled]="!selectedDepartments.length" />
-                </div>
-            </ng-template>
+        <app-toolbar [showNew]="!isSuperAdmin" [showDelete]="true" [selectedCount]="selectedDepartments.length" (newClick)="openNewDepartmentDialog()" (deleteClick)="deleteSelectedDepartments()">
             <ng-template #end>
                 <div class="flex items-center gap-2">
-                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="filterDepartments()" placeholder="Search departments..." />
-                    </p-iconfield>
+                    <button pButton label="Export" icon="pi pi-upload" (click)="exportData()" class="p-button-secondary"></button>
                 </div>
             </ng-template>
-        </p-toolbar>
+        </app-toolbar>
 
-        <p-table
-            [value]="filteredDepartments"
-            [rows]="10"
-            [paginator]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
-            [loading]="loading"
-            [rowHover]="true"
-            dataKey="departmentId"
-            [(selection)]="selectedDepartments"
-            (selectionChange)="onSelectionChange($event)"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} departments"
-            [showCurrentPageReport]="true"
-            [tableStyle]="{ 'min-width': '70rem' }"
-        >
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width:3rem"><p-tableHeaderCheckbox /></th>
-                    <th style="min-width:10rem">ID</th>
-                    <th pSortableColumn="departmentName" style="min-width:15rem">Department <p-sortIcon field="departmentName" /></th>
-                    <th pSortableColumn="campus.campusName" style="min-width:15rem">Campus <p-sortIcon field="campus.campusName" /></th>
-                    <th style="min-width:12rem">Actions</th>
-                </tr>
+        <app-data-table [data]="filteredDepartments" [columns]="tableColumns" [loading]="loading" [searchable]="true" [selectable]="true" [paginator]="true" [rows]="10" [(selection)]="selectedDepartments" (search)="onSearchInput($event)">
+            <ng-template #body let-department>
+                <td><p-tableCheckbox [value]="department" /></td>
+                <td>{{ formatId(department.departmentId) }}</td>
+                <td>{{ department.departmentName }}</td>
+                <td>{{ department.campus?.campusName || 'N/A' }}</td>
+                <td>
+                    <app-action-buttons [data]="department" [showView]="false" (edit)="editDepartment($event)" (delete)="deleteDepartment($event)" />
+                </td>
             </ng-template>
-            <ng-template pTemplate="body" let-department>
-                <tr>
-                    <td><p-tableCheckbox [value]="department" /></td>
-                    <td>{{ formatId(department.departmentId) }}</td>
-                    <td>{{ department.departmentName }}</td>
-                    <td>{{ department.campus?.campusName || 'N/A' }}</td>
-                    <td>
-                        <div class="flex gap-2">
-                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="editDepartment(department)" />
-                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="deleteDepartment(department)" />
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="5" class="text-center py-5">No departments found</td>
-                </tr>
-            </ng-template>
-        </p-table>
+        </app-data-table>
     `
 })
-export class DepartmentsComponent implements OnInit {
-    @ViewChild('dt') table!: Table;
+export class DepartmentsComponent extends BaseComponent implements OnInit {
+    // State management
+    loadingState: LoadingState = LoadingState.IDLE;
+    isUpdating: boolean = false;
+    isDeleting: boolean = false;
 
+    // Data
     departments: any[] = [];
     filteredDepartments: any[] = [];
     selectedDepartments: any[] = [];
     campuses: any[] = [];
-    searchValue: string = '';
-    loading: boolean = false;
+
+    // User role
     isSuperAdmin: boolean = false;
+
+    // Search
+    private searchSubject$ = new Subject<string>();
+    private currentSearchTerm: string = '';
+
+    // Table configuration
+    tableColumns: TableColumn[] = [
+        { field: 'departmentId', header: 'ID', sortable: false },
+        { field: 'departmentName', header: 'Department', sortable: true },
+        { field: 'campus.campusName', header: 'Campus', sortable: true },
+        { field: 'actions', header: 'Actions', sortable: false }
+    ];
+
+    // Computed properties
+    get loading(): boolean {
+        return isLoading(this.loadingState);
+    }
 
     constructor(
         private userService: UserService,
         private messageService: MessageService,
-        private authService: AuthService
-    ) {}
+        private authService: AuthService,
+        private dialogService: DialogService,
+        private exportService: ExportService,
+        private errorHandler: ErrorHandlerService,
+        private departmentsWebSocketService: DepartmentsWebSocketService
+    ) {
+        super();
+    }
 
     ngOnInit() {
         this.checkUserRole();
+        this.setupSearchDebounce();
         this.loadDepartments();
         this.loadCampuses();
+        this.connectToWebSocket();
     }
 
-    checkUserRole() {
+    /**
+     * Connect to WebSocket and subscribe to real-time updates
+     */
+    private connectToWebSocket(): void {
+        // Check if user is authenticated before connecting
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('⚠️ Skipping WebSocket connection - user not authenticated');
+            return;
+        }
+
+        try {
+            this.departmentsWebSocketService.connect();
+            console.log('✅ Connected to departments WebSocket');
+
+            // Listen for department creation
+            this.departmentsWebSocketService
+                .onDepartmentCreated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🆕 Department created:', event.data);
+                        if (event.success) {
+                            this.loadDepartments();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Department Created',
+                                detail: `${event.data.departmentName} was created`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving department-created event:', error);
+                    }
+                });
+
+            // Listen for department updates
+            this.departmentsWebSocketService
+                .onDepartmentUpdated()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('✏️ Department updated:', event.data);
+                        if (event.success) {
+                            const index = this.departments.findIndex((d) => d.departmentId === event.data.departmentId);
+                            if (index !== -1) {
+                                this.departments[index] = event.data;
+                                this.filterDepartments();
+                            }
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Department Updated',
+                                detail: `${event.data.departmentName} was updated`,
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving department-updated event:', error);
+                    }
+                });
+
+            // Listen for department deletions
+            this.departmentsWebSocketService
+                .onDepartmentDeleted()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (event) => {
+                        console.log('🗑️ Department deleted:', event.data);
+                        if (event.success) {
+                            this.departments = this.departments.filter((d) => d.departmentId !== event.data.departmentId);
+                            this.filterDepartments();
+                            this.messageService.add({
+                                severity: 'info',
+                                summary: 'Department Deleted',
+                                detail: 'A department was deleted',
+                                life: 3000
+                            });
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error receiving department-deleted event:', error);
+                    }
+                });
+        } catch (error) {
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    }
+
+    /**
+     * Override ngOnDestroy to disconnect from WebSocket
+     */
+    override ngOnDestroy(): void {
+        this.departmentsWebSocketService.disconnect();
+        console.log('🔌 Disconnected from departments WebSocket');
+        super.ngOnDestroy();
+    }
+
+    /**
+     * Check if user is SuperAdmin
+     */
+    private checkUserRole(): void {
         const currentUser = localStorage.getItem('currentUser');
         if (currentUser) {
             try {
@@ -123,315 +226,300 @@ export class DepartmentsComponent implements OnInit {
         }
     }
 
-    loadDepartments() {
-        this.loading = true;
-        this.userService.getDepartments().subscribe({
-            next: (response: any) => {
-                this.departments = Array.isArray(response) ? response : response.data || [];
-                this.filteredDepartments = [...this.departments];
-                this.loading = false;
-            },
-            error: (error) => {
-                console.error('Error loading departments:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Failed to load departments: ' + (error.error?.message || error.message),
-                    icon: 'error'
-                });
-                this.loading = false;
-            }
+    /**
+     * Setup debounced search
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.currentSearchTerm = searchTerm;
+            this.filterDepartments();
         });
     }
 
-    loadCampuses() {
-        this.userService.getCampuses().subscribe({
-            next: (response: any) => {
-                this.campuses = Array.isArray(response) ? response : response.data || [];
-            },
-            error: (error) => {
-                console.error('Error loading campuses:', error);
-            }
-        });
+    /**
+     * Handle search input
+     */
+    onSearchInput(searchTerm: string): void {
+        this.searchSubject$.next(searchTerm);
     }
 
-    filterDepartments() {
-        if (!this.searchValue.trim()) {
+    /**
+     * Load all departments
+     */
+    loadDepartments(): void {
+        if (this.loading) return;
+
+        this.loadingState = LoadingState.LOADING;
+
+        this.userService
+            .getDepartments()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
+                    }
+                })
+            )
+            .subscribe({
+                next: (response: any) => {
+                    this.departments = Array.isArray(response) ? response : response.data || [];
+                    this.filteredDepartments = [...this.departments];
+                    this.loadingState = LoadingState.SUCCESS;
+                },
+                error: (error) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'loading departments');
+                }
+            });
+    }
+
+    /**
+     * Load campuses for dropdown
+     */
+    loadCampuses(): void {
+        this.userService
+            .getCampuses()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (response: any) => {
+                    this.campuses = Array.isArray(response) ? response : response.data || [];
+                },
+                error: (error) => {
+                    console.error('Error loading campuses:', error);
+                }
+            });
+    }
+
+    /**
+     * Filter departments based on search term
+     */
+    private filterDepartments(): void {
+        const searchValue = this.currentSearchTerm.toLowerCase();
+
+        if (!searchValue.trim()) {
             this.filteredDepartments = [...this.departments];
             return;
         }
 
-        const search = this.searchValue.toLowerCase();
-        this.filteredDepartments = this.departments.filter((dept) => dept.departmentName?.toLowerCase().includes(search) || dept.campus?.campusName?.toLowerCase().includes(search));
+        this.filteredDepartments = this.departments.filter((dept) => dept.departmentName?.toLowerCase().includes(searchValue) || dept.campus?.campusName?.toLowerCase().includes(searchValue));
     }
 
-    onSelectionChange(event: any) {
-        if (this.selectedDepartments && this.selectedDepartments.length > 0) {
+    /**
+     * Open dialog to create new department
+     */
+    async openNewDepartmentDialog(): Promise<void> {
+        if (this.isUpdating) return;
+
+        const result = await this.dialogService.showForm({
+            title: '➕ Add New Department',
+            fields: [
+                {
+                    id: 'departmentName',
+                    label: 'Department Name *',
+                    type: 'text',
+                    placeholder: 'Department Name',
+                    required: true
+                }
+            ],
+            confirmButtonText: 'Create Department'
+        });
+
+        if (!result.isConfirmed || !result.value) return;
+
+        const { departmentName } = result.value;
+
+        if (!departmentName?.trim()) {
+            this.dialogService.showError('Department Name is required');
+            return;
         }
-    }
 
-    viewDepartment(department: any) {
-        const createdDate = new Date(department.departmentCreated).toLocaleDateString();
-        const updatedDate = new Date(department.departmentUpdated).toLocaleDateString();
-        Swal.fire({
-            title: department.departmentName,
-            html: `
-                <div style="text-align: left;">
-                    <p><strong>Campus:</strong> ${department.campus?.campusName || 'N/A'}</p>
-                    <p><strong>Created:</strong> ${createdDate}</p>
-                    <p><strong>Updated:</strong> ${updatedDate}</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'Close'
-        });
-    }
+        this.isUpdating = true;
 
-    editDepartment(department: any) {
-        const editData = {
-            departmentName: department.departmentName
-        };
-
-        Swal.fire({
-            title: '',
-            titleText: '',
-            html: `
-                <div style="text-align: left; width: 100%; max-width: 500px; margin: 0 auto;">
-                    <div style="background: #f5f5f5; color: #333; padding: 16px; margin: -16px -16px 16px -16px; border-radius: 8px 8px 0 0;">
-                        <h2 style="margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.5px;">✎ Edit Department</h2>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px;">
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Department Name *</label>
-                            <input id="departmentName" type="text" value="${editData.departmentName}" placeholder="Department Name" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #e0e0e0; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent;" onfocus="this.style.borderBottomColor='#667eea'" onblur="this.style.borderBottomColor='#e0e0e0'" />
-                        </div>
-                    </div>
-                </div>
-            `,
-            width: '550px',
-            showCancelButton: true,
-            confirmButtonText: 'Update Department',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#667eea',
-            cancelButtonColor: '#e0e0e0',
-            didOpen: () => {
-                const deptNameInput = document.getElementById('departmentName') as HTMLInputElement;
-                if (deptNameInput) deptNameInput.focus();
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const departmentName = (document.getElementById('departmentName') as HTMLInputElement).value.trim();
-
-                if (!departmentName) {
-                    Swal.fire({ title: 'Error', text: 'Department Name is required', icon: 'error' });
-                    return;
+        this.userService
+            .createDepartment({ departmentName: departmentName.trim() })
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.dialogService.showSuccess('Department created successfully');
+                    this.loadDepartments();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'creating department');
                 }
-
-                const updatedData = {
-                    departmentName
-                };
-
-                this.userService.updateDepartment(department.departmentId, updatedData).subscribe({
-                    next: () => {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Department updated successfully',
-                            icon: 'success'
-                        });
-                        this.loadDepartments();
-                    },
-                    error: (error) => {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to update department: ' + (error.error?.message || error.message),
-                            icon: 'error'
-                        });
-                    }
-                });
-            }
-        });
+            });
     }
 
-    deleteDepartment(department: any) {
-        const departmentId = department.departmentId;
+    /**
+     * Edit existing department
+     */
+    async editDepartment(department: any): Promise<void> {
+        if (this.isUpdating) return;
 
-        Swal.fire({
-            title: 'Confirm Delete',
-            text: 'Are you sure you want to delete this department?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Delete',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.userService.deleteDepartment(departmentId).subscribe({
-                    next: () => {
-                        Swal.fire({
-                            title: 'Deleted!',
-                            text: 'Department has been deleted successfully.',
-                            icon: 'success'
-                        });
-                        this.loadDepartments();
-                    },
-                    error: (error) => {
-                        console.error('Error deleting department:', departmentId, error);
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to delete department: ' + (error.error?.message || error.message),
-                            icon: 'error'
-                        });
-                    }
-                });
-            }
-        });
-    }
-
-    openNewDepartmentDialog() {
-        Swal.fire({
-            title: '',
-            titleText: '',
-            html: `
-                <div style="text-align: left; width: 100%; max-width: 500px; margin: 0 auto;">
-                    <div style="background: #f5f5f5; color: #333; padding: 16px; margin: -16px -16px 16px -16px; border-radius: 8px 8px 0 0;">
-                        <h2 style="margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.5px;">➕ Add New Department</h2>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px;">
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Department Name *</label>
-                            <input id="newDepartmentName" type="text" placeholder="Department Name" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #e0e0e0; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent;" onfocus="this.style.borderBottomColor='#667eea'" onblur="this.style.borderBottomColor='#e0e0e0'" />
-                        </div>
-                    </div>
-                </div>
-            `,
-            width: '550px',
-            showCancelButton: true,
-            confirmButtonText: 'Create Department',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#667eea',
-            cancelButtonColor: '#e0e0e0',
-            didOpen: () => {
-                const deptNameInput = document.getElementById('newDepartmentName') as HTMLInputElement;
-                if (deptNameInput) deptNameInput.focus();
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const departmentName = (document.getElementById('newDepartmentName') as HTMLInputElement).value.trim();
-
-                if (!departmentName) {
-                    Swal.fire({ title: 'Error', text: 'Department Name is required', icon: 'error' });
-                    return;
+        const result = await this.dialogService.showForm({
+            title: '✎ Edit Department',
+            fields: [
+                {
+                    id: 'departmentName',
+                    label: 'Department Name *',
+                    type: 'text',
+                    value: department.departmentName,
+                    required: true
                 }
-
-                const newDepartmentPayload = {
-                    departmentName
-                };
-
-                this.userService.createDepartment(newDepartmentPayload).subscribe({
-                    next: () => {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Department created successfully',
-                            icon: 'success'
-                        });
-                        this.loadDepartments();
-                    },
-                    error: (error) => {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to create department: ' + (error.error?.message || error.message),
-                            icon: 'error'
-                        });
-                    }
-                });
-            }
+            ],
+            confirmButtonText: 'Update Department'
         });
+
+        if (!result.isConfirmed || !result.value) return;
+
+        const { departmentName } = result.value;
+
+        if (!departmentName?.trim()) {
+            this.dialogService.showError('Department Name is required');
+            return;
+        }
+
+        this.isUpdating = true;
+
+        this.userService
+            .updateDepartment(department.departmentId, {
+                departmentName: departmentName.trim()
+            })
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.dialogService.showSuccess('Department updated successfully');
+                    this.loadDepartments();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'updating department');
+                }
+            });
     }
 
-    deleteSelectedDepartments() {
+    /**
+     * Delete single department
+     */
+    async deleteDepartment(department: any): Promise<void> {
+        if (this.isDeleting) return;
+
+        const confirmed = await this.dialogService.confirmDelete(`department "${department.departmentName}"`);
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+
+        this.userService
+            .deleteDepartment(department.departmentId)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isDeleting = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.dialogService.showSuccess('Department deleted successfully');
+                    this.loadDepartments();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'deleting department');
+                }
+            });
+    }
+
+    /**
+     * Delete multiple selected departments
+     */
+    async deleteSelectedDepartments(): Promise<void> {
         if (!this.selectedDepartments || this.selectedDepartments.length === 0) {
-            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Please select departments to delete' });
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Please select departments to delete'
+            });
             return;
         }
 
-        Swal.fire({
-            title: 'Confirm Delete',
-            text: `Are you sure you want to delete ${this.selectedDepartments.length} department(s)?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Delete All',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                let deletedCount = 0;
-                let failedCount = 0;
+        if (this.isDeleting) return;
 
-                this.selectedDepartments.forEach((department) => {
-                    const departmentId = department.departmentId;
+        const confirmed = await this.dialogService.confirm('Confirm Delete', `Are you sure you want to delete ${this.selectedDepartments.length} department(s)?`);
 
-                    this.userService.deleteDepartment(departmentId).subscribe({
-                        next: () => {
-                            deletedCount++;
-                            if (deletedCount + failedCount === this.selectedDepartments.length) {
-                                this.selectedDepartments = [];
-                                this.loadDepartments();
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: `${deletedCount} department(s) deleted successfully.`,
-                                    icon: 'success'
-                                });
-                            }
-                        },
-                        error: (error) => {
-                            failedCount++;
-                            console.error(`Failed to delete department ${departmentId}:`, error);
-                            if (deletedCount + failedCount === this.selectedDepartments.length) {
-                                this.selectedDepartments = [];
-                                this.loadDepartments();
-                                Swal.fire({
-                                    title: 'Partial Delete',
-                                    text: `${deletedCount} department(s) deleted, ${failedCount} failed.`,
-                                    icon: 'warning'
-                                });
-                            }
-                        }
-                    });
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+        let deletedCount = 0;
+        let failedCount = 0;
+        const totalCount = this.selectedDepartments.length;
+
+        this.selectedDepartments.forEach((department) => {
+            this.userService
+                .deleteDepartment(department.departmentId)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: () => {
+                        deletedCount++;
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    },
+                    error: (error) => {
+                        failedCount++;
+                        console.error(`Failed to delete department ${department.departmentId}:`, error);
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    }
                 });
-            }
         });
     }
 
-    exportCSV() {
+    /**
+     * Check if bulk delete operation is complete
+     */
+    private checkBulkDeleteComplete(deleted: number, failed: number, total: number): void {
+        if (deleted + failed === total) {
+            this.isDeleting = false;
+            this.selectedDepartments = [];
+            this.loadDepartments();
+
+            if (failed === 0) {
+                this.dialogService.showSuccess(`${deleted} department(s) deleted successfully`);
+            } else {
+                this.dialogService.showWarning(`${deleted} department(s) deleted, ${failed} failed`, 'Partial Delete');
+            }
+        }
+    }
+
+    /**
+     * Export departments data
+     */
+    exportData(): void {
         if (this.filteredDepartments.length === 0) {
-            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'No data to export' });
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'No data to export'
+            });
             return;
         }
 
-        const csv = this.generateCSV(this.filteredDepartments);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
+        const exportColumns: ExportColumn[] = [
+            { field: 'departmentName', header: 'Department Name' },
+            { field: 'campus.campusName', header: 'Campus Name' }
+        ];
 
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'departments_export.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        this.exportService.exportToCsv(this.filteredDepartments, 'departments_export', exportColumns);
 
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Departments exported to CSV' });
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Departments exported to CSV'
+        });
     }
 
-    private generateCSV(data: any[]): string {
-        const headers = ['Department Name', 'Campus Name'];
-        const rows = data.map((dept) => [dept.departmentName || '', dept.campus?.campusName || '']);
-
-        const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join('\n');
-
-        return csvContent;
-    }
-
-    // Format ID to show only numbers (e.g., DEPT001 → 001)
+    /**
+     * Format ID to show only numbers (e.g., DEPT001 → 001)
+     */
     formatId(id: string): string {
         if (!id) return '';
         return id.replace(/[^0-9]/g, '');

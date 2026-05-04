@@ -1,704 +1,1120 @@
 {
-  "hash": "1a353c0e",
-  "configHash": "245a0b2f",
-  "lockfileHash": "d812f5bd",
-  "browserHash": "819c6406",
+  "hash": "55d52d0c",
+  "configHash": "9f7413d3",
+  "lockfileHash": "692a04c5",
+  "browserHash": "7aafe3c8",
   "optimized": {
     "@angular/animations": {
       "src": "../../../../../../node_modules/@angular/animations/fesm2022/animations.mjs",
       "file": "@angular_animations.js",
-      "fileHash": "bcc3108f",
+      "fileHash": "c330402c",
       "needsInterop": false
     },
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "dfe1440d",
+      "fileHash": "a5d72230",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "047ab8a9",
+      "fileHash": "c9e7e452",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "02bce190",
+      "fileHash": "270263dc",
       "needsInterop": false
     },
     "@angular/forms": {
       "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
       "file": "@angular_forms.js",
-      "fileHash": "dd264b05",
+      "fileHash": "646e0068",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "507f1711",
+      "fileHash": "7f7a2ec7",
       "needsInterop": false
     },
     "@angular/platform-browser/animations/async": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/animations/async.mjs",
       "file": "@angular_platform-browser_animations_async.js",
-      "fileHash": "138a64ed",
+      "fileHash": "7fcfd6a4",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "1ecc64d6",
+      "fileHash": "716a1f4a",
       "needsInterop": false
     },
     "@angular/service-worker": {
       "src": "../../../../../../node_modules/@angular/service-worker/fesm2022/service-worker.mjs",
       "file": "@angular_service-worker.js",
-      "fileHash": "8ef40e2c",
+      "fileHash": "546a2583",
       "needsInterop": false
     },
     "@fullcalendar/angular": {
       "src": "../../../../../../node_modules/@fullcalendar/angular/fesm2020/fullcalendar-angular.mjs",
       "file": "@fullcalendar_angular.js",
-      "fileHash": "bf91c501",
+      "fileHash": "971e00e8",
       "needsInterop": false
     },
     "@fullcalendar/daygrid": {
       "src": "../../../../../../node_modules/@fullcalendar/daygrid/index.js",
       "file": "@fullcalendar_daygrid.js",
-      "fileHash": "8cf9c5ed",
+      "fileHash": "da753a63",
       "needsInterop": false
     },
     "@fullcalendar/interaction": {
       "src": "../../../../../../node_modules/@fullcalendar/interaction/index.js",
       "file": "@fullcalendar_interaction.js",
-      "fileHash": "f2ca1b91",
+      "fileHash": "240c34c2",
       "needsInterop": false
     },
     "@fullcalendar/list": {
       "src": "../../../../../../node_modules/@fullcalendar/list/index.js",
       "file": "@fullcalendar_list.js",
+<<<<<<< HEAD
       "fileHash": "270b906f",
+=======
+      "fileHash": "f6952fef",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "@fullcalendar/timegrid": {
       "src": "../../../../../../node_modules/@fullcalendar/timegrid/index.js",
       "file": "@fullcalendar_timegrid.js",
+<<<<<<< HEAD
       "fileHash": "6727d7ee",
+=======
+      "fileHash": "41bcb51c",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "@primeuix/themes": {
       "src": "../../../../../../node_modules/@primeuix/themes/dist/index.mjs",
       "file": "@primeuix_themes.js",
+<<<<<<< HEAD
       "fileHash": "a57a4dd7",
+=======
+      "fileHash": "d219bee1",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "@primeuix/themes/aura": {
       "src": "../../../../../../node_modules/@primeuix/themes/dist/aura/index.mjs",
       "file": "@primeuix_themes_aura.js",
+<<<<<<< HEAD
       "fileHash": "aa0d088a",
+=======
+      "fileHash": "2dbc4513",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "@primeuix/themes/lara": {
       "src": "../../../../../../node_modules/@primeuix/themes/dist/lara/index.mjs",
       "file": "@primeuix_themes_lara.js",
+<<<<<<< HEAD
       "fileHash": "92545bab",
+=======
+      "fileHash": "f9705367",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "@primeuix/themes/nora": {
       "src": "../../../../../../node_modules/@primeuix/themes/dist/nora/index.mjs",
       "file": "@primeuix_themes_nora.js",
+<<<<<<< HEAD
       "fileHash": "754c3707",
+=======
+      "fileHash": "06e136a1",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "@zxing/library": {
       "src": "../../../../../../node_modules/@zxing/library/esm/index.js",
       "file": "@zxing_library.js",
+<<<<<<< HEAD
       "fileHash": "6dc7ace0",
+=======
+      "fileHash": "cf53ba2d",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "exceljs": {
       "src": "../../../../../../node_modules/exceljs/dist/exceljs.min.js",
       "file": "exceljs.js",
+<<<<<<< HEAD
       "fileHash": "d87b8158",
+=======
+      "fileHash": "503415e3",
+>>>>>>> final-refractor
       "needsInterop": true
     },
     "file-saver": {
       "src": "../../../../../../node_modules/file-saver/dist/FileSaver.min.js",
       "file": "file-saver.js",
+<<<<<<< HEAD
       "fileHash": "d3a3c675",
+=======
+      "fileHash": "9b85bdef",
+>>>>>>> final-refractor
       "needsInterop": true
     },
     "jspdf": {
       "src": "../../../../../../node_modules/jspdf/dist/jspdf.es.min.js",
       "file": "jspdf.js",
+<<<<<<< HEAD
       "fileHash": "32630ec9",
+=======
+      "fileHash": "10d6cf47",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "jspdf-autotable": {
       "src": "../../../../../../node_modules/jspdf-autotable/dist/jspdf.plugin.autotable.mjs",
       "file": "jspdf-autotable.js",
+<<<<<<< HEAD
       "fileHash": "c53f5f41",
+=======
+      "fileHash": "8dd7ae99",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "jsqr": {
       "src": "../../../../../../node_modules/jsqr/dist/jsQR.js",
       "file": "jsqr.js",
+<<<<<<< HEAD
       "fileHash": "7ea306e0",
+=======
+      "fileHash": "d215e141",
+>>>>>>> final-refractor
       "needsInterop": true
     },
     "primeng/accordion": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-accordion.mjs",
       "file": "primeng_accordion.js",
+<<<<<<< HEAD
       "fileHash": "5d84992f",
+=======
+      "fileHash": "84092c48",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/api": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-api.mjs",
       "file": "primeng_api.js",
+<<<<<<< HEAD
       "fileHash": "c8cd9b1f",
+=======
+      "fileHash": "d4114174",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/autocomplete": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-autocomplete.mjs",
       "file": "primeng_autocomplete.js",
+<<<<<<< HEAD
       "fileHash": "8d3fa651",
+=======
+      "fileHash": "edafb786",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/avatar": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-avatar.mjs",
       "file": "primeng_avatar.js",
+<<<<<<< HEAD
       "fileHash": "c1378fd4",
+=======
+      "fileHash": "cd55be8a",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/avatargroup": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-avatargroup.mjs",
       "file": "primeng_avatargroup.js",
+<<<<<<< HEAD
       "fileHash": "4108aac9",
+=======
+      "fileHash": "61035e73",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/badge": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-badge.mjs",
       "file": "primeng_badge.js",
+<<<<<<< HEAD
       "fileHash": "3827d0d6",
+=======
+      "fileHash": "55724a2a",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/bind": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-bind.mjs",
       "file": "primeng_bind.js",
+<<<<<<< HEAD
       "fileHash": "564c097f",
+=======
+      "fileHash": "08a16814",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/breadcrumb": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-breadcrumb.mjs",
       "file": "primeng_breadcrumb.js",
+<<<<<<< HEAD
       "fileHash": "00aeb60f",
+=======
+      "fileHash": "6bec636a",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/button": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-button.mjs",
       "file": "primeng_button.js",
+<<<<<<< HEAD
       "fileHash": "89a97024",
+=======
+      "fileHash": "6832e994",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/buttongroup": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-buttongroup.mjs",
       "file": "primeng_buttongroup.js",
+<<<<<<< HEAD
       "fileHash": "5eee34cb",
+=======
+      "fileHash": "21fdce20",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/card": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-card.mjs",
       "file": "primeng_card.js",
+<<<<<<< HEAD
       "fileHash": "95279382",
+=======
+      "fileHash": "94090352",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/carousel": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-carousel.mjs",
       "file": "primeng_carousel.js",
+<<<<<<< HEAD
       "fileHash": "d4b2e539",
+=======
+      "fileHash": "7a94c204",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/chart": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-chart.mjs",
       "file": "primeng_chart.js",
+<<<<<<< HEAD
       "fileHash": "1b8e06df",
+=======
+      "fileHash": "4c6e9805",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/checkbox": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-checkbox.mjs",
       "file": "primeng_checkbox.js",
+<<<<<<< HEAD
       "fileHash": "110eb2a2",
+=======
+      "fileHash": "5ff14042",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/chip": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-chip.mjs",
       "file": "primeng_chip.js",
+<<<<<<< HEAD
       "fileHash": "7fa45a98",
+=======
+      "fileHash": "bb90eebf",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/colorpicker": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-colorpicker.mjs",
       "file": "primeng_colorpicker.js",
+<<<<<<< HEAD
       "fileHash": "ba68e980",
+=======
+      "fileHash": "9e3ad13c",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/config": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-config.mjs",
       "file": "primeng_config.js",
+<<<<<<< HEAD
       "fileHash": "17fa1872",
+=======
+      "fileHash": "75d12056",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/confirmpopup": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-confirmpopup.mjs",
       "file": "primeng_confirmpopup.js",
+<<<<<<< HEAD
       "fileHash": "b64aa90a",
+=======
+      "fileHash": "f1977ebf",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/contextmenu": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-contextmenu.mjs",
       "file": "primeng_contextmenu.js",
+<<<<<<< HEAD
       "fileHash": "54eb3d09",
+=======
+      "fileHash": "f8302e9d",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/dataview": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-dataview.mjs",
       "file": "primeng_dataview.js",
+<<<<<<< HEAD
       "fileHash": "e38527ce",
+=======
+      "fileHash": "e14b7912",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/datepicker": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-datepicker.mjs",
       "file": "primeng_datepicker.js",
+<<<<<<< HEAD
       "fileHash": "5272b565",
+=======
+      "fileHash": "d43dd454",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/dialog": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-dialog.mjs",
       "file": "primeng_dialog.js",
+<<<<<<< HEAD
       "fileHash": "cf5893a1",
+=======
+      "fileHash": "4ab1d528",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/divider": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-divider.mjs",
       "file": "primeng_divider.js",
+<<<<<<< HEAD
       "fileHash": "b6f772ce",
+=======
+      "fileHash": "6d04d735",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/drawer": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-drawer.mjs",
       "file": "primeng_drawer.js",
+<<<<<<< HEAD
       "fileHash": "0534d52b",
+=======
+      "fileHash": "4672dba5",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/fieldset": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-fieldset.mjs",
       "file": "primeng_fieldset.js",
+<<<<<<< HEAD
       "fileHash": "20b41a0d",
+=======
+      "fileHash": "4233d496",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/fileupload": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-fileupload.mjs",
       "file": "primeng_fileupload.js",
+<<<<<<< HEAD
       "fileHash": "50c299ed",
+=======
+      "fileHash": "9141638f",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/floatlabel": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-floatlabel.mjs",
       "file": "primeng_floatlabel.js",
+<<<<<<< HEAD
       "fileHash": "9c4e9f10",
+=======
+      "fileHash": "27f7cca3",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/fluid": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-fluid.mjs",
       "file": "primeng_fluid.js",
+<<<<<<< HEAD
       "fileHash": "7c331357",
+=======
+      "fileHash": "514e0428",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/galleria": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-galleria.mjs",
       "file": "primeng_galleria.js",
+<<<<<<< HEAD
       "fileHash": "8772e511",
+=======
+      "fileHash": "9b18e8c1",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/iconfield": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-iconfield.mjs",
       "file": "primeng_iconfield.js",
+<<<<<<< HEAD
       "fileHash": "07b09fcb",
+=======
+      "fileHash": "28716da8",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/image": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-image.mjs",
       "file": "primeng_image.js",
+<<<<<<< HEAD
       "fileHash": "aef20bf1",
+=======
+      "fileHash": "1b7ae83b",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/inputgroup": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-inputgroup.mjs",
       "file": "primeng_inputgroup.js",
+<<<<<<< HEAD
       "fileHash": "5d4732ec",
+=======
+      "fileHash": "f962c7b5",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/inputgroupaddon": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-inputgroupaddon.mjs",
       "file": "primeng_inputgroupaddon.js",
+<<<<<<< HEAD
       "fileHash": "5a93241b",
+=======
+      "fileHash": "178b9d92",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/inputicon": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-inputicon.mjs",
       "file": "primeng_inputicon.js",
+<<<<<<< HEAD
       "fileHash": "50171d11",
+=======
+      "fileHash": "217eb991",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/inputnumber": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-inputnumber.mjs",
       "file": "primeng_inputnumber.js",
+<<<<<<< HEAD
       "fileHash": "bd57b975",
+=======
+      "fileHash": "0a749a66",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/inputtext": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-inputtext.mjs",
       "file": "primeng_inputtext.js",
+<<<<<<< HEAD
       "fileHash": "478b0d34",
+=======
+      "fileHash": "c12b1b30",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/knob": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-knob.mjs",
       "file": "primeng_knob.js",
+<<<<<<< HEAD
       "fileHash": "27e54eca",
+=======
+      "fileHash": "2e988a62",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/listbox": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-listbox.mjs",
       "file": "primeng_listbox.js",
+<<<<<<< HEAD
       "fileHash": "6bf9dd20",
+=======
+      "fileHash": "6726cf1e",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/megamenu": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-megamenu.mjs",
       "file": "primeng_megamenu.js",
+<<<<<<< HEAD
       "fileHash": "118b3ab1",
+=======
+      "fileHash": "c45e04b8",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/menu": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-menu.mjs",
       "file": "primeng_menu.js",
+<<<<<<< HEAD
       "fileHash": "d659a605",
+=======
+      "fileHash": "fbc84dc6",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/menubar": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-menubar.mjs",
       "file": "primeng_menubar.js",
+<<<<<<< HEAD
       "fileHash": "a1cb3116",
+=======
+      "fileHash": "4c884f12",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/message": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-message.mjs",
       "file": "primeng_message.js",
+<<<<<<< HEAD
       "fileHash": "6af20a85",
+=======
+      "fileHash": "2c48564a",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/multiselect": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-multiselect.mjs",
       "file": "primeng_multiselect.js",
+<<<<<<< HEAD
       "fileHash": "b065b912",
+=======
+      "fileHash": "429847dd",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/orderlist": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-orderlist.mjs",
       "file": "primeng_orderlist.js",
+<<<<<<< HEAD
       "fileHash": "eae5d316",
+=======
+      "fileHash": "b6248229",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/overlaybadge": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-overlaybadge.mjs",
       "file": "primeng_overlaybadge.js",
+<<<<<<< HEAD
       "fileHash": "56bf372a",
+=======
+      "fileHash": "5e1279ee",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/panel": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-panel.mjs",
       "file": "primeng_panel.js",
+<<<<<<< HEAD
       "fileHash": "62915ffb",
+=======
+      "fileHash": "abdfa789",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/panelmenu": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-panelmenu.mjs",
       "file": "primeng_panelmenu.js",
+<<<<<<< HEAD
       "fileHash": "f4b48c91",
+=======
+      "fileHash": "dfbeecef",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/password": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-password.mjs",
       "file": "primeng_password.js",
+<<<<<<< HEAD
       "fileHash": "f9f1cc53",
+=======
+      "fileHash": "e4a1a64d",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/picklist": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-picklist.mjs",
       "file": "primeng_picklist.js",
+<<<<<<< HEAD
       "fileHash": "0765e7b2",
+=======
+      "fileHash": "c7908bfb",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/popover": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-popover.mjs",
       "file": "primeng_popover.js",
+<<<<<<< HEAD
       "fileHash": "9b1f0ebd",
+=======
+      "fileHash": "7c512ad5",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/progressbar": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-progressbar.mjs",
       "file": "primeng_progressbar.js",
+<<<<<<< HEAD
       "fileHash": "07a8a666",
+=======
+      "fileHash": "6c63c3bb",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/progressspinner": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-progressspinner.mjs",
       "file": "primeng_progressspinner.js",
+<<<<<<< HEAD
       "fileHash": "d3f7bee2",
+=======
+      "fileHash": "b91377a1",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/radiobutton": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-radiobutton.mjs",
       "file": "primeng_radiobutton.js",
+<<<<<<< HEAD
       "fileHash": "25efea52",
+=======
+      "fileHash": "2fad5ed1",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/rating": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-rating.mjs",
       "file": "primeng_rating.js",
+<<<<<<< HEAD
       "fileHash": "4dc31880",
+=======
+      "fileHash": "fa3f3447",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/ripple": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-ripple.mjs",
       "file": "primeng_ripple.js",
+<<<<<<< HEAD
       "fileHash": "84dc82f7",
+=======
+      "fileHash": "1992d713",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/scroller": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-scroller.mjs",
       "file": "primeng_scroller.js",
+<<<<<<< HEAD
       "fileHash": "863c90d4",
+=======
+      "fileHash": "7901a56f",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/scrollpanel": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-scrollpanel.mjs",
       "file": "primeng_scrollpanel.js",
+<<<<<<< HEAD
       "fileHash": "608c171a",
+=======
+      "fileHash": "ade65b0e",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/scrolltop": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-scrolltop.mjs",
       "file": "primeng_scrolltop.js",
+<<<<<<< HEAD
       "fileHash": "1a34bb81",
+=======
+      "fileHash": "e27e371b",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/select": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-select.mjs",
       "file": "primeng_select.js",
+<<<<<<< HEAD
       "fileHash": "a6b7707e",
+=======
+      "fileHash": "ed860720",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/selectbutton": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-selectbutton.mjs",
       "file": "primeng_selectbutton.js",
+<<<<<<< HEAD
       "fileHash": "bb30e1ed",
+=======
+      "fileHash": "71dc3018",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/skeleton": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-skeleton.mjs",
       "file": "primeng_skeleton.js",
+<<<<<<< HEAD
       "fileHash": "d36b0276",
+=======
+      "fileHash": "cd71d40b",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/slider": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-slider.mjs",
       "file": "primeng_slider.js",
+<<<<<<< HEAD
       "fileHash": "f29f7136",
+=======
+      "fileHash": "b6e9ca67",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/splitbutton": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-splitbutton.mjs",
       "file": "primeng_splitbutton.js",
+<<<<<<< HEAD
       "fileHash": "b37efd6b",
+=======
+      "fileHash": "cd0ab600",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/splitter": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-splitter.mjs",
       "file": "primeng_splitter.js",
+<<<<<<< HEAD
       "fileHash": "e0e9fba3",
+=======
+      "fileHash": "0e17b8c6",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/stepper": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-stepper.mjs",
       "file": "primeng_stepper.js",
+<<<<<<< HEAD
       "fileHash": "fd6eaa0c",
+=======
+      "fileHash": "d6397a17",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/styleclass": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-styleclass.mjs",
       "file": "primeng_styleclass.js",
+<<<<<<< HEAD
       "fileHash": "476edbc7",
+=======
+      "fileHash": "444219ea",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/table": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-table.mjs",
       "file": "primeng_table.js",
+<<<<<<< HEAD
       "fileHash": "24335153",
+=======
+      "fileHash": "44ac550a",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/tabs": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-tabs.mjs",
       "file": "primeng_tabs.js",
+<<<<<<< HEAD
       "fileHash": "1939ffde",
+=======
+      "fileHash": "2831ea6e",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/tag": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-tag.mjs",
       "file": "primeng_tag.js",
+<<<<<<< HEAD
       "fileHash": "e3d7de35",
+=======
+      "fileHash": "b09a3f5c",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/textarea": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-textarea.mjs",
       "file": "primeng_textarea.js",
+<<<<<<< HEAD
       "fileHash": "1e6f4c4f",
+=======
+      "fileHash": "b0612526",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/tieredmenu": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-tieredmenu.mjs",
       "file": "primeng_tieredmenu.js",
+<<<<<<< HEAD
       "fileHash": "fab68d11",
+=======
+      "fileHash": "9c341d41",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/timeline": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-timeline.mjs",
       "file": "primeng_timeline.js",
+<<<<<<< HEAD
       "fileHash": "c8f2ccd1",
+=======
+      "fileHash": "075370bf",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/toast": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-toast.mjs",
       "file": "primeng_toast.js",
+<<<<<<< HEAD
       "fileHash": "165b0f01",
+=======
+      "fileHash": "d60d0fbb",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/togglebutton": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-togglebutton.mjs",
       "file": "primeng_togglebutton.js",
+<<<<<<< HEAD
       "fileHash": "1ab35a8e",
+=======
+      "fileHash": "e54e9932",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/toggleswitch": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-toggleswitch.mjs",
       "file": "primeng_toggleswitch.js",
+<<<<<<< HEAD
       "fileHash": "30de3fdf",
+=======
+      "fileHash": "57935d4d",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/toolbar": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-toolbar.mjs",
       "file": "primeng_toolbar.js",
+<<<<<<< HEAD
       "fileHash": "4866c9bc",
+=======
+      "fileHash": "9476dae5",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/tooltip": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-tooltip.mjs",
       "file": "primeng_tooltip.js",
+<<<<<<< HEAD
       "fileHash": "45acd53f",
+=======
+      "fileHash": "731ed5e3",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/tree": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-tree.mjs",
       "file": "primeng_tree.js",
+<<<<<<< HEAD
       "fileHash": "0c9a189a",
+=======
+      "fileHash": "96ccd4f8",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/treeselect": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-treeselect.mjs",
       "file": "primeng_treeselect.js",
+<<<<<<< HEAD
       "fileHash": "a663b9f3",
+=======
+      "fileHash": "9d91c92c",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/treetable": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-treetable.mjs",
       "file": "primeng_treetable.js",
+<<<<<<< HEAD
       "fileHash": "c2f6d200",
+=======
+      "fileHash": "73d791b4",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "primeng/utils": {
       "src": "../../../../../../node_modules/primeng/fesm2022/primeng-utils.mjs",
       "file": "primeng_utils.js",
+<<<<<<< HEAD
       "fileHash": "1a72e314",
+=======
+      "fileHash": "37d222ba",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "rxjs": {
       "src": "../../../../../../node_modules/rxjs/dist/esm5/index.js",
       "file": "rxjs.js",
+<<<<<<< HEAD
       "fileHash": "830d86df",
+=======
+      "fileHash": "f912f7cc",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "rxjs/operators": {
       "src": "../../../../../../node_modules/rxjs/dist/esm5/operators/index.js",
       "file": "rxjs_operators.js",
+<<<<<<< HEAD
       "fileHash": "323ce29c",
+=======
+      "fileHash": "ef68f1f5",
+      "needsInterop": false
+    },
+    "socket.io-client": {
+      "src": "../../../../../../node_modules/socket.io-client/build/esm/index.js",
+      "file": "socket__io-client.js",
+      "fileHash": "eb7dc3c3",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "sweetalert2": {
       "src": "../../../../../../node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
       "file": "sweetalert2.js",
+<<<<<<< HEAD
       "fileHash": "1d398dff",
+=======
+      "fileHash": "24e22ce0",
+>>>>>>> final-refractor
       "needsInterop": false
     },
     "zone.js": {
       "src": "../../../../../../node_modules/zone.js/fesm2015/zone.js",
       "file": "zone__js.js",
+<<<<<<< HEAD
       "fileHash": "8aa40478",
+=======
+      "fileHash": "a054104f",
+>>>>>>> final-refractor
       "needsInterop": true
     }
   },
   "chunks": {
-    "index.es-WHF42ZHB": {
-      "file": "index__es-WHF42ZHB.js"
+    "purify.es-ARAHW7I3": {
+      "file": "purify__es-ARAHW7I3.js"
     },
+<<<<<<< HEAD
     "browser-R6D4T65X": {
       "file": "browser-R6D4T65X.js"
+=======
+    "index.es-PHLAEP7F": {
+      "file": "index__es-PHLAEP7F.js"
+>>>>>>> final-refractor
     },
-    "html2canvas.esm-3EJZBKXP": {
-      "file": "html2canvas__esm-3EJZBKXP.js"
+    "browser-HTG7YUMP": {
+      "file": "browser-HTG7YUMP.js"
     },
-    "purify.es-6RMFSXNH": {
-      "file": "purify__es-6RMFSXNH.js"
+    "html2canvas.esm-GLGN424O": {
+      "file": "html2canvas__esm-GLGN424O.js"
     },
-    "chunk-WZZ3MS3H": {
-      "file": "chunk-WZZ3MS3H.js"
+    "chunk-L57JU53E": {
+      "file": "chunk-L57JU53E.js"
     },
-    "chunk-Q2STO7IA": {
-      "file": "chunk-Q2STO7IA.js"
+    "chunk-GYV624W7": {
+      "file": "chunk-GYV624W7.js"
     },
-    "chunk-VQGYDDQN": {
-      "file": "chunk-VQGYDDQN.js"
+    "chunk-FSJBOASM": {
+      "file": "chunk-FSJBOASM.js"
     },
+<<<<<<< HEAD
     "chunk-XYXHJP6T": {
       "file": "chunk-XYXHJP6T.js"
+=======
+    "chunk-Z2X5NVJ2": {
+      "file": "chunk-Z2X5NVJ2.js"
+>>>>>>> final-refractor
     },
-    "chunk-RXFZ2UOV": {
-      "file": "chunk-RXFZ2UOV.js"
+    "chunk-I7SDZXCW": {
+      "file": "chunk-I7SDZXCW.js"
     },
-    "chunk-SLWQBA2D": {
-      "file": "chunk-SLWQBA2D.js"
+    "chunk-NA2HXHHQ": {
+      "file": "chunk-NA2HXHHQ.js"
     },
+<<<<<<< HEAD
     "chunk-WIZL7UWX": {
       "file": "chunk-WIZL7UWX.js"
+=======
+    "chunk-L246PXSQ": {
+      "file": "chunk-L246PXSQ.js"
     },
-    "chunk-IJX3QERM": {
-      "file": "chunk-IJX3QERM.js"
+    "chunk-6DNZO36H": {
+      "file": "chunk-6DNZO36H.js"
     },
-    "chunk-HR6BBVSY": {
-      "file": "chunk-HR6BBVSY.js"
+    "chunk-HNVPPJ54": {
+      "file": "chunk-HNVPPJ54.js"
+>>>>>>> final-refractor
     },
+    "chunk-BXQVETLP": {
+      "file": "chunk-BXQVETLP.js"
+    },
+    "chunk-5VTTPTWN": {
+      "file": "chunk-5VTTPTWN.js"
+    },
+<<<<<<< HEAD
     "chunk-Y62XZCUQ": {
       "file": "chunk-Y62XZCUQ.js"
     },
@@ -716,72 +1132,103 @@
     },
     "chunk-NJFZQYYI": {
       "file": "chunk-NJFZQYYI.js"
+=======
+    "chunk-STNSDEB4": {
+      "file": "chunk-STNSDEB4.js"
     },
-    "chunk-4MZ4D3YC": {
-      "file": "chunk-4MZ4D3YC.js"
+    "chunk-WP6DTCHK": {
+      "file": "chunk-WP6DTCHK.js"
     },
+    "chunk-S6V2FEHM": {
+      "file": "chunk-S6V2FEHM.js"
+>>>>>>> final-refractor
+    },
+    "chunk-JBL5TBT2": {
+      "file": "chunk-JBL5TBT2.js"
+    },
+<<<<<<< HEAD
     "chunk-S75JNSMM": {
       "file": "chunk-S75JNSMM.js"
     },
     "chunk-EVSARLCR": {
       "file": "chunk-EVSARLCR.js"
+=======
+    "chunk-S2NBXIRK": {
+      "file": "chunk-S2NBXIRK.js"
+>>>>>>> final-refractor
     },
-    "chunk-N7IT2AO2": {
-      "file": "chunk-N7IT2AO2.js"
+    "chunk-7VOXV35W": {
+      "file": "chunk-7VOXV35W.js"
     },
-    "chunk-GDCM7YMP": {
-      "file": "chunk-GDCM7YMP.js"
+    "chunk-FXSYVB3P": {
+      "file": "chunk-FXSYVB3P.js"
     },
-    "chunk-5BBA45FO": {
-      "file": "chunk-5BBA45FO.js"
+    "chunk-7LJ6CF6F": {
+      "file": "chunk-7LJ6CF6F.js"
     },
-    "chunk-KJPWV6WR": {
-      "file": "chunk-KJPWV6WR.js"
+    "chunk-RZFRA6O3": {
+      "file": "chunk-RZFRA6O3.js"
     },
-    "chunk-4ZJYHXVI": {
-      "file": "chunk-4ZJYHXVI.js"
+    "chunk-3ZR2ZU3P": {
+      "file": "chunk-3ZR2ZU3P.js"
     },
-    "chunk-2NXK4IZZ": {
-      "file": "chunk-2NXK4IZZ.js"
+    "chunk-IK6FD4DG": {
+      "file": "chunk-IK6FD4DG.js"
     },
-    "chunk-VICELNQI": {
-      "file": "chunk-VICELNQI.js"
+    "chunk-BZM5KJBS": {
+      "file": "chunk-BZM5KJBS.js"
     },
+<<<<<<< HEAD
     "chunk-QV5SN4WD": {
       "file": "chunk-QV5SN4WD.js"
+=======
+    "chunk-A7H3FXNJ": {
+      "file": "chunk-A7H3FXNJ.js"
     },
-    "chunk-IOM7T3UX": {
-      "file": "chunk-IOM7T3UX.js"
+    "chunk-XXGW2ZKJ": {
+      "file": "chunk-XXGW2ZKJ.js"
+>>>>>>> final-refractor
     },
+    "chunk-3QOF35MF": {
+      "file": "chunk-3QOF35MF.js"
+    },
+<<<<<<< HEAD
     "chunk-LERCPKH5": {
       "file": "chunk-LERCPKH5.js"
+=======
+    "chunk-OLJED6AA": {
+      "file": "chunk-OLJED6AA.js"
+    },
+    "chunk-5KG75P36": {
+      "file": "chunk-5KG75P36.js"
+    },
+    "chunk-7QHXTJMK": {
+      "file": "chunk-7QHXTJMK.js"
+    },
+    "chunk-7V5GWXVN": {
+      "file": "chunk-7V5GWXVN.js"
+>>>>>>> final-refractor
     },
     "chunk-P6SMTJBG": {
       "file": "chunk-P6SMTJBG.js"
     },
-    "chunk-UCC4SYHQ": {
-      "file": "chunk-UCC4SYHQ.js"
+    "chunk-XJ4CG35O": {
+      "file": "chunk-XJ4CG35O.js"
     },
-    "chunk-3DNZLJAM": {
-      "file": "chunk-3DNZLJAM.js"
+    "chunk-GJXHKTVI": {
+      "file": "chunk-GJXHKTVI.js"
     },
-    "chunk-G3KLILSY": {
-      "file": "chunk-G3KLILSY.js"
+    "chunk-32HJBRZT": {
+      "file": "chunk-32HJBRZT.js"
     },
-    "chunk-GGKQQQY2": {
-      "file": "chunk-GGKQQQY2.js"
+    "chunk-7FDDY7DG": {
+      "file": "chunk-7FDDY7DG.js"
     },
-    "chunk-M2NELYC7": {
-      "file": "chunk-M2NELYC7.js"
+    "chunk-75JTQVRY": {
+      "file": "chunk-75JTQVRY.js"
     },
-    "chunk-WBKIMRVV": {
-      "file": "chunk-WBKIMRVV.js"
-    },
-    "chunk-6D2SAAIV": {
-      "file": "chunk-6D2SAAIV.js"
-    },
-    "chunk-PXYWQ7E3": {
-      "file": "chunk-PXYWQ7E3.js"
+    "chunk-HVVMUKCH": {
+      "file": "chunk-HVVMUKCH.js"
     },
     "chunk-HQXWA6LS": {
       "file": "chunk-HQXWA6LS.js"
@@ -792,6 +1239,7 @@
     "chunk-U4LT4ZJN": {
       "file": "chunk-U4LT4ZJN.js"
     },
+<<<<<<< HEAD
     "chunk-SJUOZCFA": {
       "file": "chunk-SJUOZCFA.js"
     },
@@ -827,6 +1275,10 @@
     },
     "chunk-MARUHEWW": {
       "file": "chunk-MARUHEWW.js"
+=======
+    "chunk-UOVNMUXR": {
+      "file": "chunk-UOVNMUXR.js"
+>>>>>>> final-refractor
     },
     "chunk-CC6CDFND": {
       "file": "chunk-CC6CDFND.js"
@@ -837,8 +1289,49 @@
     "chunk-RFTQKC7U": {
       "file": "chunk-RFTQKC7U.js"
     },
+<<<<<<< HEAD
     "chunk-V4F5PRXT": {
       "file": "chunk-V4F5PRXT.js"
+=======
+    "chunk-GAL5RSMX": {
+      "file": "chunk-GAL5RSMX.js"
+    },
+    "chunk-GGMOGVES": {
+      "file": "chunk-GGMOGVES.js"
+    },
+    "chunk-SLWC4WYB": {
+      "file": "chunk-SLWC4WYB.js"
+    },
+    "chunk-ZLAPKAAG": {
+      "file": "chunk-ZLAPKAAG.js"
+    },
+    "chunk-AS6KI2MM": {
+      "file": "chunk-AS6KI2MM.js"
+    },
+    "chunk-4BOPXW5F": {
+      "file": "chunk-4BOPXW5F.js"
+    },
+    "chunk-7RCU5MHB": {
+      "file": "chunk-7RCU5MHB.js"
+    },
+    "chunk-APPCZKFW": {
+      "file": "chunk-APPCZKFW.js"
+    },
+    "chunk-QFF4CQQI": {
+      "file": "chunk-QFF4CQQI.js"
+    },
+    "chunk-HWYXSU2G": {
+      "file": "chunk-HWYXSU2G.js"
+    },
+    "chunk-JRFR6BLO": {
+      "file": "chunk-JRFR6BLO.js"
+    },
+    "chunk-MARUHEWW": {
+      "file": "chunk-MARUHEWW.js"
+    },
+    "chunk-NJ4VOZBH": {
+      "file": "chunk-NJ4VOZBH.js"
+>>>>>>> final-refractor
     }
   }
 }

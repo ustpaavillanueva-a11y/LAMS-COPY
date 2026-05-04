@@ -1,432 +1,400 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TableModule, Table } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { TooltipModule } from 'primeng/tooltip';
-import { ToolbarModule } from 'primeng/toolbar';
-import { ToastModule } from 'primeng/toast';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
+
+// PrimeNG
+import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+
+// Core
+import { BaseComponent } from '../../core/base/base.component';
+import { LoadingState, isLoading } from '../../core/models/loading-state.enum';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+
+// Shared
+import { DataTableComponent, TableColumn } from '../../shared/components/data-table/data-table.component';
+import { ToolbarComponent } from '../../shared/components/toolbar/toolbar.component';
+import { ActionButtonsComponent } from '../../shared/components/action-buttons/action-buttons.component';
+import { DialogService } from '../../shared/services/dialog.service';
+import { ExportService, ExportColumn } from '../../shared/services/export.service';
+import { debounceInput } from '../../shared/utils/rxjs-operators';
+
+// Services
 import { UserService } from '../service/user.service';
-import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-campuses',
     standalone: true,
-    imports: [CommonModule, CardModule, ButtonModule, TableModule, InputTextModule, TooltipModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, FormsModule],
+    imports: [CommonModule, FormsModule, CardModule, TableModule, ToastModule, ButtonModule, DataTableComponent, ToolbarComponent, ActionButtonsComponent],
     styleUrls: ['../../../assets/pages/_campuses.scss'],
     providers: [MessageService],
     template: `
         <p-toast />
 
-        <p-toolbar styleClass="mb-4">
-            <ng-template #start>
-                <div class="flex items-center gap-2">
-                    <p-button label="New" icon="pi pi-plus" severity="secondary" (onClick)="openNewCampusDialog()" />
-                    <p-button label="Delete Selected" icon="pi pi-trash" severity="secondary" outlined (onClick)="deleteSelectedCampuses()" [disabled]="!selectedCampuses.length" />
-                </div>
-            </ng-template>
+        <app-toolbar [showNew]="true" [showDelete]="true" [selectedCount]="selectedCampuses.length" (newClick)="openNewCampusDialog()" (deleteClick)="deleteSelectedCampuses()">
             <ng-template #end>
                 <div class="flex items-center gap-2">
-                    <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" [(ngModel)]="searchValue" (input)="filterCampuses()" placeholder="Search campuses..." />
-                    </p-iconfield>
+                    <button pButton label="Export" icon="pi pi-upload" (click)="exportData()" class="p-button-secondary"></button>
                 </div>
             </ng-template>
-        </p-toolbar>
+        </app-toolbar>
 
-        <p-table
-            [value]="filteredCampuses"
-            [rows]="10"
-            [paginator]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
-            [loading]="loading"
-            [rowHover]="true"
-            dataKey="campusId"
-            [(selection)]="selectedCampuses"
-            (selectionChange)="onSelectionChange($event)"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} campuses"
-            [showCurrentPageReport]="true"
-            [tableStyle]="{ 'min-width': '70rem' }"
-        >
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width:3rem"><p-tableHeaderCheckbox /></th>
-                    <th style="min-width:20rem">ID</th>
-                    <th pSortableColumn="campusName" style="min-width:15rem">Campus <p-sortIcon field="campusName" /></th>
-                    <th pSortableColumn="campusDirector" style="min-width:15rem">Campus Director <p-sortIcon field="campusDirector" /></th>
-                    <th style="min-width:12rem">Actions</th>
-                </tr>
+        <app-data-table [data]="filteredCampuses" [columns]="tableColumns" [loading]="loading" [searchable]="true" [selectable]="true" [paginator]="true" [rows]="10" [(selection)]="selectedCampuses" (search)="onSearchInput($event)">
+            <ng-template #body let-campus>
+                <td><p-tableCheckbox [value]="campus" /></td>
+                <td>{{ formatId(campus.campusId) }}</td>
+                <td>{{ campus.campusName }}</td>
+                <td>{{ campus.campusDirector || 'N/A' }}</td>
+                <td>
+                    <app-action-buttons [data]="campus" [showView]="false" (edit)="editCampus($event)" (delete)="deleteCampus($event)" />
+                </td>
             </ng-template>
-            <ng-template pTemplate="body" let-campus>
-                <tr>
-                    <td><p-tableCheckbox [value]="campus" /></td>
-                    <td>{{ formatId(campus.campusId) }}</td>
-                    <td>{{ campus.campusName }}</td>
-                    <td>{{ campus.campusDirector || 'N/A' }}</td>
-                    <td>
-                        <div class="flex gap-2">
-                            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true" (onClick)="editCampus(campus)" />
-                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (onClick)="deleteCampus(campus)" />
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="5" class="text-center py-5">No campuses found</td>
-                </tr>
-            </ng-template>
-        </p-table>
+        </app-data-table>
     `
 })
-export class CampusesComponent implements OnInit {
-    @ViewChild('dt') table!: Table;
+export class CampusesComponent extends BaseComponent implements OnInit {
+    // State management
+    loadingState: LoadingState = LoadingState.IDLE;
+    isUpdating: boolean = false;
+    isDeleting: boolean = false;
 
+    // Data
     campuses: any[] = [];
     filteredCampuses: any[] = [];
     selectedCampuses: any[] = [];
-    searchValue: string = '';
-    loading: boolean = false;
+
+    // Search
+    private searchSubject$ = new Subject<string>();
+    private currentSearchTerm: string = '';
+
+    // Table configuration
+    tableColumns: TableColumn[] = [
+        { field: 'campusId', header: 'ID', sortable: false },
+        { field: 'campusName', header: 'Campus', sortable: true },
+        { field: 'campusDirector', header: 'Campus Director', sortable: true },
+        { field: 'actions', header: 'Actions', sortable: false }
+    ];
+
+    // Computed properties
+    get loading(): boolean {
+        return isLoading(this.loadingState);
+    }
 
     constructor(
         private userService: UserService,
-        private messageService: MessageService
-    ) {}
+        private messageService: MessageService,
+        private dialogService: DialogService,
+        private exportService: ExportService,
+        private errorHandler: ErrorHandlerService
+    ) {
+        super();
+    }
 
     ngOnInit() {
+        this.setupSearchDebounce();
         this.loadCampuses();
     }
 
-    loadCampuses() {
-        this.loading = true;
-        this.userService.getCampuses().subscribe({
-            next: (response: any) => {
-                this.campuses = Array.isArray(response) ? response : response.data || [];
-                this.filteredCampuses = [...this.campuses];
-                this.loading = false;
-            },
-            error: (error) => {
-                console.error('Error loading campuses:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Failed to load campuses: ' + (error.error?.message || error.message),
-                    icon: 'error'
-                });
-                this.loading = false;
-            }
+    /**
+     * Setup debounced search
+     */
+    private setupSearchDebounce(): void {
+        this.searchSubject$.pipe(debounceInput(300), takeUntil(this.destroy$)).subscribe((searchTerm) => {
+            this.currentSearchTerm = searchTerm;
+            this.filterCampuses();
         });
     }
 
-    filterCampuses() {
-        if (!this.searchValue.trim()) {
+    /**
+     * Handle search input
+     */
+    onSearchInput(searchTerm: string): void {
+        this.searchSubject$.next(searchTerm);
+    }
+
+    /**
+     * Load all campuses
+     */
+    loadCampuses(): void {
+        if (this.loading) return;
+
+        this.loadingState = LoadingState.LOADING;
+
+        this.userService
+            .getCampuses()
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    if (this.loadingState === LoadingState.LOADING) {
+                        this.loadingState = LoadingState.IDLE;
+                    }
+                })
+            )
+            .subscribe({
+                next: (response: any) => {
+                    this.campuses = Array.isArray(response) ? response : response.data || [];
+                    this.filteredCampuses = [...this.campuses];
+                    this.loadingState = LoadingState.SUCCESS;
+                },
+                error: (error) => {
+                    this.loadingState = LoadingState.ERROR;
+                    this.errorHandler.handleError(error, 'loading campuses');
+                }
+            });
+    }
+
+    /**
+     * Filter campuses based on search term
+     */
+    private filterCampuses(): void {
+        const searchValue = this.currentSearchTerm.toLowerCase();
+
+        if (!searchValue.trim()) {
             this.filteredCampuses = [...this.campuses];
             return;
         }
 
-        const search = this.searchValue.toLowerCase();
-        this.filteredCampuses = this.campuses.filter((campus) => campus.campusName?.toLowerCase().includes(search) || campus.campusDirector?.toLowerCase().includes(search));
+        this.filteredCampuses = this.campuses.filter((campus) => campus.campusName?.toLowerCase().includes(searchValue) || campus.campusDirector?.toLowerCase().includes(searchValue));
     }
 
-    onSelectionChange(event: any) {
-        if (this.selectedCampuses && this.selectedCampuses.length > 0) {
-          
+    /**
+     * Open dialog to create new campus
+     */
+    async openNewCampusDialog(): Promise<void> {
+        if (this.isUpdating) return;
+
+        const result = await this.dialogService.showForm({
+            title: '➕ Add New Campus',
+            fields: [
+                {
+                    id: 'campusName',
+                    label: 'Campus Name *',
+                    type: 'text',
+                    placeholder: 'Campus Name',
+                    required: true
+                },
+                {
+                    id: 'campusDirector',
+                    label: 'Campus Director *',
+                    type: 'text',
+                    placeholder: 'Director Name',
+                    required: true
+                }
+            ],
+            confirmButtonText: 'Create Campus'
+        });
+
+        if (!result.isConfirmed || !result.value) return;
+
+        const { campusName, campusDirector } = result.value;
+
+        if (!campusName?.trim() || !campusDirector?.trim()) {
+            this.dialogService.showError('Campus Name and Director are required');
+            return;
         }
-    }
 
-    viewCampus(campus: any) {
-        const createdDate = new Date(campus.campusCreated).toLocaleDateString();
-        const updatedDate = new Date(campus.campusUpdated).toLocaleDateString();
-        Swal.fire({
-            title: campus.campusName,
-            html: `
-                <div style="text-align: left;">
-                    <p><strong>Campus Director:</strong> ${campus.campusDirector || 'N/A'}</p>
-                    <p><strong>Created:</strong> ${createdDate}</p>
-                    <p><strong>Updated:</strong> ${updatedDate}</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'Close'
-        });
-    }
+        this.isUpdating = true;
 
-    editCampus(campus: any) {
-        const editData = {
-            campusName: campus.campusName,
-            campusDirector: campus.campusDirector
-        };
-
-        Swal.fire({
-            title: '',
-            titleText: '',
-            html: `
-                <div style="text-align: left; width: 100%; max-width: 500px; margin: 0 auto;">
-                    <div style="background: #f5f5f5; color: #333; padding: 16px; margin: -16px -16px 16px -16px; border-radius: 8px 8px 0 0;">
-                        <h2 style="margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.5px;">✎ Edit Campus</h2>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px;">
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Campus Name *</label>
-                            <input id="campusName" type="text" value="${editData.campusName}" placeholder="Campus Name" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #e0e0e0; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent;" onfocus="this.style.borderBottomColor='#667eea'" onblur="this.style.borderBottomColor='#e0e0e0'" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Campus Director *</label>
-                            <input id="campusDirector" type="text" value="${editData.campusDirector}" placeholder="Director Name" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #e0e0e0; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent;" onfocus="this.style.borderBottomColor='#667eea'" onblur="this.style.borderBottomColor='#e0e0e0'" />
-                        </div>
-                    </div>
-                </div>
-            `,
-            width: '550px',
-            showCancelButton: true,
-            confirmButtonText: 'Update Campus',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#667eea',
-            cancelButtonColor: '#e0e0e0',
-            didOpen: () => {
-                const campusNameInput = document.getElementById('campusName') as HTMLInputElement;
-                if (campusNameInput) campusNameInput.focus();
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const campusName = (document.getElementById('campusName') as HTMLInputElement).value.trim();
-                const campusDirector = (document.getElementById('campusDirector') as HTMLInputElement).value.trim();
-
-                if (!campusName) {
-                    Swal.fire({ title: 'Error', text: 'Campus Name is required', icon: 'error' });
-                    return;
+        this.userService
+            .createCampus({
+                campusName: campusName.trim(),
+                campusDirector: campusDirector.trim()
+            })
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.dialogService.showSuccess('Campus created successfully');
+                    this.loadCampuses();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'creating campus');
                 }
-
-                if (!campusDirector) {
-                    Swal.fire({ title: 'Error', text: 'Campus Director is required', icon: 'error' });
-                    return;
-                }
-
-                const updatedData = {
-                    campusName,
-                    campusDirector
-                };
-
-                this.userService.updateCampus(campus.campusId, updatedData).subscribe({
-                    next: () => {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Campus updated successfully',
-                            icon: 'success'
-                        });
-                        this.loadCampuses();
-                    },
-                    error: (error) => {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to update campus: ' + (error.error?.message || error.message),
-                            icon: 'error'
-                        });
-                    }
-                });
-            }
-        });
+            });
     }
 
-    deleteCampus(campus: any) {
-        const campusId = campus.campusId;
-     
+    /**
+     * Edit existing campus
+     */
+    async editCampus(campus: any): Promise<void> {
+        if (this.isUpdating) return;
 
-        Swal.fire({
-            title: 'Confirm Delete',
-            text: 'Are you sure you want to delete this campus?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Delete',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.userService.deleteCampus(campusId).subscribe({
-                    next: () => {
-                        Swal.fire({
-                            title: 'Deleted!',
-                            text: 'Campus has been deleted successfully.',
-                            icon: 'success'
-                        });
-                        this.loadCampuses();
-                    },
-                    error: (error) => {
-                        console.error('Error deleting campus:', campusId, error);
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to delete campus: ' + (error.error?.message || error.message),
-                            icon: 'error'
-                        });
-                    }
-                });
-            }
+        const result = await this.dialogService.showForm({
+            title: '✎ Edit Campus',
+            fields: [
+                {
+                    id: 'campusName',
+                    label: 'Campus Name *',
+                    type: 'text',
+                    value: campus.campusName,
+                    required: true
+                },
+                {
+                    id: 'campusDirector',
+                    label: 'Campus Director *',
+                    type: 'text',
+                    value: campus.campusDirector,
+                    required: true
+                }
+            ],
+            confirmButtonText: 'Update Campus'
         });
+
+        if (!result.isConfirmed || !result.value) return;
+
+        const { campusName, campusDirector } = result.value;
+
+        if (!campusName?.trim() || !campusDirector?.trim()) {
+            this.dialogService.showError('Campus Name and Director are required');
+            return;
+        }
+
+        this.isUpdating = true;
+
+        this.userService
+            .updateCampus(campus.campusId, {
+                campusName: campusName.trim(),
+                campusDirector: campusDirector.trim()
+            })
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isUpdating = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.dialogService.showSuccess('Campus updated successfully');
+                    this.loadCampuses();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'updating campus');
+                }
+            });
     }
 
-    openNewCampusDialog() {
-        Swal.fire({
-            title: '',
-            titleText: '',
-            html: `
-                <div style="text-align: left; width: 100%; max-width: 500px; margin: 0 auto;">
-                    <div style="background: #f5f5f5; color: #333; padding: 16px; margin: -16px -16px 16px -16px; border-radius: 8px 8px 0 0;">
-                        <h2 style="margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.5px;">➕ Add New Campus</h2>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px;">
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Campus Name *</label>
-                            <input id="newCampusName" type="text" placeholder="Campus Name" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #e0e0e0; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent;" onfocus="this.style.borderBottomColor='#667eea'" onblur="this.style.borderBottomColor='#e0e0e0'" />
-                        </div>
-                        <div>
-                            <label style="display: block; font-weight: 500; margin-bottom: 6px; color: #555; font-size: 13px;">Campus Director *</label>
-                            <input id="newCampusDirector" type="text" placeholder="Director Name" style="width: 100%; padding: 8px 10px; border: none; border-bottom: 1.5px solid #e0e0e0; border-radius: 0; font-size: 13px; box-sizing: border-box; background: transparent;" onfocus="this.style.borderBottomColor='#667eea'" onblur="this.style.borderBottomColor='#e0e0e0'" />
-                        </div>
-                    </div>
-                </div>
-            `,
-            width: '550px',
-            showCancelButton: true,
-            confirmButtonText: 'Create Campus',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#667eea',
-            cancelButtonColor: '#e0e0e0',
-            didOpen: () => {
-                const campusNameInput = document.getElementById('newCampusName') as HTMLInputElement;
-                if (campusNameInput) campusNameInput.focus();
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const campusName = (document.getElementById('newCampusName') as HTMLInputElement).value.trim();
-                const campusDirector = (document.getElementById('newCampusDirector') as HTMLInputElement).value.trim();
+    /**
+     * Delete single campus
+     */
+    async deleteCampus(campus: any): Promise<void> {
+        if (this.isDeleting) return;
 
-                if (!campusName) {
-                    Swal.fire({ title: 'Error', text: 'Campus Name is required', icon: 'error' });
-                    return;
+        const confirmed = await this.dialogService.confirmDelete(`campus "${campus.campusName}"`);
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+
+        this.userService
+            .deleteCampus(campus.campusId)
+            .pipe(
+                takeUntil(this.destroy$),
+                finalize(() => (this.isDeleting = false))
+            )
+            .subscribe({
+                next: () => {
+                    this.dialogService.showSuccess('Campus deleted successfully');
+                    this.loadCampuses();
+                },
+                error: (error) => {
+                    this.errorHandler.handleError(error, 'deleting campus');
                 }
-
-                if (!campusDirector) {
-                    Swal.fire({ title: 'Error', text: 'Campus Director is required', icon: 'error' });
-                    return;
-                }
-
-                const newCampusPayload = {
-                    campusName,
-                    campusDirector
-                };
-
-                this.userService.createCampus(newCampusPayload).subscribe({
-                    next: () => {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Campus created successfully',
-                            icon: 'success'
-                        });
-                        this.loadCampuses();
-                    },
-                    error: (error) => {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Failed to create campus: ' + (error.error?.message || error.message),
-                            icon: 'error'
-                        });
-                    }
-                });
-            }
-        });
+            });
     }
 
-    deleteSelectedCampuses() {
+    /**
+     * Delete multiple selected campuses
+     */
+    async deleteSelectedCampuses(): Promise<void> {
         if (!this.selectedCampuses || this.selectedCampuses.length === 0) {
-            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Please select campuses to delete' });
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Please select campuses to delete'
+            });
             return;
         }
 
-        Swal.fire({
-            title: 'Confirm Delete',
-            text: `Are you sure you want to delete ${this.selectedCampuses.length} campus(es)?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Delete All',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                let deletedCount = 0;
-                let failedCount = 0;
+        if (this.isDeleting) return;
 
-                this.selectedCampuses.forEach((campus) => {
-                    const campusId = campus.campusId;
+        const confirmed = await this.dialogService.confirm('Confirm Delete', `Are you sure you want to delete ${this.selectedCampuses.length} campus(es)?`);
 
-                    this.userService.deleteCampus(campusId).subscribe({
-                        next: () => {
-                            deletedCount++;
-                            if (deletedCount + failedCount === this.selectedCampuses.length) {
-                                this.selectedCampuses = [];
-                                this.loadCampuses();
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: `${deletedCount} campus(es) deleted successfully.`,
-                                    icon: 'success'
-                                });
-                            }
-                        },
-                        error: (error) => {
-                            failedCount++;
-                            console.error(`Failed to delete campus ${campusId}:`, error);
-                            if (deletedCount + failedCount === this.selectedCampuses.length) {
-                                this.selectedCampuses = [];
-                                this.loadCampuses();
-                                Swal.fire({
-                                    title: 'Partial Delete',
-                                    text: `${deletedCount} campus(es) deleted, ${failedCount} failed.`,
-                                    icon: 'warning'
-                                });
-                            }
-                        }
-                    });
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+        let deletedCount = 0;
+        let failedCount = 0;
+        const totalCount = this.selectedCampuses.length;
+
+        this.selectedCampuses.forEach((campus) => {
+            this.userService
+                .deleteCampus(campus.campusId)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: () => {
+                        deletedCount++;
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    },
+                    error: (error) => {
+                        failedCount++;
+                        console.error(`Failed to delete campus ${campus.campusId}:`, error);
+                        this.checkBulkDeleteComplete(deletedCount, failedCount, totalCount);
+                    }
                 });
-            }
         });
     }
 
-    exportCSV() {
+    /**
+     * Check if bulk delete operation is complete
+     */
+    private checkBulkDeleteComplete(deleted: number, failed: number, total: number): void {
+        if (deleted + failed === total) {
+            this.isDeleting = false;
+            this.selectedCampuses = [];
+            this.loadCampuses();
+
+            if (failed === 0) {
+                this.dialogService.showSuccess(`${deleted} campus(es) deleted successfully`);
+            } else {
+                this.dialogService.showWarning(`${deleted} campus(es) deleted, ${failed} failed`, 'Partial Delete');
+            }
+        }
+    }
+
+    /**
+     * Export campuses data
+     */
+    exportData(): void {
         if (this.filteredCampuses.length === 0) {
-            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'No data to export' });
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'No data to export'
+            });
             return;
         }
 
-        const csv = this.generateCSV(this.filteredCampuses);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
+        const exportColumns: ExportColumn[] = [
+            { field: 'campusName', header: 'Campus Name' },
+            { field: 'campusDirector', header: 'Campus Director' }
+        ];
 
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'campuses_export.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        this.exportService.exportToCsv(this.filteredCampuses, 'campuses_export', exportColumns);
 
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Campuses exported to CSV' });
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Campuses exported to CSV'
+        });
     }
 
-    private generateCSV(data: any[]): string {
-        const headers = ['Campus Name', 'Campus Director'];
-        const rows = data.map((campus) => [campus.campusName || '', campus.campusDirector || '']);
-
-        const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join('\n');
-
-        return csvContent;
-    }
-
-    // Format ID to show only numbers (e.g., CAMPUS001 → 001)
+    /**
+     * Format ID to show only numbers (e.g., CAMPUS001 → 001)
+     */
     formatId(id: string): string {
         if (!id) return '';
         return id.replace(/[^0-9]/g, '');

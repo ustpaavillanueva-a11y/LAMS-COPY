@@ -1,24 +1,24 @@
 import {
   BaseEditableHolder
-} from "./chunk-4ZJYHXVI.js";
-import "./chunk-2NXK4IZZ.js";
+} from "./chunk-A7H3FXNJ.js";
+import "./chunk-XXGW2ZKJ.js";
 import {
   AutoFocus
-} from "./chunk-IOM7T3UX.js";
+} from "./chunk-7QHXTJMK.js";
 import "./chunk-P6SMTJBG.js";
 import {
   PARENT_INSTANCE
-} from "./chunk-M2NELYC7.js";
+} from "./chunk-32HJBRZT.js";
 import {
   BaseStyle
-} from "./chunk-WBKIMRVV.js";
-import {
-  SharedModule
-} from "./chunk-6D2SAAIV.js";
+} from "./chunk-7FDDY7DG.js";
 import {
   Bind,
   BindModule
-} from "./chunk-PXYWQ7E3.js";
+} from "./chunk-75JTQVRY.js";
+import {
+  SharedModule
+} from "./chunk-HVVMUKCH.js";
 import "./chunk-OTTARZB5.js";
 import {
   $,
@@ -29,13 +29,13 @@ import {
 } from "./chunk-U4LT4ZJN.js";
 import {
   NG_VALUE_ACCESSOR
-} from "./chunk-SJUOZCFA.js";
+} from "./chunk-SLWC4WYB.js";
 import {
   CommonModule,
   NgIf,
   NgStyle,
   isPlatformBrowser
-} from "./chunk-RH3RUHL2.js";
+} from "./chunk-7RCU5MHB.js";
 import "./chunk-APPCZKFW.js";
 import {
   ChangeDetectionStrategy,
@@ -82,11 +82,16 @@ import {
   ɵɵstyleProp,
   ɵɵtemplate,
   ɵɵviewQuery
+<<<<<<< HEAD
 } from "./chunk-FKRSZNWR.js";
+=======
+} from "./chunk-QFF4CQQI.js";
+import "./chunk-HWYXSU2G.js";
+>>>>>>> final-refractor
 import "./chunk-JRFR6BLO.js";
 import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";
-import "./chunk-V4F5PRXT.js";
+import "./chunk-NJ4VOZBH.js";
 
 // node_modules/@primeuix/styles/dist/slider/index.mjs
 var style = "\n    .p-slider {\n        display: block;\n        position: relative;\n        background: dt('slider.track.background');\n        border-radius: dt('slider.track.border.radius');\n    }\n\n    .p-slider-handle {\n        cursor: grab;\n        touch-action: none;\n        user-select: none;\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        height: dt('slider.handle.height');\n        width: dt('slider.handle.width');\n        background: dt('slider.handle.background');\n        border-radius: dt('slider.handle.border.radius');\n        transition:\n            background dt('slider.transition.duration'),\n            color dt('slider.transition.duration'),\n            border-color dt('slider.transition.duration'),\n            box-shadow dt('slider.transition.duration'),\n            outline-color dt('slider.transition.duration');\n        outline-color: transparent;\n    }\n\n    .p-slider-handle::before {\n        content: '';\n        width: dt('slider.handle.content.width');\n        height: dt('slider.handle.content.height');\n        display: block;\n        background: dt('slider.handle.content.background');\n        border-radius: dt('slider.handle.content.border.radius');\n        box-shadow: dt('slider.handle.content.shadow');\n        transition: background dt('slider.transition.duration');\n    }\n\n    .p-slider:not(.p-disabled) .p-slider-handle:hover {\n        background: dt('slider.handle.hover.background');\n    }\n\n    .p-slider:not(.p-disabled) .p-slider-handle:hover::before {\n        background: dt('slider.handle.content.hover.background');\n    }\n\n    .p-slider-handle:focus-visible {\n        box-shadow: dt('slider.handle.focus.ring.shadow');\n        outline: dt('slider.handle.focus.ring.width') dt('slider.handle.focus.ring.style') dt('slider.handle.focus.ring.color');\n        outline-offset: dt('slider.handle.focus.ring.offset');\n    }\n\n    .p-slider-range {\n        display: block;\n        background: dt('slider.range.background');\n        border-radius: dt('slider.track.border.radius');\n    }\n\n    .p-slider.p-slider-horizontal {\n        height: dt('slider.track.size');\n    }\n\n    .p-slider-horizontal .p-slider-range {\n        inset-block-start: 0;\n        inset-inline-start: 0;\n        height: 100%;\n    }\n\n    .p-slider-horizontal .p-slider-handle {\n        inset-block-start: 50%;\n        margin-block-start: calc(-1 * calc(dt('slider.handle.height') / 2));\n        margin-inline-start: calc(-1 * calc(dt('slider.handle.width') / 2));\n    }\n\n    .p-slider-vertical {\n        min-height: 100px;\n        width: dt('slider.track.size');\n    }\n\n    .p-slider-vertical .p-slider-handle {\n        inset-inline-start: 50%;\n        margin-inline-start: calc(-1 * calc(dt('slider.handle.width') / 2));\n        margin-block-end: calc(-1 * calc(dt('slider.handle.height') / 2));\n    }\n\n    .p-slider-vertical .p-slider-range {\n        inset-block-end: 0;\n        inset-inline-start: 0;\n        width: 100%;\n    }\n";
