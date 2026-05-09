@@ -44,15 +44,30 @@ import { UserService } from '../service/user.service';
             </ng-template>
         </app-toolbar>
 
-        <app-data-table [data]="filteredCampuses" [columns]="tableColumns" [loading]="loading" [searchable]="true" [selectable]="true" [paginator]="true" [rows]="10" [(selection)]="selectedCampuses" (search)="onSearchInput($event)">
+        <app-data-table
+            [data]="filteredCampuses"
+            [columns]="tableColumns"
+            [loading]="loading"
+            [searchable]="true"
+            [selectable]="true"
+            [paginator]="true"
+            [rows]="10"
+            [dataKey]="'campusId'"
+            [(selection)]="selectedCampuses"
+            (search)="onSearchInput($event)"
+        >
             <ng-template #body let-campus>
-                <td><p-tableCheckbox [value]="campus" /></td>
-                <td>{{ formatId(campus.campusId) }}</td>
-                <td>{{ campus.campusName }}</td>
-                <td>{{ campus.campusDirector || 'N/A' }}</td>
-                <td>
-                    <app-action-buttons [data]="campus" [showView]="false" (edit)="editCampus($event)" (delete)="deleteCampus($event)" />
-                </td>
+                <tr>
+                    <td>
+                        <input type="checkbox" [checked]="isSelected(campus)" (change)="toggleSelection(campus)" class="p-checkbox-box" />
+                    </td>
+                    <td>{{ formatId(campus.campusId) }}</td>
+                    <td>{{ campus.campusName }}</td>
+                    <td>{{ campus.campusDirector || 'N/A' }}</td>
+                    <td>
+                        <app-action-buttons [data]="campus" [showView]="false" (edit)="editCampus($event)" (delete)="deleteCampus($event)" />
+                    </td>
+                </tr>
             </ng-template>
         </app-data-table>
     `
@@ -390,6 +405,25 @@ export class CampusesComponent extends BaseComponent implements OnInit {
             summary: 'Success',
             detail: 'Campuses exported to CSV'
         });
+    }
+
+    /**
+     * Check if a campus is selected
+     */
+    isSelected(campus: any): boolean {
+        return this.selectedCampuses.some((c) => c.campusId === campus.campusId);
+    }
+
+    /**
+     * Toggle selection of a campus
+     */
+    toggleSelection(campus: any): void {
+        const index = this.selectedCampuses.findIndex((c) => c.campusId === campus.campusId);
+        if (index > -1) {
+            this.selectedCampuses.splice(index, 1);
+        } else {
+            this.selectedCampuses.push(campus);
+        }
     }
 
     /**

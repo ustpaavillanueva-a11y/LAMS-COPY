@@ -33,9 +33,6 @@ import {
   I,
   Yt
 } from "./chunk-U4LT4ZJN.js";
-import {
-  NG_VALUE_ACCESSOR
-} from "./chunk-SLWC4WYB.js";
 import "./chunk-GAL5RSMX.js";
 import {
   animate,
@@ -43,6 +40,9 @@ import {
   transition,
   trigger
 } from "./chunk-GGMOGVES.js";
+import {
+  NG_VALUE_ACCESSOR
+} from "./chunk-SLWC4WYB.js";
 import {
   CommonModule,
   NgIf,

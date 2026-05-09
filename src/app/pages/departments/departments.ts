@@ -46,15 +46,30 @@ import { DepartmentsWebSocketService } from './departments-websocket.service';
             </ng-template>
         </app-toolbar>
 
-        <app-data-table [data]="filteredDepartments" [columns]="tableColumns" [loading]="loading" [searchable]="true" [selectable]="true" [paginator]="true" [rows]="10" [(selection)]="selectedDepartments" (search)="onSearchInput($event)">
+        <app-data-table
+            [data]="filteredDepartments"
+            [columns]="tableColumns"
+            [loading]="loading"
+            [searchable]="true"
+            [selectable]="true"
+            [paginator]="true"
+            [rows]="10"
+            [dataKey]="'departmentId'"
+            [(selection)]="selectedDepartments"
+            (search)="onSearchInput($event)"
+        >
             <ng-template #body let-department>
-                <td><p-tableCheckbox [value]="department" /></td>
-                <td>{{ formatId(department.departmentId) }}</td>
-                <td>{{ department.departmentName }}</td>
-                <td>{{ department.campus?.campusName || 'N/A' }}</td>
-                <td>
-                    <app-action-buttons [data]="department" [showView]="false" (edit)="editDepartment($event)" (delete)="deleteDepartment($event)" />
-                </td>
+                <tr>
+                    <td>
+                        <input type="checkbox" [checked]="isSelected(department)" (change)="toggleSelection(department)" class="p-checkbox-box" />
+                    </td>
+                    <td>{{ formatId(department.departmentId) }}</td>
+                    <td>{{ department.departmentName }}</td>
+                    <td>{{ department.campus?.campusName || 'N/A' }}</td>
+                    <td>
+                        <app-action-buttons [data]="department" [showView]="false" (edit)="editDepartment($event)" (delete)="deleteDepartment($event)" />
+                    </td>
+                </tr>
             </ng-template>
         </app-data-table>
     `
@@ -515,6 +530,25 @@ export class DepartmentsComponent extends BaseComponent implements OnInit {
             summary: 'Success',
             detail: 'Departments exported to CSV'
         });
+    }
+
+    /**
+     * Check if a department is selected
+     */
+    isSelected(department: any): boolean {
+        return this.selectedDepartments.some((d) => d.departmentId === department.departmentId);
+    }
+
+    /**
+     * Toggle selection of a department
+     */
+    toggleSelection(department: any): void {
+        const index = this.selectedDepartments.findIndex((d) => d.departmentId === department.departmentId);
+        if (index > -1) {
+            this.selectedDepartments.splice(index, 1);
+        } else {
+            this.selectedDepartments.push(department);
+        }
     }
 
     /**

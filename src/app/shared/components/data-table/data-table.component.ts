@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, TemplateRef, ContentChild, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, TemplateRef, ContentChild, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule, Table } from 'primeng/table';
@@ -55,7 +55,7 @@ import { SelectModule } from 'primeng/select';
             </ng-template>
 
             <ng-template pTemplate="body" let-rowData>
-                <ng-container *ngTemplateOutlet="bodyTemplate; context: { $implicit: rowData }"></ng-container>
+                <ng-container *ngIf="bodyTemplate" [ngTemplateOutlet]="bodyTemplate" [ngTemplateOutletContext]="{ $implicit: rowData }"></ng-container>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
@@ -70,7 +70,7 @@ import { SelectModule } from 'primeng/select';
         <ng-template #defaultHeader>
             <tr>
                 <th *ngIf="selectable" style="width:3rem">
-                    <p-tableHeaderCheckbox />
+                    <input type="checkbox" [checked]="isAllSelected()" (change)="toggleAllSelection()" class="p-checkbox-box" />
                 </th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.sortable ? col.field : undefined" [style]="col.style">
                     {{ col.header }}
@@ -95,7 +95,7 @@ import { SelectModule } from 'primeng/select';
         `
     ]
 })
-export class DataTableComponent {
+export class DataTableComponent implements AfterViewInit {
     @ViewChild('dt') table!: Table;
 
     // Data
@@ -129,7 +129,13 @@ export class DataTableComponent {
     @Input() showCaption: boolean = true;
     @Input() title: string = '';
     @Input() emptyMessage: string = '';
-    @Input() columnCount: number = 0;
+
+    // Computed column count
+    get columnCount(): number {
+        let count = this.columns.length;
+        if (this.selectable) count++;
+        return count;
+    }
 
     // Actions
     @Input() exportable: boolean = true;
@@ -139,8 +145,34 @@ export class DataTableComponent {
     @Output() print = new EventEmitter<void>();
 
     // Templates
-    @ContentChild('header') headerTemplate: TemplateRef<any> | null = null;
     @ContentChild('body') bodyTemplate!: TemplateRef<any>;
+    @ContentChild('header') headerTemplate: TemplateRef<any> | null = null;
+
+    ngAfterViewInit(): void {
+        // Ensure body template is available
+        if (!this.bodyTemplate) {
+            console.warn('DataTableComponent: body template not provided');
+        }
+    }
+
+    /**
+     * Check if all items are selected
+     */
+    isAllSelected(): boolean {
+        return this.data.length > 0 && this.selection.length === this.data.length;
+    }
+
+    /**
+     * Toggle selection of all items
+     */
+    toggleAllSelection(): void {
+        if (this.isAllSelected()) {
+            this.selection = [];
+        } else {
+            this.selection = [...this.data];
+        }
+        this.selectionChange.emit(this.selection);
+    }
 
     onSearchInput(event: any): void {
         const value = event.target?.value || '';

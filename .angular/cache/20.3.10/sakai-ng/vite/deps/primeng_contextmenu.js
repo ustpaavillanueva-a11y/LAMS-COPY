@@ -1,8 +1,4 @@
 import {
-  Badge,
-  BadgeModule
-} from "./chunk-GIUYGYUT.js";
-import {
   Tooltip,
   TooltipModule
 } from "./chunk-BIFJ4FDJ.js";
@@ -10,11 +6,15 @@ import {
   DomHandler
 } from "./chunk-P6SMTJBG.js";
 import {
-  Ripple
-} from "./chunk-7V5GWXVN.js";
+  Badge,
+  BadgeModule
+} from "./chunk-GIUYGYUT.js";
 import {
   zindexutils
 } from "./chunk-OLJED6AA.js";
+import {
+  Ripple
+} from "./chunk-7V5GWXVN.js";
 import {
   AngleRightIcon
 } from "./chunk-XJ4CG35O.js";

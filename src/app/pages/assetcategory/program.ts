@@ -51,12 +51,16 @@ import { AssetService } from '../service/asset.service';
             (exportExcel)="exportData()"
         >
             <ng-template #body let-item>
-                <td><p-tableCheckbox [value]="item" /></td>
-                <td>{{ item.programId }}</td>
-                <td>{{ item.programName }}</td>
-                <td>
-                    <app-action-buttons [data]="item" [showView]="false" [showEdit]="true" [showDelete]="true" [editDisabled]="isUpdating" [deleteDisabled]="isDeleting" (edit)="edit($event)" (delete)="delete($event)" />
-                </td>
+                <tr>
+                    <td>
+                        <input type="checkbox" [checked]="isSelected(item)" (change)="toggleSelection(item)" class="p-checkbox-box" />
+                    </td>
+                    <td>{{ item.programId }}</td>
+                    <td>{{ item.programName }}</td>
+                    <td>
+                        <app-action-buttons [data]="item" [showView]="false" [showEdit]="true" [showDelete]="true" [editDisabled]="isUpdating" [deleteDisabled]="isDeleting" (edit)="edit($event)" (delete)="delete($event)" />
+                    </td>
+                </tr>
             </ng-template>
         </app-data-table>
     `
@@ -322,6 +326,25 @@ export class ProgramComponent extends BaseComponent implements OnInit {
             } else {
                 this.dialogService.showWarning(`${deleted} program(s) deleted, ${failed} failed`, 'Partial Delete');
             }
+        }
+    }
+
+    /**
+     * Check if an item is selected
+     */
+    isSelected(item: any): boolean {
+        return this.selectedItems.some((i) => i.programId === item.programId);
+    }
+
+    /**
+     * Toggle selection of an item
+     */
+    toggleSelection(item: any): void {
+        const index = this.selectedItems.findIndex((i) => i.programId === item.programId);
+        if (index > -1) {
+            this.selectedItems.splice(index, 1);
+        } else {
+            this.selectedItems.push(item);
         }
     }
 
